@@ -4,6 +4,7 @@ Sistema de Recolección de Datos de Acciones
 Módulo base para obtener información técnica y fundamental de acciones
 """
 
+
 import yfinance as yf
 import pandas as pd
 import requests
@@ -14,6 +15,13 @@ from typing import Dict, List, Optional
 import numpy as np
 import warnings
 warnings.filterwarnings('ignore')
+
+# Integración NewsAnalyzer
+try:
+    from news_analyzer import NewsAnalyzer
+    NEWS_ANALYZER_AVAILABLE = True
+except ImportError:
+    NEWS_ANALYZER_AVAILABLE = False
 
 # Try to import talib, fallback to manual calculations if not available
 try:
@@ -29,6 +37,7 @@ class StockDataCollector:
         self.session.headers.update({
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
         })
+        self.news_analyzer = NewsAnalyzer() if NEWS_ANALYZER_AVAILABLE else None
     
     def calculate_rsi(self, prices: pd.Series, period: int = 14) -> pd.Series:
         """
@@ -289,14 +298,14 @@ class StockDataCollector:
         """
         if 'error' in data:
             return {'analysis': 'No se pudo analizar por error en datos'}
-        
+
         score = 0
         signals = []
-        
+
         price_data = data.get('price_data', {})
         technical = data.get('technical_indicators', {})
         current_price = price_data.get('current_price', 0)
-        
+
         # 1. Análisis de momentum básico
         change_pct = price_data.get('change_percent', 0)
         if change_pct > 3:
@@ -311,7 +320,7 @@ class StockDataCollector:
         elif change_pct < -1:
             score -= 1
             signals.append(f"⚠️ Momentum negativo: {change_pct:.2f}%")
-        
+
         # 2. Análisis RSI
         rsi = technical.get('rsi')
         if rsi:
@@ -327,7 +336,7 @@ class StockDataCollector:
             elif rsi > 60:
                 score -= 1
                 signals.append(f"🔄 RSI approaching overbought ({rsi:.1f})")
-        
+
         # 3. Análisis MACD
         macd_data = technical.get('macd', {})
         if macd_data.get('macd_line') is not None and macd_data.get('signal_line') is not None:
@@ -340,7 +349,6 @@ class StockDataCollector:
             else:
                 score -= 1
                 signals.append("📉 MACD below signal line - negative momentum")
-            
             # Análisis del histograma MACD
             histogram = macd_data.get('histogram')
             if histogram:
@@ -350,13 +358,13 @@ class StockDataCollector:
                 elif histogram < -0.001:
                     score -= 1
                     signals.append("⚠️ MACD histogram negative - momentum weakening")
-        
+
         # 4. Análisis Bollinger Bands
         bb_data = technical.get('bollinger_bands', {})
         bb_position = bb_data.get('position')
         bb_upper = bb_data.get('upper')
         bb_lower = bb_data.get('lower')
-        
+
         if bb_position is not None:
             if bb_position <= 0.2:
                 score += 2
@@ -370,11 +378,11 @@ class StockDataCollector:
             elif bb_position >= 0.6:
                 score -= 1
                 signals.append("🔄 Price in upper Bollinger Band zone - potential resistance")
-        
+
         # Bollinger Band squeeze (baja volatilidad)
         if bb_data.get('squeeze'):
             signals.append("⚡ Bollinger Band squeeze detected - volatility breakout expected")
-        
+
         # 5. Análisis vs medias móviles (mantenido del código original)
         price_vs_ma20 = technical.get('price_vs_ma20')
         if price_vs_ma20:
@@ -388,7 +396,7 @@ class StockDataCollector:
                 signals.append(f"📉 Precio {price_vs_ma20:.1f}% bajo MA20 - tendencia bajista")
             elif price_vs_ma20 < -2:
                 signals.append(f"⚠️ Precio {price_vs_ma20:.1f}% bajo MA20")
-        
+
         # 6. Análisis de volumen
         volume_ratio = price_data.get('volume_ratio', 1)
         if volume_ratio > 2:
@@ -400,23 +408,46 @@ class StockDataCollector:
         elif volume_ratio < 0.5:
             score -= 1
             signals.append("💤 Volumen bajo - poca actividad")
-        
-        # Clasificación final mejorada
-        if score >= 5:
-            classification = "STRONG_BUY"
-        elif score >= 3:
-            classification = "BUY"
-        elif score >= 1:
-            classification = "NEUTRAL_POSITIVE"
-        elif score <= -5:
-            classification = "STRONG_SELL"
-        elif score <= -3:
+
+        # --- INTEGRACIÓN NEWS SENTIMENT (ajustada) ---
+        news_sentiment = None
+        symbol = data.get('symbol')
+        if self.news_analyzer and symbol:
+            try:
+                news_sentiment = self.news_analyzer.get_news_sentiment(symbol)
+                if news_sentiment is not None:
+                    signals.append(f"📰 News sentiment: {news_sentiment:+.2f}")
+                    if news_sentiment < -0.6:
+                        score -= 3
+                        signals.append("Negative news detected")
+                    elif news_sentiment > 0.4:
+                        score += 1
+                        signals.append("Positive news sentiment")
+            except Exception as e:
+                signals.append(f"📰 News sentiment error: {e}")
+                news_sentiment = None
+
+        # Override técnico: si news muy negativas, forzar BEARISH
+        if news_sentiment is not None and news_sentiment < -0.6:
             classification = "SELL"
-        elif score <= -1:
-            classification = "NEUTRAL_NEGATIVE"
+            signals.append("❗ SELL - Negative news overrides technicals")
         else:
-            classification = "NEUTRAL"
-        
+            # Clasificación final mejorada
+            if score >= 5:
+                classification = "STRONG_BUY"
+            elif score >= 3:
+                classification = "BUY"
+            elif score >= 1:
+                classification = "NEUTRAL_POSITIVE"
+            elif score <= -5:
+                classification = "STRONG_SELL"
+            elif score <= -3:
+                classification = "SELL"
+            elif score <= -1:
+                classification = "NEUTRAL_NEGATIVE"
+            else:
+                classification = "NEUTRAL"
+
         return {
             'score': score,
             'classification': classification,
@@ -426,7 +457,8 @@ class StockDataCollector:
                 'rsi_status': self._get_rsi_status(rsi) if rsi else 'N/A',
                 'macd_status': self._get_macd_status(macd_data) if macd_data else 'N/A',
                 'bb_status': self._get_bb_status(bb_position) if bb_position is not None else 'N/A'
-            }
+            },
+            'news_sentiment': news_sentiment
         }
     
     def _get_rsi_status(self, rsi: float) -> str:

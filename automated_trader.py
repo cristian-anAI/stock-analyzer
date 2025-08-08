@@ -17,23 +17,24 @@ data_collector = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(data_collector)
 StockDataCollector = data_collector.StockDataCollector
 
+
+
 from position_manager import PositionManager, PositionDecision
+from earnings_calendar import EarningsChecker
 
 class AutomatedTrader:
     def __init__(self, max_positions: int = 8, max_investment_per_stock: float = 5000):
         """Initialize el trader automatizado"""
         self.collector = StockDataCollector()
         self.position_manager = PositionManager(self.collector)
-        
+        self.earnings_checker = EarningsChecker()
         self.max_positions = max_positions
         self.max_investment_per_stock = max_investment_per_stock
         self.scan_interval = 1800  # 30 minutos
         self.update_interval = 300  # 5 minutos
-        
         self.running = False
         self.last_scan = datetime.min
         self.last_update = datetime.min
-        
         # Watchlist de stocks populares
         self.watchlist = [
             "AAPL", "MSFT", "GOOGL", "AMZN", "META", "TSLA", "NVDA", "NFLX", "ADBE", "CRM",
@@ -43,10 +44,8 @@ class AutomatedTrader:
             "BA", "CAT", "MMM", "GE", "XOM", "CVX", "COP", "SLB",
             "SPY", "QQQ", "IWM", "DIA", "VTI", "SQQQ", "TQQQ", "SOXL", "DFEN"
         ]
-        
-        self.scanned_today: Set[str] = set()
+        self.scanned_today = set()
         self.alerts_today = []
-        
         print(f" AutomatedTrader inicializado")
         print(f" Watchlist: {len(self.watchlist)} stocks")
         print(f" Max posiciones: {max_positions}")
@@ -65,18 +64,43 @@ class AutomatedTrader:
         for symbol in self.watchlist:
             if symbol in self.position_manager.positions:
                 continue
-            
             if symbol in self.scanned_today:
                 continue
-            
+            # Earnings check
+            try:
+                if self.earnings_checker.has_upcoming_earnings(symbol, days=3):
+                    # Obtener días hasta earnings para log
+                    ticker = self.earnings_checker
+                    ticker_obj = None
+                    try:
+                        ticker_obj = ticker.yf.Ticker(symbol)
+                        cal = ticker_obj.calendar
+                        earnings_date = None
+                        if ticker.EARNINGS_DATE in cal.index:
+                            earnings_date = cal.loc[ticker.EARNINGS_DATE][0]
+                        elif ticker.EARNINGS_DATE in cal.columns:
+                            earnings_date = cal[ticker.EARNINGS_DATE][0]
+                        if earnings_date is not None:
+                            today = datetime.now().date()
+                            earnings_date_val = earnings_date.date() if hasattr(earnings_date, 'date') else earnings_date
+                            days_to_earnings = (earnings_date_val - today).days
+                        else:
+                            days_to_earnings = 'unknown'
+                    except Exception:
+                        days_to_earnings = 'unknown'
+                    print(f" {symbol} skipped - earnings in {days_to_earnings} days")
+                    self.scanned_today.add(symbol)
+                    continue
+            except Exception as e:
+                print(f" {symbol} earnings check error: {e}")
+                self.scanned_today.add(symbol)
+                continue
             try:
                 print(f" Escaneando {symbol}...", end=" ")
-                
                 stock_data = self.collector.get_stock_data(symbol)
                 if 'error' in stock_data:
                     print(" Error")
                     continue
-                
                 analysis = self.collector.analyze_stock_potential(stock_data)
                 tech_indicators = stock_data.get('technical_indicators', {})
                 price_data = stock_data.get('price_data', {})
