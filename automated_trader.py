@@ -535,5 +535,42 @@ def main():
     else:
         print("Invalid option")
 
+        import argparse
+        parser = argparse.ArgumentParser(description="Automated Trading System")
+        parser.add_argument('--mode', type=str, default=None, help='Mode: cloud or local')
+        args = parser.parse_args()
+
+        if args.mode == 'cloud':
+            # Run trading and dashboard in parallel (for Docker/Cloud)
+            from multiprocessing import Process
+            def run_trader():
+                trader = AutomatedTrader()
+                trader.start_automated_trading()
+            def run_dashboard():
+                import subprocess
+                subprocess.run([sys.executable, 'web_dashboard.py'])
+            p1 = Process(target=run_trader)
+            p2 = Process(target=run_dashboard)
+            p1.start()
+            p2.start()
+            p1.join()
+            p2.join()
+        else:
+            print(" AUTOMATED TRADER")
+            print("1. Demo rápido")
+            print("2. Trading automatizado")
+            print("3. Verify portfolio data")
+            choice = input("Opción (1-3): ")
+            if choice == "1":
+                trader = quick_demo()
+            elif choice == "2":
+                trader = AutomatedTrader()
+                trader.start_automated_trading()
+            elif choice == "3":
+                trader = AutomatedTrader()
+                trader.verify_portfolio_data()
+            else:
+                print("Invalid option")
+
 if __name__ == "__main__":
     main()
