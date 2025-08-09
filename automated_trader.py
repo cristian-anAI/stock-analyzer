@@ -573,4 +573,24 @@ def main():
                 print("Invalid option")
 
 if __name__ == "__main__":
-    main()
+    import argparse
+    parser = argparse.ArgumentParser(description="Automated Trading System")
+    parser.add_argument('--mode', type=str, default='cloud', help='Mode: cloud or local')
+    args = parser.parse_args()
+
+    if args.mode == 'cloud':
+        from multiprocessing import Process
+        def run_trader():
+            trader = AutomatedTrader()
+            trader.start_automated_trading()
+        def run_dashboard():
+            import subprocess
+            subprocess.run([sys.executable, 'web_dashboard.py'])
+        p1 = Process(target=run_trader)
+        p2 = Process(target=run_dashboard)
+        p1.start()
+        p2.start()
+        p1.join()
+        p2.join()
+    else:
+        main()
