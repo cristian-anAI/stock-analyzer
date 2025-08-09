@@ -126,62 +126,115 @@ class StockDataCollector:
     
     def get_stock_data(self, symbol: str, period: str = "6mo") -> Dict:
         """
-        Obtiene datos completos de una acción
-        
-        Args:
-            symbol: Ticker de la acción (ej: "AAPL")
-            period: Periodo de datos ("1d", "5d", "1mo", "3mo", "6mo", "1y", "2y", "5y")
-        
-        Returns:
-            Dict con toda la información de la acción
+        Obtiene datos completos de una acción o cripto
+        Si el símbolo es de cripto (ej: termina en -USD, -EUR, -USDT, etc), usa CryptoDataCollector
         """
         try:
+            # Detectar si es cripto
+            is_crypto = False
+            crypto_suffixes = ["-USD", "-USDT", "-EUR", "-BTC", "-ETH"]
+            for suf in crypto_suffixes:
+                if symbol.upper().endswith(suf):
+                    is_crypto = True
+                    break
+            if is_crypto:
+                # Importar solo si es necesario
+                try:
+                    from crypto_data_collector import CryptoDataCollector
+                except ImportError:
+                    return {'symbol': symbol, 'error': 'CryptoDataCollector not found', 'timestamp': datetime.now().isoformat()}
+                crypto_collector = CryptoDataCollector()
+                # yfinance para BTC-USD, ETH-USD, etc. CoinGecko para otros
+                if symbol.upper() in ["BTC-USD", "ETH-USD"]:
+                    df = crypto_collector.get_yfinance_data(symbol, period="90d", interval="1d")
+                else:
+                    # CoinGecko usa ids tipo 'binancecoin' para BNB
+                    coingecko_map = {"BNB-USD": "binancecoin", "BNB-EUR": "binancecoin"}
+                    coin_id = coingecko_map.get(symbol.upper(), symbol.split("-")[0].lower())
+                    df = crypto_collector.get_coingecko_data(coin_id, days=90)
+                if df is None or len(df) == 0:
+                    return {'symbol': symbol, 'error': 'No crypto data', 'timestamp': datetime.now().isoformat()}
+                # Usar la última fila
+                last = df.iloc[-1]
+                prev = df.iloc[-2] if len(df) > 1 else last
+                # Estructura compatible con acciones
+                result = {
+                    'symbol': symbol,
+                    'timestamp': datetime.now().isoformat(),
+                    'price_data': {
+                        'current_price': round(last['close'], 4),
+                        'prev_close': round(prev['close'], 4),
+                        'change': round(last['close'] - prev['close'], 4),
+                        'change_percent': round(((last['close'] - prev['close']) / prev['close']) * 100, 4) if prev['close'] else 0,
+                        'day_high': round(df['close'][-10:].max(), 4),
+                        'day_low': round(df['close'][-10:].min(), 4),
+                        'volume': int(last['volume']) if 'volume' in last and not pd.isna(last['volume']) else None,
+                        'avg_volume': int(df['volume'][-30:].mean()) if 'volume' in df.columns else None,
+                        'volume_ratio': round((last['volume'] / df['volume'][-30:].mean()), 2) if 'volume' in df.columns and df['volume'][-30:].mean() > 0 else 1
+                    },
+                    'technical_indicators': {
+                        'ma_20': round(df['close'][-20:].mean(), 4) if len(df) >= 20 else None,
+                        'ma_50': round(df['close'][-50:].mean(), 4) if len(df) >= 50 else None,
+                        'price_vs_ma20': round(((last['close'] / df['close'][-20:].mean()) - 1) * 100, 4) if len(df) >= 20 else None,
+                        'volatility_30d': round(df['close'][-30:].pct_change().std() * 100, 4) if len(df) >= 30 else None,
+                        'rsi': round(last['rsi'], 2) if 'rsi' in last and not pd.isna(last['rsi']) else None,
+                        'macd': {
+                            'macd_line': round(last['macd'], 4) if 'macd' in last and not pd.isna(last['macd']) else None,
+                            'signal_line': round(last['macd_signal'], 4) if 'macd_signal' in last and not pd.isna(last['macd_signal']) else None,
+                            'histogram': round((last['macd'] - last['macd_signal']), 4) if 'macd' in last and 'macd_signal' in last and not pd.isna(last['macd']) and not pd.isna(last['macd_signal']) else None,
+                            'bullish_crossover': (last['macd'] > last['macd_signal']) if 'macd' in last and 'macd_signal' in last and not pd.isna(last['macd']) and not pd.isna(last['macd_signal']) else None
+                        },
+                        'bollinger_bands': {
+                            'upper': round(last['bb_upper'], 4) if 'bb_upper' in last and not pd.isna(last['bb_upper']) else None,
+                            'middle': round(df['close'][-20:].mean(), 4) if len(df) >= 20 else None,
+                            'lower': round(last['bb_lower'], 4) if 'bb_lower' in last and not pd.isna(last['bb_lower']) else None,
+                            'position': round(((last['close'] - last['bb_lower']) / (last['bb_upper'] - last['bb_lower'])), 4) if 'bb_upper' in last and 'bb_lower' in last and not pd.isna(last['bb_upper']) and not pd.isna(last['bb_lower']) and (last['bb_upper'] - last['bb_lower']) > 0 else None,
+                            'squeeze': abs(last['bb_upper'] - last['bb_lower']) / df['close'][-20:].mean() < 0.1 if 'bb_upper' in last and 'bb_lower' in last and not pd.isna(last['bb_upper']) and not pd.isna(last['bb_lower']) and len(df) >= 20 and df['close'][-20:].mean() != 0 else None
+                        }
+                    },
+                    'fundamental_data': {},
+                    'company_info': {
+                        'name': symbol,
+                        'description': f"Crypto asset {symbol}"
+                    }
+                }
+                return result
+            # Si no es cripto, flujo normal de acciones
             ticker = yf.Ticker(symbol)
-            
             # Datos históricos de precios
             hist = ticker.history(period=period)
-            
             # Información fundamental
             info = ticker.info
-            
             # Datos recientes (últimos 30 días para análisis técnico)
             recent_data = ticker.history(period="1mo")
-            
             # Calcular métricas técnicas básicas
             current_price = hist['Close'].iloc[-1]
             prev_close = hist['Close'].iloc[-2] if len(hist) > 1 else current_price
             change = current_price - prev_close
             change_pct = (change / prev_close) * 100
-            
             # Promedios móviles
             ma_20 = recent_data['Close'].rolling(20).mean().iloc[-1]
             ma_50 = hist['Close'].rolling(50).mean().iloc[-1] if len(hist) >= 50 else None
-            
             # Volumen promedio
             avg_volume = recent_data['Volume'].mean()
             current_volume = hist['Volume'].iloc[-1]
             volume_ratio = current_volume / avg_volume if avg_volume > 0 else 1
-            
             # Indicadores técnicos avanzados
             rsi = self.calculate_rsi(hist['Close'])
             current_rsi = rsi.iloc[-1] if len(rsi) > 0 and not pd.isna(rsi.iloc[-1]) else None
-            
             macd_data = self.calculate_macd(hist['Close'])
             current_macd = macd_data['macd'].iloc[-1] if len(macd_data['macd']) > 0 and not pd.isna(macd_data['macd'].iloc[-1]) else None
             current_macd_signal = macd_data['signal'].iloc[-1] if len(macd_data['signal']) > 0 and not pd.isna(macd_data['signal'].iloc[-1]) else None
             current_macd_hist = macd_data['histogram'].iloc[-1] if len(macd_data['histogram']) > 0 and not pd.isna(macd_data['histogram'].iloc[-1]) else None
-            
             bb_data = self.calculate_bollinger_bands(hist['Close'])
             current_bb_upper = bb_data['upper'].iloc[-1] if len(bb_data['upper']) > 0 and not pd.isna(bb_data['upper'].iloc[-1]) else None
             current_bb_middle = bb_data['middle'].iloc[-1] if len(bb_data['middle']) > 0 and not pd.isna(bb_data['middle'].iloc[-1]) else None
             current_bb_lower = bb_data['lower'].iloc[-1] if len(bb_data['lower']) > 0 and not pd.isna(bb_data['lower'].iloc[-1]) else None
-            
             # Calcular posición dentro de las Bollinger Bands
             bb_position = None
             if current_bb_upper and current_bb_lower:
                 bb_width = current_bb_upper - current_bb_lower
                 bb_position = (current_price - current_bb_lower) / bb_width if bb_width > 0 else 0.5
-            
             result = {
                 'symbol': symbol,
                 'timestamp': datetime.now().isoformat(),
@@ -232,9 +285,7 @@ class StockDataCollector:
                     'description': info.get('longBusinessSummary', '')[:200] + '...' if info.get('longBusinessSummary') else None
                 }
             }
-            
             return result
-            
         except Exception as e:
             return {
                 'symbol': symbol,

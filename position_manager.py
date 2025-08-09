@@ -39,13 +39,52 @@ class Position:
     position_type: str = "AUTO"  # "AUTO" o "MANUAL"
 
 class PositionManager:
+    def force_update_all_positions(self):
+        """Update all positions (manual and auto) with the latest prices from the collector."""
+        updated = 0
+        for symbol, position in self.positions.items():
+            try:
+                stock_data = self.stock_collector.get_stock_data(symbol)
+                if 'error' not in stock_data:
+                    current_price = stock_data['price_data']['current_price']
+                    position.current_price = current_price
+                    entry_value = position.entry_price * position.quantity
+                    current_value = current_price * position.quantity
+                    position.unrealized_pnl = current_value - entry_value
+                    position.unrealized_pnl_percent = (position.unrealized_pnl / entry_value) * 100 if entry_value else 0
+                    updated += 1
+                    if self.db_manager:
+                        self.db_manager.update_position(asdict(position))
+            except Exception as e:
+                print(f"[FORCE UPDATE ERROR] {symbol}: {e}")
+        print(f"[INFO] Updated {updated} positions with current prices.")
+        return updated
+    def reload_from_database(self):
+        """Reload all positions from the database, replacing in-memory positions."""
+        self.positions.clear()
+        self.load_positions_from_db()
+        print("[INFO] Portfolio reloaded from database.")
     def get_portfolio_summary(self):
-        """Devuelve resumen del portfolio: total de posiciones y P&L total"""
+        """Devuelve resumen del portfolio: total de posiciones, P&L total y lista de posiciones"""
         total_positions = len(self.positions)
         total_pnl = sum(pos.unrealized_pnl for pos in self.positions.values())
+        positions_list = [
+            {
+                'symbol': pos.symbol,
+                'type': pos.position_type,
+                'entry_price': pos.entry_price,
+                'current_price': pos.current_price,
+                'quantity': pos.quantity,
+                'unrealized_pnl': pos.unrealized_pnl,
+                'unrealized_pnl_percent': pos.unrealized_pnl_percent,
+                'days_held': pos.days_held
+            }
+            for pos in self.positions.values()
+        ]
         return {
             'total_positions': total_positions,
-            'total_pnl': total_pnl
+            'total_pnl': total_pnl,
+            'positions': positions_list
         }
     def __init__(self, stock_collector):
         """Initialize con referencia al StockDataCollector y DB"""
