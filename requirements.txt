@@ -1,0 +1,8 @@
+yfinance>=0.2.36
+pandas>=2.0.3
+requests>=2.31.0
+textblob>=0.17.1
+beautifulsoup4>=4.12.2
+sqlite3
+dataclasses
+enum34; python_version < '3.4'

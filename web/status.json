@@ -1,0 +1,64 @@
+{
+  "timestamp": "2025-08-10T23:35:10.068067",
+  "uptime_hours": 1.0,
+  "running": true,
+  "positions": {
+    "TXN": {
+      "type": "AUTO",
+      "quantity": 26,
+      "entry_price": 187.22,
+      "current_price": 187.22,
+      "pnl_percent": 0.0,
+      "pnl_usd": 0.0
+    },
+    "QCOM": {
+      "type": "AUTO",
+      "quantity": 33,
+      "entry_price": 147.56,
+      "current_price": 147.56,
+      "pnl_percent": 0.0,
+      "pnl_usd": 0.0
+    },
+    "SOL-USD": {
+      "type": "MANUAL",
+      "quantity": 0.31373242,
+      "entry_price": 162.119043992967,
+      "current_price": 183.1585,
+      "pnl_percent": 12.981544603696276,
+      "pnl_usd": 6.6026732163320005
+    },
+    "BNB-USD": {
+      "type": "MANUAL",
+      "quantity": 0.15871727,
+      "entry_price": 719.9689107555845,
+      "current_price": 801.1463,
+      "pnl_percent": 11.261456992542316,
+      "pnl_usd": 12.868635827232993
+    },
+    "ONE-USD": {
+      "type": "AUTO",
+      "quantity": 442477,
+      "entry_price": 0.0113,
+      "current_price": 0.0113,
+      "pnl_percent": 0.0,
+      "pnl_usd": 0.0
+    },
+    "ATOM-USD": {
+      "type": "AUTO",
+      "quantity": 1072,
+      "entry_price": 4.6634,
+      "current_price": 4.6399,
+      "pnl_percent": -0.5039241754942928,
+      "pnl_usd": -25.192000000000917
+    },
+    "NEAR-USD": {
+      "type": "AUTO",
+      "quantity": 1829,
+      "entry_price": 2.7327,
+      "current_price": 2.713,
+      "pnl_percent": -0.7208987448311124,
+      "pnl_usd": -36.031299999999646
+    }
+  },
+  "total_pnl": -41.75199095643557
+}
