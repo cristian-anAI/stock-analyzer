@@ -1,8 +1,27 @@
+# Core dependencies
 yfinance>=0.2.36
 pandas>=2.0.3
 requests>=2.31.0
 textblob>=0.17.1
 beautifulsoup4>=4.12.2
-sqlite3
 dataclasses
+
+# FastAPI and API dependencies
+fastapi>=0.104.1
+uvicorn[standard]>=0.24.0
+pydantic>=2.5.0
+python-multipart>=0.0.6
+
+# Cache and performance
+redis>=5.0.0
+aiohttp>=3.9.0
+
+# Database (sqlite3 is built into Python)
+
+# Development dependencies
+pytest>=7.4.3
+pytest-asyncio>=0.21.1
+httpx>=0.25.2
+
+# Legacy support
 enum34; python_version < '3.4'

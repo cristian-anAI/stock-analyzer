@@ -12,15 +12,13 @@ import sys
 import importlib.util
 
 # Import modules
-spec = importlib.util.spec_from_file_location("data_collector", "data-collector.py")
+spec = importlib.util.spec_from_file_location("data_collector", "src/data/data_collector.py")
 data_collector = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(data_collector)
 StockDataCollector = data_collector.StockDataCollector
 
-
-
-from position_manager import PositionManager, PositionDecision
-from earnings_calendar import EarningsChecker
+from src.core.position_manager import PositionManager, PositionDecision
+from src.data.earnings_calendar import EarningsChecker
 
 class AutomatedTrader:
     def verify_portfolio_data(self):

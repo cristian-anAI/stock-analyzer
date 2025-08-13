@@ -11,7 +11,7 @@ from dataclasses import dataclass, asdict
 from enum import Enum
 import pandas as pd
 import traceback
-from database_manager import DatabaseManager
+from src.core.database_manager import DatabaseManager
 
 class PositionDecision(Enum):
     HOLD_STRONG = "HOLD_STRONG"

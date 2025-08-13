@@ -8,7 +8,7 @@ import os
 import json
 import time
 from datetime import datetime
-from automated_trader import AutomatedTrader
+from .automated_trader import AutomatedTrader
 import threading
 import traceback
 

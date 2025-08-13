@@ -1,20 +1,54 @@
+# Python
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
-*.db
-backups/
-.env
-env/
+.Python
+*.so
+.coverage
+.pytest_cache/
 venv/
-.vscode/
-*.log
-*.tmp
-*.swp
-*.bak
+env/
+stock-analyzer-env/
+
+# Database
+*.db
+*.db-journal
 *.sqlite3
-*.ipynb_checkpoints/
+backups/
+
+# Logs
+logs/
+*.log
+
+# Data files
+data/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*.tmp
+*.bak
+
+# Environment variables
+.env
+.env.local
+
+# Build
 *.egg-info/
 dist/
 build/
 node_modules/
+
+# Jupyter
+*.ipynb_checkpoints/
+
+# Temporary files
+temp/
+tmp/
