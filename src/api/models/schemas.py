@@ -14,7 +14,7 @@ class StockBase(BaseModel):
 class Stock(StockBase):
     id: str = Field(..., description="Unique identifier")
     current_price: Optional[float] = Field(None, description="Current stock price")
-    score: Optional[int] = Field(None, ge=1, le=10, description="Score from 1-10")
+    score: Optional[float] = Field(None, ge=1, le=10, description="Score from 1-10")
     change: Optional[float] = Field(None, description="Price change amount")
     change_percent: Optional[float] = Field(None, description="Price change percentage")
     volume: Optional[int] = Field(None, description="Trading volume")
@@ -27,7 +27,7 @@ class CryptoBase(BaseModel):
 class Crypto(CryptoBase):
     id: str = Field(..., description="Unique identifier")
     current_price: Optional[float] = Field(None, description="Current price", alias="currentPrice")
-    score: Optional[int] = Field(None, ge=1, le=10, description="Score from 1-10")
+    score: Optional[float] = Field(None, ge=1, le=10, description="Score from 1-10")
     change: Optional[float] = Field(None, description="Price change amount")
     change_percent: Optional[float] = Field(None, description="Price change percentage", alias="changePercent")
     volume: Optional[float] = Field(None, description="Trading volume")

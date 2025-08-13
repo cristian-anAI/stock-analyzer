@@ -15,7 +15,7 @@ class ScoringService:
         self.recent_scores = {'stocks': [], 'cryptos': []}
         self.max_history = 100  # Keep last 100 scores for percentile calculation
     
-    def calculate_stock_score(self, stock_data: Dict[str, Any]) -> int:
+    def calculate_stock_score(self, stock_data: Dict[str, Any]) -> float:
         """
         Calculate calibrated score for a stock (1-10 scale)
         REALISTIC SCORING: Score 10 = RARE (1-2% of time), Score 8-9 = Quality (5-10%)
@@ -85,7 +85,7 @@ class ScoringService:
             logger.error(f"Error calculating stock score: {str(e)}")
             return 3  # Lower default score
     
-    def calculate_crypto_score(self, crypto_data: Dict[str, Any]) -> int:
+    def calculate_crypto_score(self, crypto_data: Dict[str, Any]) -> float:
         """
         Calculate calibrated score for a cryptocurrency (1-8 scale MAX)
         CRYPTO SCORING: Max 8.0 (too volatile for 10), Score 8-9 = Exceptional setups only

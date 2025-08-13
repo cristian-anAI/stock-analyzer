@@ -49,9 +49,9 @@ class BackgroundScheduler:
         self.stats["started_at"] = datetime.now().isoformat()
         self.stats["status"] = "running"
         
-        logger.info("🚀 Starting background autotrader scheduler...")
-        logger.info(f"⏰ Autotrader interval: {self.autotrader_interval}s")
-        logger.info(f"📊 Data update interval: {self.data_update_interval}s")
+        logger.info(" Starting background autotrader scheduler...")
+        logger.info(f" Autotrader interval: {self.autotrader_interval}s")
+        logger.info(f" Data update interval: {self.data_update_interval}s")
         
         # Start background task
         self.task = asyncio.create_task(self._run_scheduler())
@@ -86,7 +86,7 @@ class BackgroundScheduler:
     
     async def _run_scheduler(self):
         """Main scheduler loop"""
-        logger.info("📅 Background scheduler loop started")
+        logger.info(" Background scheduler loop started")
         
         last_autotrader_run = 0
         last_data_update = 0
@@ -112,7 +112,7 @@ class BackgroundScheduler:
                 await asyncio.sleep(10)
                 
         except asyncio.CancelledError:
-            logger.info("📅 Scheduler loop cancelled")
+            logger.info(" Scheduler loop cancelled")
             raise
         except Exception as e:
             logger.error(f"💥 Scheduler loop error: {str(e)}")
@@ -133,7 +133,7 @@ class BackgroundScheduler:
     async def _update_data(self):
         """Update stocks and cryptos data"""
         try:
-            logger.info("📊 Background data update starting...")
+            logger.info(" Background data update starting...")
             
             # Update stocks and cryptos in parallel
             await asyncio.gather(
@@ -143,7 +143,7 @@ class BackgroundScheduler:
             )
             
             self.stats["last_data_update"] = datetime.now().isoformat()
-            logger.info("✅ Background data update completed")
+            logger.info(" Background data update completed")
             
         except Exception as e:
             logger.error(f"❌ Background data update error: {str(e)}")
@@ -152,7 +152,7 @@ class BackgroundScheduler:
     async def _run_autotrader_cycle(self):
         """Run autotrader cycle"""
         try:
-            logger.info("🤖 Background autotrader cycle starting...")
+            logger.info(" Background autotrader cycle starting...")
             
             results = await self.autotrader_service.run_trading_cycle()
             
@@ -166,7 +166,7 @@ class BackgroundScheduler:
                 for action in results.get("actions_taken", []):
                     logger.info(f"  📈 {action['action'].upper()}: {action['symbol']} - {action['quantity']:.2f} @ ${action['price']:.2f}")
             else:
-                logger.info("🤖 Autotrader completed: No actions taken")
+                logger.info(" Autotrader completed: No actions taken")
             
         except Exception as e:
             logger.error(f"❌ Background autotrader error: {str(e)}")
@@ -189,11 +189,11 @@ class BackgroundScheduler:
         """Update scheduler settings"""
         if autotrader_interval:
             self.autotrader_interval = autotrader_interval
-            logger.info(f"⏰ Autotrader interval updated to {autotrader_interval}s")
+            logger.info(f" Autotrader interval updated to {autotrader_interval}s")
         
         if data_update_interval:
             self.data_update_interval = data_update_interval
-            logger.info(f"📊 Data update interval updated to {data_update_interval}s")
+            logger.info(f" Data update interval updated to {data_update_interval}s")
 
 # Global scheduler instance
 background_scheduler = BackgroundScheduler()
