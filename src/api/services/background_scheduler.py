@@ -10,6 +10,7 @@ import threading
 
 from .autotrader_service import AutotraderService
 from .data_service import DataService
+from .excel_reports_service import excel_reports_service
 
 logger = logging.getLogger(__name__)
 
@@ -34,6 +35,7 @@ class BackgroundScheduler:
         # Schedule settings
         self.autotrader_interval = 300  # 5 minutes
         self.data_update_interval = 180  # 3 minutes
+        self.reports_interval = 3600  # 1 hour (Excel reports)
         
         # Market hours (optional - set to None to trade 24/7)
         self.market_start = None  # time(9, 30)  # 9:30 AM
@@ -52,6 +54,7 @@ class BackgroundScheduler:
         logger.info(" Starting background autotrader scheduler...")
         logger.info(f" Autotrader interval: {self.autotrader_interval}s")
         logger.info(f" Data update interval: {self.data_update_interval}s")
+        logger.info(f" Excel reports interval: {self.reports_interval}s")
         
         # Start background task
         self.task = asyncio.create_task(self._run_scheduler())
@@ -90,6 +93,7 @@ class BackgroundScheduler:
         
         last_autotrader_run = 0
         last_data_update = 0
+        last_reports_generation = 0
         
         try:
             while self.is_running:
@@ -107,6 +111,11 @@ class BackgroundScheduler:
                     if current_time - last_autotrader_run >= self.autotrader_interval:
                         await self._run_autotrader_cycle()
                         last_autotrader_run = current_time
+                    
+                    # Generate Excel reports
+                    if current_time - last_reports_generation >= self.reports_interval:
+                        await self._generate_excel_reports()
+                        last_reports_generation = current_time
                 
                 # Sleep for 10 seconds before next check
                 await asyncio.sleep(10)
@@ -170,6 +179,28 @@ class BackgroundScheduler:
             
         except Exception as e:
             logger.error(f"❌ Background autotrader error: {str(e)}")
+            self.stats["errors"] += 1
+    
+    async def _generate_excel_reports(self):
+        """Generate Excel reports in background"""
+        try:
+            logger.info(" Starting Excel reports generation...")
+            
+            # Run in executor to avoid blocking the async loop
+            loop = asyncio.get_event_loop()
+            success = await loop.run_in_executor(None, excel_reports_service.generate_all_reports)
+            
+            if success:
+                logger.info(" Excel reports generated successfully")
+                # Cleanup old reports
+                await loop.run_in_executor(None, excel_reports_service.cleanup_old_reports, 7)
+                logger.info(" Old reports cleaned up")
+            else:
+                logger.error(" Failed to generate Excel reports")
+                self.stats["errors"] += 1
+            
+        except Exception as e:
+            logger.error(f"❌ Excel reports generation error: {str(e)}")
             self.stats["errors"] += 1
     
     def get_status(self) -> Dict[str, Any]:

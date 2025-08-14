@@ -53,3 +53,12 @@ node_modules/
 # Temporary files
 temp/
 tmp/
+
+# Excel reports
+reports/
+*.xlsx
+
+# Testing and utility scripts
+check_*.py
+test_excel_content.py
+generate_reports_now.py

@@ -10,7 +10,7 @@ import logging
 from typing import List, Optional, Dict, Any
 import uvicorn
 
-from .routers import stocks, cryptos, positions, cache, scheduler, diagnostics
+from .routers import stocks, cryptos, positions, cache, scheduler, diagnostics, portfolio, reports
 from .database.database import init_db
 from .middleware.error_handler import ErrorHandlerMiddleware
 from .middleware.logging_middleware import LoggingMiddleware
@@ -59,6 +59,8 @@ app.include_router(positions.router, prefix="/api/v1", tags=["positions"])
 app.include_router(cache.router, prefix="/api/v1", tags=["cache"])
 app.include_router(scheduler.router, prefix="/api/v1", tags=["scheduler"])
 app.include_router(diagnostics.router, prefix="/api/v1", tags=["diagnostics"])
+app.include_router(portfolio.router, prefix="/api/v1", tags=["portfolio"])
+app.include_router(reports.router, prefix="/api/v1", tags=["reports"])
 
 @app.on_event("startup")
 async def startup_event():

@@ -15,6 +15,13 @@ from .scoring_service import ScoringService
 from .cache_service import cache_service
 from ..middleware.rate_limiter import rate_limiter
 
+# Import expanded watchlists
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
+from expanded_crypto_watchlist import get_diversified_portfolio, get_symbols_only
+from optimized_trading_strategy import ExpandedTradingConfig
+
 logger = logging.getLogger(__name__)
 
 class DataService:
@@ -23,18 +30,29 @@ class DataService:
     def __init__(self):
         self.scoring_service = ScoringService()
         
-        # Popular stocks to track
-        self.default_stocks = [
-            "AAPL", "MSFT", "GOOGL", "AMZN", "TSLA", "META", "NVDA", "NFLX",
-            "AMD", "INTC", "CRM", "ORCL", "ADBE", "NOW", "SNOW", "PLTR",
-            "BABA", "DIS", "V", "MA", "JPM", "BAC", "WMT", "HD", "UNH"
-        ]
+        # Initialize expanded trading configuration
+        try:
+            self.trading_config = ExpandedTradingConfig()
+            self.default_stocks = self.trading_config.all_stock_symbols
+            self.default_cryptos = self.trading_config.crypto_symbols
+            logger.info(f"Loaded expanded watchlists: {len(self.default_stocks)} stocks, {len(self.default_cryptos)} cryptos")
+        except Exception as e:
+            logger.warning(f"Could not load expanded watchlists, using fallback: {e}")
+            # Fallback to original small lists if expanded config fails
+            self.default_stocks = [
+                "AAPL", "MSFT", "GOOGL", "AMZN", "TSLA", "META", "NVDA", "NFLX",
+                "AMD", "INTC", "CRM", "ORCL", "ADBE", "NOW", "SNOW", "PLTR",
+                "BABA", "DIS", "V", "MA", "JPM", "BAC", "WMT", "HD", "UNH"
+            ]
+            self.default_cryptos = [
+                "BTC-USD", "ETH-USD", "BNB-USD", "ADA-USD", "XRP-USD", "SOL-USD",
+                "DOGE-USD", "DOT-USD", "AVAX-USD", "LINK-USD", "LTC-USD", "BCH-USD"
+            ]
         
-        # Popular cryptos to track (removed MATIC and UNI due to delisting)
-        self.default_cryptos = [
-            "BTC-USD", "ETH-USD", "BNB-USD", "ADA-USD", "XRP-USD", "SOL-USD",
-            "DOGE-USD", "DOT-USD", "AVAX-USD", "LINK-USD", "LTC-USD", "BCH-USD"
-        ]
+        # For performance, limit concurrent updates to avoid overwhelming APIs
+        self.batch_size = 50  # Process 50 symbols at a time
+        self.max_concurrent_stocks = 100  # Limit stocks for API safety
+        self.max_concurrent_cryptos = 30   # Limit cryptos for API safety
     
     async def get_cached_stocks_data(self) -> Optional[List[Dict[str, Any]]]:
         """Get stocks data from cache"""
@@ -53,11 +71,22 @@ class DataService:
         
         try:
             stocks_data = []
-            for symbol in self.default_stocks:
-                stock_data = await self.update_single_stock(symbol)
-                if stock_data:
-                    stocks_data.append(stock_data)
-                await asyncio.sleep(0.1)  # Rate limiting
+            # Process in batches to avoid overwhelming the API
+            stocks_to_process = self.default_stocks[:self.max_concurrent_stocks]
+            
+            for i in range(0, len(stocks_to_process), self.batch_size):
+                batch = stocks_to_process[i:i + self.batch_size]
+                logger.info(f"Processing stock batch {i//self.batch_size + 1}/{(len(stocks_to_process) + self.batch_size - 1)//self.batch_size}")
+                
+                for symbol in batch:
+                    stock_data = await self.update_single_stock(symbol)
+                    if stock_data:
+                        stocks_data.append(stock_data)
+                    await asyncio.sleep(0.15)  # Slightly longer rate limiting
+                
+                # Longer pause between batches
+                if i + self.batch_size < len(stocks_to_process):
+                    await asyncio.sleep(2.0)
             
             # Cache the results
             await cache_service.set("stocks:all", stocks_data, "stocks")
@@ -141,11 +170,23 @@ class DataService:
         
         try:
             cryptos_data = []
-            for symbol in self.default_cryptos:
-                crypto_data = await self.update_single_crypto(symbol.replace('-USD', ''))
-                if crypto_data:
-                    cryptos_data.append(crypto_data)
-                await asyncio.sleep(0.1)  # Rate limiting
+            # Process in batches to avoid overwhelming the API
+            cryptos_to_process = self.default_cryptos[:self.max_concurrent_cryptos]
+            
+            for i in range(0, len(cryptos_to_process), min(self.batch_size, 20)):  # Smaller batches for crypto
+                batch = cryptos_to_process[i:i + min(self.batch_size, 20)]
+                logger.info(f"Processing crypto batch {i//20 + 1}/{(len(cryptos_to_process) + 19)//20}")
+                
+                for symbol in batch:
+                    crypto_symbol = symbol.replace('-USD', '') if symbol.endswith('-USD') else symbol
+                    crypto_data = await self.update_single_crypto(crypto_symbol)
+                    if crypto_data:
+                        cryptos_data.append(crypto_data)
+                    await asyncio.sleep(0.2)  # Longer rate limiting for crypto
+                
+                # Longer pause between batches
+                if i + 20 < len(cryptos_to_process):
+                    await asyncio.sleep(3.0)
             
             # Cache the results  
             await cache_service.set("cryptos:all", cryptos_data, "cryptos")
