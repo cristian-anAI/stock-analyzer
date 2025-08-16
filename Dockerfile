@@ -43,7 +43,7 @@ echo "🔧 Checking dependencies..."\n\
 python -c "import yfinance, pandas, fastapi, uvicorn; print(\"✅ All dependencies OK\")" || { echo "❌ Dependency error"; exit 1; }\n\
 echo ""\n\
 echo "🗄️  Initializing database..."\n\
-python -c "from src.api.database.database import db_manager; db_manager.initialize_database(); print(\"✅ Database ready\")" || { echo "❌ Database error"; exit 1; }\n\
+python -c "from src.api.database.database import init_db; init_db(); print(\"✅ Database ready\")" || { echo "❌ Database error"; exit 1; }\n\
 echo ""\n\
 echo "🌐 Starting FastAPI server..."\n\
 cd /app && python -m uvicorn src.api.main:app --host 0.0.0.0 --port 8000 --workers 1\n\
