@@ -56,6 +56,10 @@ def init_db():
     """Initialize database with required tables"""
     db = DatabaseManager()
     
+    # Run migrations first
+    from .migrations import run_portfolio_migrations
+    run_portfolio_migrations()
+    
     # Create tables
     with db.get_connection() as conn:
         cursor = conn.cursor()
@@ -113,12 +117,30 @@ def init_db():
             )
         """)
         
+        # Add new columns for advanced tracking if they don't exist
+        cursor.execute("PRAGMA table_info(positions)")
+        existing_columns = [column[1] for column in cursor.fetchall()]
+        
+        new_columns = [
+            ("last_analysis_date", "TEXT"),
+            ("last_recommendation", "TEXT"),
+            ("stop_loss_updated", "REAL"),
+            ("take_profit_updated", "REAL"),
+            ("alerts_triggered", "TEXT"),
+            ("analysis_history", "TEXT")
+        ]
+        
+        for column_name, column_type in new_columns:
+            if column_name not in existing_columns:
+                cursor.execute(f"ALTER TABLE positions ADD COLUMN {column_name} {column_type}")
+                logger.info(f"Added column {column_name} to positions table")
+        
         # Autotrader transactions log
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS autotrader_transactions (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 symbol TEXT NOT NULL,
-                action TEXT NOT NULL CHECK (action IN ('buy', 'sell')),
+                action TEXT NOT NULL CHECK (action IN ('buy', 'sell', 'short')),
                 quantity REAL NOT NULL,
                 price REAL NOT NULL,
                 timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

@@ -28,7 +28,7 @@ def get_scoring_service():
 async def get_stocks(
     response: Response,
     sort: Optional[str] = Query(None, description="Sort by 'score' or other fields"),
-    limit: Optional[int] = Query(100, ge=1, le=1000, description="Number of stocks to return"),
+    limit: Optional[int] = Query(500, ge=1, le=1000, description="Number of stocks to return"),
     data_service: DataService = Depends(get_data_service),
     scoring_service: ScoringService = Depends(get_scoring_service)
 ):

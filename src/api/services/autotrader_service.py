@@ -10,6 +10,7 @@ from datetime import datetime
 from ..database.database import db_manager
 from .data_service import DataService
 from .scoring_service import ScoringService
+from .portfolio_manager import portfolio_manager
 
 logger = logging.getLogger(__name__)
 
@@ -115,11 +116,8 @@ class AutotraderService:
         actions = []
         
         try:
-            # Check if we're at position limit
-            current_positions = self._get_autotrader_position_count()
-            if current_positions >= self.max_total_positions:
-                logger.info(f"At position limit ({current_positions}/{self.max_total_positions})")
-                return actions
+            # Use portfolio manager to check position limits per asset type
+            # Remove the old global position limit check since we now use specific limits per asset type
             
             # Get high-scoring stocks
             high_score_stocks = db_manager.execute_query(
@@ -141,21 +139,52 @@ class AutotraderService:
             for pos in existing_positions:
                 existing_symbols.add(pos['symbol'])
             
-            # Process buy signals for stocks
+            # Process buy signals for stocks (portfolio manager handles limits)
             for stock in high_score_stocks:
-                if stock['symbol'] not in existing_symbols and len(actions) < 3:  # Limit new positions per cycle
+                if stock['symbol'] not in existing_symbols and len(actions) < 5:  # Allow more actions per cycle
                     action = await self._execute_buy(stock, 'stock', f"High score: {stock['score']}")
                     if action:
                         actions.append(action)
                         existing_symbols.add(stock['symbol'])
             
-            # Process buy signals for cryptos
+            # Process buy signals for cryptos (portfolio manager handles limits)
             for crypto in high_score_cryptos:
-                if crypto['symbol'] not in existing_symbols and len(actions) < 3:  # Limit new positions per cycle
+                if crypto['symbol'] not in existing_symbols and len(actions) < 5:  # Allow more actions per cycle
                     action = await self._execute_buy(crypto, 'crypto', f"High score: {crypto['score']}")
                     if action:
                         actions.append(action)
                         existing_symbols.add(crypto['symbol'])
+            
+            # Check for SHORT signals (portfolio manager handles capacity)
+            # Get low-scoring cryptos for SHORT signals
+            low_score_cryptos = db_manager.execute_query(
+                "SELECT * FROM cryptos WHERE score < 3.5 ORDER BY score ASC LIMIT 5"
+            )
+            
+            # Get low-scoring stocks for SHORT signals  
+            low_score_stocks = db_manager.execute_query(
+                "SELECT * FROM stocks WHERE score < 2.5 ORDER BY score ASC LIMIT 5"
+            )
+                
+            # Process SHORT signals for cryptos
+            for crypto in low_score_cryptos:
+                if crypto['symbol'] not in existing_symbols and len(actions) < 5:
+                    short_signal = self.evaluate_crypto_short_signals(crypto)
+                    if short_signal:
+                        action = await self._execute_short(crypto, short_signal)
+                        if action:
+                            actions.append(action)
+                            existing_symbols.add(crypto['symbol'])
+            
+            # Process SHORT signals for stocks
+            for stock in low_score_stocks:
+                if stock['symbol'] not in existing_symbols and len(actions) < 5:
+                    short_signal = self.evaluate_stock_short_signals(stock)
+                    if short_signal:
+                        action = await self._execute_short(stock, short_signal)
+                        if action:
+                            actions.append(action)
+                            existing_symbols.add(stock['symbol'])
         
         except Exception as e:
             logger.error(f"Error checking buy signals: {str(e)}")
@@ -172,8 +201,17 @@ class AutotraderService:
                 logger.warning(f"Invalid price for {symbol}: {current_price}")
                 return None
             
-            # Calculate quantity based on max position value
-            quantity = self.max_position_value / current_price
+            # Use portfolio manager to get position size and check if we can open
+            score = asset_data.get('score', 5)
+            confidence = min(100, (score - 5) * 10) if score > 5 else 0
+            position_size = portfolio_manager.get_position_size(asset_type, confidence)
+            
+            if not portfolio_manager.can_open_position(asset_type, position_size):
+                logger.info(f"Cannot open {asset_type} position for {symbol}: insufficient capital or max positions")
+                return None
+                
+            # Calculate quantity based on portfolio manager allocation
+            quantity = position_size / current_price
             
             # Create position
             position_id = str(uuid.uuid4())
@@ -182,13 +220,17 @@ class AutotraderService:
             db_manager.execute_insert(
                 """INSERT INTO positions 
                    (id, symbol, name, type, quantity, entry_price, current_price, 
-                    value, pnl, pnl_percent, source)
-                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0, 0, 'autotrader')""",
+                    value, pnl, pnl_percent, source, position_side, created_at, updated_at)
+                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0, 0, 'autotrader', 'LONG', ?, ?)""",
                 (
                     position_id, symbol, asset_data['name'], asset_type,
-                    quantity, current_price, current_price, value
+                    quantity, current_price, current_price, value,
+                    datetime.now().isoformat(), datetime.now().isoformat()
                 )
             )
+            
+            # Update portfolio manager
+            portfolio_manager.execute_buy(symbol, current_price, quantity, asset_type)
             
             # Log transaction
             db_manager.execute_insert(
@@ -228,9 +270,18 @@ class AutotraderService:
                 logger.warning(f"Invalid current price for {symbol}: {current_price}")
                 return None
             
-            # Calculate P&L
-            pnl = (current_price - entry_price) * quantity
+            # Calculate P&L based on position side
+            position_side = position.get('position_side', 'LONG')
+            if position_side == 'LONG':
+                pnl = (current_price - entry_price) * quantity
+            else:  # SHORT
+                pnl = (entry_price - current_price) * quantity
+                
             pnl_percent = (pnl / (entry_price * quantity)) * 100 if entry_price > 0 else 0
+            
+            # Update portfolio manager before removing position
+            asset_type = position.get('type', 'stock')
+            portfolio_manager.execute_sell(symbol, current_price, quantity, asset_type, pnl)
             
             # Remove position
             db_manager.execute_update(
@@ -324,3 +375,115 @@ class AutotraderService:
                 "average_pnl_percent": 0,
                 "recent_transactions": []
             }
+    
+    def evaluate_crypto_short_signals(self, crypto_data: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+        """Evaluate SHORT signals for crypto"""
+        try:
+            score = crypto_data.get('score', 0)
+            symbol = crypto_data.get('symbol', '')
+            
+            # Only SHORT if score is very low and we can open position
+            if score < 3.5:
+                required_capital = portfolio_manager.get_position_size('crypto', (4 - score) * 20)
+                
+                if portfolio_manager.can_open_position('crypto', required_capital):
+                    return {
+                        'action': 'SHORT',
+                        'confidence': min(90, (4 - score) * 20),
+                        'reasons': [f'Low score: {score}', 'Bearish technical signals'],
+                        'required_capital': required_capital
+                    }
+            
+            return None
+            
+        except Exception as e:
+            logger.error(f"Error evaluating crypto SHORT signals: {e}")
+            return None
+    
+    def evaluate_stock_short_signals(self, stock_data: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+        """Evaluate SHORT signals for stocks"""
+        try:
+            score = stock_data.get('score', 0)
+            symbol = stock_data.get('symbol', '')
+            
+            # More conservative SHORT threshold for stocks
+            if score < 2.5:
+                required_capital = portfolio_manager.get_position_size('stock', (3 - score) * 25)
+                
+                if portfolio_manager.can_open_position('stock', required_capital):
+                    return {
+                        'action': 'SHORT',
+                        'confidence': min(85, (3 - score) * 25),
+                        'reasons': [f'Very low score: {score}', 'Strong bearish signals'],
+                        'required_capital': required_capital
+                    }
+            
+            return None
+            
+        except Exception as e:
+            logger.error(f"Error evaluating stock SHORT signals: {e}")
+            return None
+    
+    async def _execute_short(self, asset_data: Dict[str, Any], signal: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+        """Execute a SHORT position"""
+        try:
+            symbol = asset_data['symbol']
+            name = asset_data['name']
+            # Determine asset type - if coming from crypto table, it should be 'crypto'
+            # For SHORT signals, we know the context from the calling loop
+            asset_type = asset_data.get('type', 'stock')
+            # If no type field, infer from context: cryptos don't have a 'sector' field
+            if 'type' not in asset_data and 'sector' not in asset_data:
+                asset_type = 'crypto'
+            current_price = asset_data['current_price']
+            required_capital = signal['required_capital']
+            
+            # Calculate quantity based on capital allocation
+            quantity = required_capital / current_price
+            
+            if quantity <= 0:
+                logger.warning(f"Invalid quantity calculated for SHORT {symbol}: {quantity}")
+                return None
+            
+            # Create SHORT position in database
+            position_id = str(uuid.uuid4())
+            now = datetime.now().isoformat()
+            
+            db_manager.execute_insert(
+                """INSERT INTO positions 
+                   (id, symbol, name, type, quantity, entry_price, current_price, 
+                    value, pnl, pnl_percent, source, position_side, created_at, updated_at)
+                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'autotrader', 'SHORT', ?, ?)""",
+                (position_id, symbol, name, asset_type, quantity, current_price, current_price,
+                 quantity * current_price, 0.0, 0.0, now, now)
+            )
+            
+            # Update portfolio manager
+            reason = f"SHORT signal - {', '.join(signal['reasons'])}"
+            portfolio_manager.execute_buy(symbol, current_price, quantity, asset_type)
+            
+            # Log transaction
+            db_manager.execute_insert(
+                """INSERT INTO autotrader_transactions 
+                   (symbol, action, quantity, price, reason)
+                   VALUES (?, 'short', ?, ?, ?)""",
+                (symbol, quantity, current_price, reason)
+            )
+            
+            action = {
+                "action": "short",
+                "symbol": symbol,
+                "type": asset_type,
+                "quantity": quantity,
+                "price": current_price,
+                "value": quantity * current_price,
+                "reason": reason,
+                "timestamp": datetime.now().isoformat()
+            }
+            
+            logger.info(f"SHORT: {symbol} ({asset_type}) - {quantity:.4f} @ ${current_price:.2f} - {reason}")
+            return action
+            
+        except Exception as e:
+            logger.error(f"Error executing SHORT for {asset_data.get('symbol', 'unknown')}: {str(e)}")
+            return None

@@ -1,0 +1,49 @@
+# Development files
+*.pyc
+__pycache__/
+*.pyo
+*.pyd
+.Python
+env
+pip-log.txt
+
+# Local logs
+logs/
+src/logs/
+*.log
+
+# Reports and backups
+reports/
+backups/
+*.db
+*.backup
+*.sqlite
+*.sqlite3
+
+# Temporary files
+temp_*.json
+*.tmp
+*.temp
+
+# Legacy and testing
+legacy/
+scripts/testing/
+scripts/setup/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Local config
+config/local.yml
+.env.local
+
+# Build files
+dist/
+build/

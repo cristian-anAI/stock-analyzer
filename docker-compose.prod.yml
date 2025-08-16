@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  stock-analyzer-api:
+    build: .
+    container_name: stock-analyzer-prod
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    volumes:
+      # Persist database
+      - ./data:/app/data
+      # Persist logs  
+      - ./logs:/app/src/logs
+      # Persist reports (optional)
+      - ./reports:/app/reports
+    environment:
+      - ENVIRONMENT=production
+      - LOG_LEVEL=INFO
+      - SQLITE_DB_PATH=/app/data/trading.db
+      - AUTOTRADER_ENABLED=true
+      - STOCKS_CAPITAL=10000
+      - CRYPTO_CAPITAL=50000
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+        reservations:
+          memory: 512M
+
+networks:
+  default:
+    name: stock-analyzer-network

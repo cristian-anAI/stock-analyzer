@@ -9,6 +9,10 @@ import sqlite3
 from datetime import datetime, timedelta
 import logging
 
+from ..services.portfolio_manager import portfolio_manager
+from ..database.migrations import reset_portfolio_state
+from ..models.schemas import SuccessResponse
+
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
@@ -316,3 +320,55 @@ async def get_portfolio_comparison():
     except Exception as e:
         logger.error(f"Error getting portfolio comparison: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error retrieving comparison: {str(e)}")
+
+@router.post("/portfolio/reset", response_model=SuccessResponse)
+async def reset_portfolio():
+    """Reset portfolio to initial state - closes all positions and resets capital"""
+    try:
+        logger.warning("Portfolio reset requested - this will close all positions!")
+        
+        # Reset portfolio manager
+        success = portfolio_manager.reset_portfolio()
+        
+        if not success:
+            raise HTTPException(status_code=500, detail="Failed to reset portfolio manager")
+            
+        # Reset database state
+        db_success = reset_portfolio_state()
+        
+        if not db_success:
+            raise HTTPException(status_code=500, detail="Failed to reset portfolio database state")
+        
+        # Get updated portfolio summary
+        summary = portfolio_manager.get_portfolio_summary()
+        
+        logger.info("Portfolio reset completed successfully")
+        return SuccessResponse(
+            message="Portfolio reset to initial state successfully",
+            data={
+                "reset_timestamp": datetime.now().isoformat(),
+                "new_state": summary
+            }
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error resetting portfolio: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error resetting portfolio: {str(e)}")
+
+@router.get("/portfolio/summary")
+async def get_portfolio_summary():
+    """Get detailed portfolio summary using PortfolioManager"""
+    try:
+        summary = portfolio_manager.get_portfolio_summary()
+        
+        return {
+            "success": True,
+            "data": summary,
+            "timestamp": datetime.now().isoformat()
+        }
+        
+    except Exception as e:
+        logger.error(f"Error getting portfolio summary: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error retrieving portfolio summary: {str(e)}")

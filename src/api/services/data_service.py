@@ -51,7 +51,7 @@ class DataService:
         
         # For performance, limit concurrent updates to avoid overwhelming APIs
         self.batch_size = 50  # Process 50 symbols at a time
-        self.max_concurrent_stocks = 100  # Limit stocks for API safety
+        self.max_concurrent_stocks = 300  # Increased limit for full watchlist coverage
         self.max_concurrent_cryptos = 30   # Limit cryptos for API safety
     
     async def get_cached_stocks_data(self) -> Optional[List[Dict[str, Any]]]:
@@ -235,7 +235,7 @@ class DataService:
             # Prepare crypto data
             crypto_data = {
                 'id': str(uuid.uuid4()),
-                'symbol': symbol.replace('-USD', ''),
+                'symbol': yahoo_symbol,  # Store full symbol with -USD for correct price fetching
                 'name': info.get('longName', symbol.replace('-USD', '')),
                 'current_price': float(current_price),
                 'score': score,
@@ -277,9 +277,9 @@ class DataService:
     async def update_positions_prices(self) -> None:
         """Update current prices for all positions"""
         try:
-            # Get all positions
+            # Get all positions including position_side
             positions = db_manager.execute_query(
-                "SELECT id, symbol, type, quantity, entry_price FROM positions"
+                "SELECT id, symbol, type, quantity, entry_price, position_side FROM positions"
             )
             
             for position in positions:
@@ -289,8 +289,17 @@ class DataService:
                     # Calculate new values
                     quantity = position['quantity']
                     entry_price = position['entry_price']
+                    position_side = position.get('position_side', 'LONG')
                     value = quantity * current_price
-                    pnl = (current_price - entry_price) * quantity
+                    
+                    # Calculate P&L based on position side
+                    if position_side == 'SHORT':
+                        # SHORT: profit when price goes down
+                        pnl = (entry_price - current_price) * quantity
+                    else:
+                        # LONG: profit when price goes up
+                        pnl = (current_price - entry_price) * quantity
+                        
                     pnl_percent = (pnl / (entry_price * quantity)) * 100 if entry_price > 0 else 0
                     
                     # Update position
