@@ -16,13 +16,18 @@ from .middleware.error_handler import ErrorHandlerMiddleware
 from .middleware.logging_middleware import LoggingMiddleware
 
 # Configure logging
+import os
+log_handlers = [logging.StreamHandler()]
+if os.path.exists('logs') or os.makedirs('logs', exist_ok=True):
+    try:
+        log_handlers.append(logging.FileHandler('logs/api.log'))
+    except:
+        pass  # Skip file logging if directory creation fails
+
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.FileHandler('logs/api.log'),
-        logging.StreamHandler()
-    ]
+    handlers=log_handlers
 )
 
 logger = logging.getLogger(__name__)
