@@ -429,11 +429,13 @@ class AutotraderService:
         try:
             symbol = asset_data['symbol']
             name = asset_data['name']
-            # Determine asset type - if coming from crypto table, it should be 'crypto'
-            # For SHORT signals, we know the context from the calling loop
+            # Determine asset type correctly
             asset_type = asset_data.get('type', 'stock')
+            # If symbol ends with -USD, it's definitely crypto
+            if symbol.endswith('-USD'):
+                asset_type = 'crypto'
             # If no type field, infer from context: cryptos don't have a 'sector' field
-            if 'type' not in asset_data and 'sector' not in asset_data:
+            elif 'type' not in asset_data and 'sector' not in asset_data:
                 asset_type = 'crypto'
             current_price = asset_data['current_price']
             required_capital = signal['required_capital']
