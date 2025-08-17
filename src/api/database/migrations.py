@@ -24,6 +24,9 @@ def run_portfolio_migrations():
         # Migration 4: Update autotrader_transactions constraint to allow 'short'
         update_autotrader_transactions_constraint()
         
+        # Migration 5: Create portfolio tracking tables
+        create_portfolio_tracking_tables()
+        
         logger.info("Portfolio migrations completed successfully")
         return True
         
@@ -206,4 +209,63 @@ def update_autotrader_transactions_constraint():
         
     except Exception as e:
         logger.error(f"Error updating autotrader_transactions constraint: {e}")
+        return False
+
+def create_portfolio_tracking_tables():
+    """Create portfolio tracking tables (config and transactions)"""
+    try:
+        # Create portfolio configuration table
+        db_manager.execute_update("""
+            CREATE TABLE IF NOT EXISTS portfolio_config (
+                id INTEGER PRIMARY KEY,
+                type TEXT NOT NULL, -- 'stocks' or 'crypto'
+                initial_capital REAL NOT NULL,
+                current_capital REAL NOT NULL,
+                available_cash REAL NOT NULL,
+                invested_amount REAL NOT NULL,
+                total_pnl REAL NOT NULL DEFAULT 0,
+                win_rate REAL NOT NULL DEFAULT 0,
+                total_trades INTEGER NOT NULL DEFAULT 0,
+                last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        """)
+        
+        # Create portfolio transactions table
+        db_manager.execute_update("""
+            CREATE TABLE IF NOT EXISTS portfolio_transactions (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                portfolio_type TEXT NOT NULL, -- 'stocks' or 'crypto'
+                symbol TEXT NOT NULL,
+                action TEXT NOT NULL, -- 'buy' or 'sell'
+                quantity REAL NOT NULL,
+                price REAL NOT NULL,
+                total_amount REAL NOT NULL,
+                fees REAL DEFAULT 0,
+                buy_reason TEXT,
+                sell_reason TEXT,
+                score REAL,
+                timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                source TEXT DEFAULT 'autotrader' -- 'autotrader' or 'manual'
+            )
+        """)
+        
+        # Initialize portfolio config if empty
+        existing_config = db_manager.execute_query("SELECT COUNT(*) as count FROM portfolio_config")
+        if existing_config[0]['count'] == 0:
+            # Insert initial portfolio configuration
+            db_manager.execute_insert("""
+                INSERT INTO portfolio_config (type, initial_capital, current_capital, available_cash, invested_amount)
+                VALUES ('stocks', 10000.0, 10000.0, 10000.0, 0.0)
+            """)
+            db_manager.execute_insert("""
+                INSERT INTO portfolio_config (type, initial_capital, current_capital, available_cash, invested_amount)
+                VALUES ('crypto', 50000.0, 50000.0, 50000.0, 0.0)
+            """)
+            logger.info("Initialized portfolio configuration with default values")
+        
+        logger.info("Created portfolio tracking tables")
+        return True
+        
+    except Exception as e:
+        logger.error(f"Error creating portfolio tracking tables: {e}")
         return False
