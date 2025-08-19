@@ -1,0 +1,200 @@
+[19:35:19] INFO: SHORT LOGIC AUDIT REPORT
+[19:35:19] INFO: Timestamp: 2025-08-17 19:35:19.720469
+[19:35:19] INFO: Database: trading.db
+[19:35:19] INFO: API Base URL: http://localhost:8000
+[19:35:19] INFO: ============================================================
+[19:35:19] INFO: 1. SHORT SIGNAL CRITERIA ANALYSIS
+[19:35:19] INFO: ============================================================
+[19:35:19] INFO: SHORT SIGNAL THRESHOLDS:
+[19:35:19] INFO:   CRYPTO SHORT: score < 3.5
+[19:35:19] INFO:     - Confidence: min(90, (4 - score) * 20)
+[19:35:19] INFO:     - Reasons: 'Low score', 'Bearish technical signals'
+[19:35:19] INFO: 
+[19:35:19] INFO:   STOCK SHORT: score < 2.5
+[19:35:19] INFO:     - Confidence: min(85, (3 - score) * 25)
+[19:35:19] INFO:     - Reasons: 'Very low score', 'Strong bearish signals'
+[19:35:19] INFO: 
+[19:35:19] INFO: SCORING LOGIC ANALYSIS:
+[19:35:19] INFO:   Crypto base score: 2.0
+[19:35:19] INFO:   Stock base score: 3.0
+[19:35:19] INFO: 
+[19:35:19] INFO:   Crypto penalties that lead to LOW scores:
+[19:35:19] INFO:     - Recent pump >5%: -3 points
+[19:35:19] INFO:     - Recent pump >2%: -1.5 points
+[19:35:19] INFO:     - RSI >70: -2 points
+[19:35:19] INFO:     - Low volume <10M: -1.5 points
+[19:35:19] INFO:     - Small market cap <1B: -1 point
+[19:35:19] INFO: 
+[19:35:19] INFO:   RESULT: Crypto needs MULTIPLE negative factors to hit <3.5
+[19:35:19] INFO:   ANALYSIS: This is AGGRESSIVE - could be triggered by:
+[19:35:19] INFO:     - Recent pump + overbought RSI + low volume
+[19:35:19] INFO:     - Any recent gains >2% + any other negative factor
+[19:35:19] INFO: 
+============================================================
+[19:35:19] INFO: 2. CURRENT SHORT POSITIONS ANALYSIS
+[19:35:19] INFO: ============================================================
+[19:35:19] INFO: Found 5 SHORT positions:
+[19:35:19] INFO: 
+[19:35:19] INFO:   FIL:
+[19:35:19] INFO:     Entry: $2.4823, Current: $2.5907
+[19:35:19] INFO:     Quantity: 5856.97
+[19:35:19] INFO:     P&L: $-634.93 (-4.37%)
+[19:35:19] INFO:     Created: 2025-08-17T19:30:13.572323
+[19:35:19] INFO:     P&L calculation correct
+[19:35:19] INFO:     Price moved UP 4.37% (BAD for SHORT)
+[19:35:19] INFO: 
+[19:35:19] INFO:   VET:
+[19:35:19] INFO:     Entry: $0.0244, Current: $0.0254
+[19:35:19] INFO:     Quantity: 676940.44
+[19:35:19] INFO:     P&L: $-671.63 (-4.07%)
+[19:35:19] INFO:     Created: 2025-08-17T19:30:13.544170
+[19:35:19] INFO:     P&L calculation correct
+[19:35:19] INFO:     Price moved UP 4.07% (BAD for SHORT)
+[19:35:19] INFO: 
+[19:35:19] INFO:   ATOM:
+[19:35:19] INFO:     Entry: $4.4896, Current: $4.6853
+[19:35:19] INFO:     Quantity: 4181.70
+[19:35:19] INFO:     P&L: $-818.45 (-4.36%)
+[19:35:19] INFO:     Created: 2025-08-17T19:30:13.519076
+[19:35:19] INFO:     P&L calculation correct
+[19:35:19] INFO:     Price moved UP 4.36% (BAD for SHORT)
+[19:35:19] INFO: 
+[19:35:19] INFO:   SHIB:
+[19:35:19] INFO:     Entry: $0.0000, Current: $0.0000
+[19:35:19] INFO:     Quantity: 1654263236.82
+[19:35:19] INFO:     P&L: $-507.17 (-2.38%)
+[19:35:19] INFO:     Created: 2025-08-17T19:30:13.487935
+[19:35:19] INFO:     P&L calculation correct
+[19:35:19] INFO:     Price moved UP 2.38% (BAD for SHORT)
+[19:35:19] INFO: 
+[19:35:19] INFO:   TON11419:
+[19:35:19] INFO:     Entry: $3.4924, Current: $3.4936
+[19:35:19] INFO:     Quantity: 6941.70
+[19:35:19] INFO:     P&L: $-8.15 (-0.03%)
+[19:35:19] INFO:     Created: 2025-08-17T19:30:13.464871
+[19:35:19] INFO:     P&L calculation correct
+[19:35:19] INFO:     Price moved UP 0.03% (BAD for SHORT)
+[19:35:19] INFO: 
+[19:35:19] INFO: TOTAL SHORT P&L: $-2640.33
+[19:35:19] INFO: 
+CURRENT SCORES FOR SHORT POSITIONS:
+[19:35:24] INFO:   FIL: Score = 1.0
+[19:35:24] INFO:     Score 1.0 < 3.5 - SHORT signal still valid
+[19:35:24] INFO:   VET: Score = 1.0
+[19:35:24] INFO:     Score 1.0 < 3.5 - SHORT signal still valid
+[19:35:24] INFO:   ATOM: Score = 1.0
+[19:35:24] INFO:     Score 1.0 < 3.5 - SHORT signal still valid
+[19:35:24] INFO:   SHIB: Score = 1.0
+[19:35:24] INFO:     Score 1.0 < 3.5 - SHORT signal still valid
+[19:35:24] INFO:   TON11419: Score = 1.0
+[19:35:24] INFO:     Score 1.0 < 3.5 - SHORT signal still valid
+[19:35:24] INFO: 
+============================================================
+[19:35:24] INFO: 3. P&L CALCULATION LOGIC AUDIT
+[19:35:24] INFO: ============================================================
+[19:35:24] INFO: SHORT P&L FORMULA:
+[19:35:24] INFO:   P&L = (entry_price - current_price) * quantity
+[19:35:24] INFO:   Profit when: current_price < entry_price
+[19:35:24] INFO:   Loss when: current_price > entry_price
+[19:35:24] INFO: 
+[19:35:24] INFO: TEST CASES:
+[19:35:24] INFO:   Test 1: Entry=$100, Current=$90, Qty=10
+[19:35:24] INFO:     Expected P&L: $100
+[19:35:24] INFO:     Calculated P&L: $100
+[19:35:24] INFO:     Result: PASS
+[19:35:24] INFO: 
+[19:35:24] INFO:   Test 2: Entry=$100, Current=$110, Qty=10
+[19:35:24] INFO:     Expected P&L: $-100
+[19:35:24] INFO:     Calculated P&L: $-100
+[19:35:24] INFO:     Result: PASS
+[19:35:24] INFO: 
+[19:35:24] INFO:   Test 3: Entry=$3.5, Current=$3.4, Qty=1000
+[19:35:24] INFO:     Expected P&L: $100
+[19:35:24] INFO:     Calculated P&L: $100.00000000000009
+[19:35:24] INFO:     Result: PASS
+[19:35:24] INFO: 
+[19:35:24] INFO: 
+============================================================
+[19:35:24] INFO: 4. SHORT RISK MANAGEMENT AUDIT
+[19:35:24] INFO: ============================================================
+[19:35:24] INFO: RISK MANAGEMENT CONCERNS FOR SHORT:
+[19:35:24] INFO:   1. INFINITE LOSS POTENTIAL: Prices can rise indefinitely
+[19:35:24] INFO:   2. VOLATILITY RISK: Crypto can spike 50%+ in hours
+[19:35:24] INFO:   3. LIQUIDITY RISK: Need to buy back to close position
+[19:35:24] INFO: 
+[19:35:24] WARNING: WARNING: NO STOP LOSSES FOUND - HIGH RISK!
+[19:35:24] INFO:   SHORT positions without stops can cause unlimited losses
+[19:35:24] INFO: 
+POSITION SIZE ANALYSIS:
+[19:35:24] INFO:   Total SHORT exposure: $95411.03
+[19:35:26] INFO:   Available crypto capital: $106616.24
+[19:35:26] INFO:   SHORT exposure within available capital
+[19:35:26] INFO: 
+============================================================
+[19:35:26] INFO: 5. SHORT EXIT LOGIC AUDIT
+[19:35:26] INFO: ============================================================
+[19:35:26] INFO: EXIT CRITERIA ANALYSIS:
+[19:35:26] INFO:   Looking for exit logic in autotrader...
+[19:35:26] INFO: RECENT SHORT EXITS: 10 found
+[19:35:26] INFO:   2025-08-17 17:30:13: TON11419 SELL 6851.17 @ $3.4944
+[19:35:26] INFO:     Reason: Score dropped to 1
+[19:35:26] INFO:   2025-08-17 17:30:13: SHIB SELL 1632690278.39 @ $0.0000
+[19:35:26] INFO:     Reason: Score dropped to 1
+[19:35:26] INFO:   2025-08-17 17:30:13: ATOM SELL 4127.17 @ $4.6872
+[19:35:26] INFO:     Reason: Score dropped to 1
+[19:35:26] INFO:   2025-08-17 17:30:13: VET SELL 668112.58 @ $0.0254
+[19:35:26] INFO:     Reason: Score dropped to 1
+[19:35:26] INFO:   2025-08-17 17:30:13: FIL SELL 5780.59 @ $2.5927
+[19:35:26] INFO:     Reason: Score dropped to 1
+[19:35:26] INFO:   2025-08-17 17:24:05: TON11419 SELL 6765.15 @ $3.4910
+[19:35:26] INFO:     Reason: Score dropped to 1
+[19:35:26] INFO:   2025-08-17 17:24:05: SHIB SELL 1612189884.73 @ $0.0000
+[19:35:26] INFO:     Reason: Score dropped to 1
+[19:35:26] INFO:   2025-08-17 17:24:05: ATOM SELL 4075.35 @ $4.6846
+[19:35:26] INFO:     Reason: Score dropped to 1
+[19:35:26] INFO:   2025-08-17 17:24:05: VET SELL 659723.62 @ $0.0254
+[19:35:26] INFO:     Reason: Score dropped to 1
+[19:35:26] INFO:   2025-08-17 17:24:05: FIL SELL 5708.01 @ $2.5906
+[19:35:26] INFO:     Reason: Score dropped to 1
+[19:35:26] INFO: 
+EXIT LOGIC REQUIREMENTS FOR SHORT:
+[19:35:26] INFO:   1. Score improvement: If score rises above SHORT threshold
+[19:35:26] INFO:   2. Stop loss: Price rises beyond acceptable loss
+[19:35:26] INFO:   3. Take profit: Price falls to target profit level
+[19:35:26] INFO:   4. Time-based: Maximum holding period for SHORT
+[19:35:26] INFO: 
+============================================================
+[19:35:26] INFO: 6. RECOMMENDATIONS
+[19:35:26] INFO: ============================================================
+[19:35:26] INFO: CRITICAL ISSUES IDENTIFIED:
+[19:35:26] INFO:   1. AGGRESSIVE SHORT THRESHOLDS
+[19:35:26] INFO:      - Crypto SHORT at score <3.5 may be too sensitive
+[19:35:26] INFO:      - Any recent gain >2% can trigger SHORT signal
+[19:35:26] INFO: 
+[19:35:26] INFO:   2. MISSING RISK MANAGEMENT
+[19:35:26] INFO:      - No apparent stop losses for SHORT positions
+[19:35:26] INFO:      - SHORT positions have unlimited loss potential
+[19:35:26] INFO: 
+[19:35:26] INFO:   3. UNCLEAR EXIT STRATEGY
+[19:35:26] INFO:      - Need clear exit criteria for SHORT positions
+[19:35:26] INFO:      - Should exit when score improves or reaches stop loss
+[19:35:26] INFO: 
+[19:35:26] INFO: RECOMMENDED FIXES:
+[19:35:26] INFO:   1. TIGHTEN SHORT CRITERIA:
+[19:35:26] INFO:      - Crypto: score <2.5 (instead of 3.5)
+[19:35:26] INFO:      - Require multiple bearish indicators
+[19:35:26] INFO:      - Add momentum confirmation
+[19:35:26] INFO: 
+[19:35:26] INFO:   2. ADD STOP LOSSES:
+[19:35:26] INFO:      - Automatic stop loss at +15% price move
+[19:35:26] INFO:      - Take profit at -10% price move
+[19:35:26] INFO:      - Maximum holding period: 7 days
+[19:35:26] INFO: 
+[19:35:26] INFO:   3. IMPROVE EXIT LOGIC:
+[19:35:26] INFO:      - Exit when score rises above 4.0
+[19:35:26] INFO:      - Exit on any strong bullish reversal signal
+[19:35:26] INFO:      - Regular position review every 24 hours
+[19:35:26] INFO: 
+============================================================
+[19:35:26] INFO: AUDIT COMPLETE
+[19:35:26] INFO: ============================================================

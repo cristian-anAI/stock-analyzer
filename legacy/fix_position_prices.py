@@ -16,7 +16,7 @@ def fix_all_positions():
     collector = data_collector.StockDataCollector()
     manager = PositionManager(collector)
     db = DatabaseManager()
-    print("🔧 FIXING ALL POSITION PRICES")
+    print(" FIXING ALL POSITION PRICES")
     print("=" * 50)
     # Real positions with CORRECT current values and prices
     real_positions = {
@@ -58,7 +58,7 @@ def fix_all_positions():
     for symbol, data in real_positions.items():
         if symbol in manager.positions:
             position = manager.positions[symbol]
-            print(f"\n🔧 Fixing {symbol}:")
+            print(f"\n Fixing {symbol}:")
             print(f"   Old entry price: ${position.entry_price:.2f}")
             print(f"   New entry price: ${data['correct_entry_price']:.2f}")
             # Update position in memory
@@ -77,13 +77,13 @@ def fix_all_positions():
     # Replace broken symbols
     for old_symbol, new_symbol in symbol_replacements.items():
         if old_symbol in manager.positions:
-            print(f"\n🔄 Replacing {old_symbol} with {new_symbol}:")
+            print(f"\n Replacing {old_symbol} with {new_symbol}:")
             old_position = manager.positions[old_symbol]
             try:
                 stock_data = collector.get_stock_data(new_symbol)
                 if 'error' not in stock_data:
                     current_price = stock_data['price_data']['current_price']
-                    print(f"   {new_symbol} current price: ${current_price:.2f} ✅")
+                    print(f"   {new_symbol} current price: ${current_price:.2f} ")
                     # Calculate reasonable entry price based on your real P&L
                     if old_symbol == "PPFB.L":
                         entry_price = current_price / 1.011
@@ -107,17 +107,17 @@ def fix_all_positions():
                         new_pos.notes = f"Replaced {old_symbol} - Real position equivalent"
                         manager.update_position(new_symbol, current_price)
                         manager.close_position(old_symbol, f"Replaced with {new_symbol}")
-                        print(f"   ✅ Successfully replaced with {new_symbol}")
+                        print(f"    Successfully replaced with {new_symbol}")
                 else:
-                    print(f"   ❌ {new_symbol} also has data issues")
+                    print(f"    {new_symbol} also has data issues")
             except Exception as e:
-                print(f"   ❌ Error testing {new_symbol}: {e}")
+                print(f"    Error testing {new_symbol}: {e}")
 
 def verify_fixes():
     """Verify all positions now have reasonable P&L"""
     collector = data_collector.StockDataCollector()
     manager = PositionManager(collector)
-    print(f"\n✅ VERIFICATION - Updated Positions:")
+    print(f"\n VERIFICATION - Updated Positions:")
     print("=" * 50)
     total_pnl = 0
     for symbol, position in manager.positions.items():
@@ -126,18 +126,18 @@ def verify_fixes():
             if 'error' not in stock_data:
                 current_price = stock_data['price_data']['current_price']
                 manager.update_position(symbol, current_price)
-                pnl_color = "📈" if position.unrealized_pnl >= 0 else "📉"
+                pnl_color = "" if position.unrealized_pnl >= 0 else ""
                 print(f"{symbol:10} | {pnl_color} {position.unrealized_pnl_percent:+6.1f}% | ${position.unrealized_pnl:+8.2f}")
                 total_pnl += position.unrealized_pnl
             else:
-                print(f"{symbol:10} | ❌ Data error")
+                print(f"{symbol:10} |  Data error")
         except Exception as e:
-            print(f"{symbol:10} | ❌ Error: {e}")
-    print(f"\n📊 Total Portfolio P&L: ${total_pnl:+.2f}")
+            print(f"{symbol:10} |  Error: {e}")
+    print(f"\n Total Portfolio P&L: ${total_pnl:+.2f}")
     print("   (Should be positive overall based on your real gains)")
 
 def main():
-    print("🔧 POSITION PRICE FIXER")
+    print(" POSITION PRICE FIXER")
     print("=" * 30)
     print("This will:")
     print("1. Fix NDAQ/BNTX/DFEN/BTC prices")
@@ -147,7 +147,7 @@ def main():
     if confirm == 'y':
         fix_all_positions()
         verify_fixes()
-        print("\n✅ All positions fixed!")
+        print("\n All positions fixed!")
     else:
         print("Operation cancelled")
 

@@ -23,7 +23,7 @@ from crypto_dashboard import CryptoDashboard
 
 class HybridTradingSystem:
     def __init__(self):
-        print("🚀 INITIALIZING HYBRID TRADING SYSTEM")
+        print(" INITIALIZING HYBRID TRADING SYSTEM")
         print("=" * 60)
         # Initialize collectors
         self.stock_collector = data_collector.StockDataCollector()
@@ -41,34 +41,34 @@ class HybridTradingSystem:
         )
         # Initialize crypto dashboard
         self.crypto_dashboard = CryptoDashboard(self.position_manager)
-        print("✅ Stock Collector: Ready")
-        print("✅ Crypto Collector: Ready") 
-        print("✅ Position Manager: Ready")
-        print("✅ Unified Trader: Ready")
+        print(" Stock Collector: Ready")
+        print(" Crypto Collector: Ready") 
+        print(" Position Manager: Ready")
+        print(" Unified Trader: Ready")
     def run_market_analysis(self):
         """Run complete market analysis - both stocks and crypto"""
-        print(f"\n🔍 MARKET ANALYSIS - {datetime.now().strftime('%H:%M:%S')}")
+        print(f"\n MARKET ANALYSIS - {datetime.now().strftime('%H:%M:%S')}")
         print("=" * 60)
         try:
             # Run unified analysis
             opportunities = self.unified_trader.run_cycle()
             # Display stock opportunities
             stock_opps = opportunities.get('stock_opportunities', [])
-            print(f"\n📈 STOCK OPPORTUNITIES: {len(stock_opps)}")
+            print(f"\n STOCK OPPORTUNITIES: {len(stock_opps)}")
             for opp in stock_opps:
                 print(f"  {opp['symbol']:6} | Score: {opp['score']} | {', '.join(opp['reasons'][:2])}")
             # Display crypto opportunities  
             crypto_opps = opportunities.get('crypto_opportunities', [])
-            print(f"\n🪙 CRYPTO OPPORTUNITIES: {len(crypto_opps)}")
+            print(f"\n CRYPTO OPPORTUNITIES: {len(crypto_opps)}")
             for opp in crypto_opps:
                 print(f"  {opp['symbol']:10} | Score: {opp['score']} | {', '.join(opp['reasons'][:2])}")
             return opportunities
         except Exception as e:
-            print(f"❌ Error in market analysis: {e}")
+            print(f" Error in market analysis: {e}")
             return {"stock_opportunities": [], "crypto_opportunities": []}
     def show_portfolio_status(self):
         """Show current portfolio status"""
-        print(f"\n💼 PORTFOLIO STATUS")
+        print(f"\n PORTFOLIO STATUS")
         print("=" * 60)
         # Regular portfolio dashboard
         self.position_manager.print_portfolio_dashboard()
@@ -76,7 +76,7 @@ class HybridTradingSystem:
         self.crypto_dashboard.show()
     def run_demo_cycle(self):
         """Run one complete demo cycle"""
-        print(f"\n🎯 DEMO CYCLE STARTING")
+        print(f"\n DEMO CYCLE STARTING")
         print("=" * 60)
         # 1. Show current portfolio
         self.show_portfolio_status()
@@ -85,18 +85,18 @@ class HybridTradingSystem:
         # 3. Summary
         total_stock_opps = len(opportunities.get('stock_opportunities', []))
         total_crypto_opps = len(opportunities.get('crypto_opportunities', []))
-        print(f"\n📊 SUMMARY:")
+        print(f"\n SUMMARY:")
         print(f"  Stock opportunities: {total_stock_opps}")
         print(f"  Crypto opportunities: {total_crypto_opps}")
         print(f"  Total signals: {total_stock_opps + total_crypto_opps}")
         return opportunities
     def run_continuous_monitoring(self, cycles=5, interval_minutes=10):
         """Run continuous monitoring for testing"""
-        print(f"\n🔄 CONTINUOUS MONITORING")
+        print(f"\n CONTINUOUS MONITORING")
         print(f"Cycles: {cycles} | Interval: {interval_minutes} min")
         print("=" * 60)
         for i in range(cycles):
-            print(f"\n🔄 CYCLE #{i+1} - {datetime.now().strftime('%H:%M:%S')}")
+            print(f"\n CYCLE #{i+1} - {datetime.now().strftime('%H:%M:%S')}")
             opportunities = self.run_demo_cycle()
             # Check if any strong signals (score >= 6)
             strong_signals = []
@@ -104,16 +104,16 @@ class HybridTradingSystem:
                 if opp['score'] >= 6:
                     strong_signals.append(opp)
             if strong_signals:
-                print(f"\n🚨 STRONG SIGNALS DETECTED:")
+                print(f"\n STRONG SIGNALS DETECTED:")
                 for signal in strong_signals:
                     print(f"  {signal['symbol']} | Score: {signal['score']} | Action: POTENTIAL BUY")
             if i < cycles - 1:  # Don't sleep on last cycle
-                print(f"\n⏳ Waiting {interval_minutes} minutes for next cycle...")
+                print(f"\n Waiting {interval_minutes} minutes for next cycle...")
                 time.sleep(interval_minutes * 60)
-        print(f"\n✅ Continuous monitoring completed!")
+        print(f"\n Continuous monitoring completed!")
 def main():
     """Main execution"""
-    print("🚀 HYBRID TRADING SYSTEM - STOCKS + CRYPTO")
+    print(" HYBRID TRADING SYSTEM - STOCKS + CRYPTO")
     print("=" * 60)
     try:
         # Initialize system
@@ -135,15 +135,15 @@ def main():
         elif choice == "4":
             system.run_continuous_monitoring(cycles=5, interval_minutes=10)
         elif choice == "5":
-            print("🪙 WEEKEND CRYPTO MODE - Press Ctrl+C to stop")
+            print(" WEEKEND CRYPTO MODE - Press Ctrl+C to stop")
             system.run_continuous_monitoring(cycles=999, interval_minutes=30)
         else:
             print("Running default demo cycle...")
             system.run_demo_cycle()
     except KeyboardInterrupt:
-        print(f"\n\n🛑 System stopped by user")
+        print(f"\n\n System stopped by user")
     except Exception as e:
-        print(f"\n❌ System error: {e}")
+        print(f"\n System error: {e}")
         import traceback
         traceback.print_exc()
 

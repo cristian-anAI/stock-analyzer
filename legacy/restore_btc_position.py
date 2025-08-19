@@ -51,7 +51,7 @@ def restore_btc_position():
         "position_type": RESTORE_DATA["position_type"]
     }
     db.save_position(pos_dict)
-    print(f"✅ BTC-USD restored to open positions as MANUAL.")
+    print(f" BTC-USD restored to open positions as MANUAL.")
 
 if __name__ == "__main__":
     restore_btc_position()

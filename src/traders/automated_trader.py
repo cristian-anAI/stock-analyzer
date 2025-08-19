@@ -23,7 +23,7 @@ from src.data.earnings_calendar import EarningsChecker
 class AutomatedTrader:
     def verify_portfolio_data(self):
         """Verify portfolio data is correct before trading"""
-        print(f"\n🔍 PORTFOLIO VERIFICATION")
+        print(f"\n PORTFOLIO VERIFICATION")
         print("=" * 60)
         if not self.position_manager.positions:
             print("No positions loaded")
@@ -36,21 +36,21 @@ class AutomatedTrader:
                     current_price = stock_data['price_data']['current_price']
                     self.position_manager.update_position(symbol, current_price)
                     pnl_pct = position.unrealized_pnl_percent
-                    pnl_color = "📈" if pnl_pct >= 0 else "📉"
+                    pnl_color = "" if pnl_pct >= 0 else ""
                     print(f"{symbol:8} | {pnl_color} {pnl_pct:+6.1f}% | Entry: ${position.entry_price:.2f} | Current: ${current_price:.2f}")
                     if abs(pnl_pct) > 50 and symbol not in ["BTC-USD"]:
-                        print(f"   ⚠️ WARNING: Extreme P&L detected for {symbol}")
+                        print(f"    WARNING: Extreme P&L detected for {symbol}")
                         all_reasonable = False
                 else:
-                    print(f"{symbol:8} | ❌ Data error")
+                    print(f"{symbol:8} |  Data error")
                     all_reasonable = False
             except Exception as e:
-                print(f"{symbol:8} | ❌ Exception: {e}")
+                print(f"{symbol:8} |  Exception: {e}")
                 all_reasonable = False
         if all_reasonable:
             print(f"\n[OK] All position data looks reasonable")
         else:
-            print(f"\n❌ Some positions have unreasonable data - check database")
+            print(f"\n Some positions have unreasonable data - check database")
         return all_reasonable
     def __init__(self, max_positions: int = 15, max_investment_per_stock: float = 5000):
         """Initialize el trader automatizado"""
@@ -346,7 +346,7 @@ class AutomatedTrader:
             
             # Validar precio antes de calcular cantidad
             if current_price <= 0:
-                print(f"   ❌ {symbol}: Precio inválido ({current_price}), saltando...")
+                print(f"    {symbol}: Precio inválido ({current_price}), saltando...")
                 continue
                 
             quantity = max(1, int(self.max_investment_per_stock / current_price))
@@ -412,13 +412,13 @@ class AutomatedTrader:
                 self.position_manager.update_position(symbol, current_price)
                 decision, reasons = self.position_manager.analyze_position_decision(symbol)
                 position = self.position_manager.positions[symbol]
-                pnl_color = "📈" if position.unrealized_pnl >= 0 else "📉"
+                pnl_color = "" if position.unrealized_pnl >= 0 else ""
                 print(f"{pnl_color} P&L: {position.unrealized_pnl_percent:+.1f}% | {decision.value}")
                 # SAFETY CHECK FOR MANUAL POSITIONS
                 is_manual = self.is_manual_position(symbol)
                 if decision == PositionDecision.SELL_IMMEDIATELY:
                     if is_manual:
-                        self.send_alert("MANUAL_REVIEW_URGENT", symbol, f"🚨 MANUAL POSITION NEEDS REVIEW - P&L: {position.unrealized_pnl_percent:+.1f}% - SELL signal detected")
+                        self.send_alert("MANUAL_REVIEW_URGENT", symbol, f" MANUAL POSITION NEEDS REVIEW - P&L: {position.unrealized_pnl_percent:+.1f}% - SELL signal detected")
                         print(f"   [SAFETY] Manual position {symbol} requires manual review")
                     else:
                         self.send_alert("SELL_IMMEDIATELY", symbol, f"Sell immediately - P&L: {position.unrealized_pnl_percent:+.1f}%")
@@ -434,7 +434,7 @@ class AutomatedTrader:
         try:
             total_pnl = sum(pos.unrealized_pnl for pos in self.position_manager.positions.values())
             total_positions = len(self.position_manager.positions)
-            pnl_color = "📈" if total_pnl >= 0 else "📉"
+            pnl_color = "" if total_pnl >= 0 else ""
             print(f"\n{pnl_color} Portfolio: {total_positions} posiciones | P&L Total: ${total_pnl:.2f}")
         except Exception as e:
             print(f"\nPortfolio summary error: {e}")
@@ -443,15 +443,15 @@ class AutomatedTrader:
         """Sistema de notificaciones mejorado"""
         timestamp = datetime.now().strftime("%H:%M:%S")
         emoji_map = {
-            "BUY_SIGNAL": "🎯",
-            "POSITION_OPENED": "📈", 
-            "SELL_IMMEDIATELY": "🔴",
-            "CONSIDER_SELL": "⚠️",
-            "PARTIAL_PROFIT": "💰",
-            "MANUAL_REVIEW": "👁️",
-            "MANUAL_REVIEW_URGENT": "🚨"
+            "BUY_SIGNAL": "",
+            "POSITION_OPENED": "", 
+            "SELL_IMMEDIATELY": "",
+            "CONSIDER_SELL": "",
+            "PARTIAL_PROFIT": "",
+            "MANUAL_REVIEW": "️",
+            "MANUAL_REVIEW_URGENT": ""
         }
-        emoji = emoji_map.get(alert_type, "📊")
+        emoji = emoji_map.get(alert_type, "")
         alert_text = f"\n{emoji} {timestamp} | {symbol}: {message}"
         # Highlight manual position alerts
         if "MANUAL" in alert_type:

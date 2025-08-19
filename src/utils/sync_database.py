@@ -18,17 +18,17 @@ def clean_and_sync_database():
     manager = PositionManager(collector)
     db = DatabaseManager()
     
-    print("🧹 CLEANING AND SYNCING DATABASE")
+    print(" CLEANING AND SYNCING DATABASE")
     print("=" * 50)
     
     # Step 1: Show current database content
-    print("📋 Current Database Content:")
+    print(" Current Database Content:")
     db_positions = db.load_positions()
     for pos in db_positions:
         print(f"   {pos['symbol']:12} | Entry: ${pos['entry_price']:8.2f} | Qty: {pos['quantity']:6.2f}")
     
     # Step 2: Clear ALL positions from database
-    print(f"\n🗑️ Clearing all positions from database...")
+    print(f"\n️ Clearing all positions from database...")
     cursor = db.conn.cursor()
     cursor.execute("DELETE FROM positions")
     db.conn.commit()
@@ -107,7 +107,7 @@ def clean_and_sync_database():
     ]
     
     # Step 4: Add corrected positions to database
-    print(f"\n📥 Adding corrected positions to database:")
+    print(f"\n Adding corrected positions to database:")
     
     total_expected_pnl = 0
     
@@ -148,20 +148,20 @@ def clean_and_sync_database():
             # Save to database
             try:
                 db.save_position(position_dict)
-                print(f"      ✅ Saved to database")
+                print(f"       Saved to database")
             except Exception as e:
-                print(f"      ❌ Database error: {e}")
+                print(f"       Database error: {e}")
         else:
-            print(f"   {pos_data['symbol']:8} | ❌ Cannot get current price")
+            print(f"   {pos_data['symbol']:8} |  Cannot get current price")
     
-    print(f"\n📊 Expected Portfolio P&L: ${total_expected_pnl:+.2f}")
+    print(f"\n Expected Portfolio P&L: ${total_expected_pnl:+.2f}")
     
     # Step 5: Verify sync
-    print(f"\n🔍 Verification - Reloading from database:")
+    print(f"\n Verification - Reloading from database:")
     new_manager = PositionManager(collector)
     
     if new_manager.positions:
-        print(f"   ✅ Loaded {len(new_manager.positions)} positions")
+        print(f"    Loaded {len(new_manager.positions)} positions")
         
         for symbol, position in new_manager.positions.items():
             # Update with current price
@@ -170,13 +170,13 @@ def clean_and_sync_database():
                 current_price = stock_data['price_data']['current_price']
                 new_manager.update_position(symbol, current_price)
                 
-                pnl_color = "📈" if position.unrealized_pnl >= 0 else "📉"
+                pnl_color = "" if position.unrealized_pnl >= 0 else ""
                 print(f"      {symbol:8} | {pnl_color} {position.unrealized_pnl_percent:+6.1f}% | ${position.unrealized_pnl:+8.2f}")
     
     return new_manager
 
 def main():
-    print("🔄 DATABASE SYNC TOOL")
+    print(" DATABASE SYNC TOOL")
     print("=" * 30)
     print("This will:")
     print("1. Clear ALL positions from database")
@@ -184,12 +184,12 @@ def main():
     print("3. Sync database with current system state")
     print("4. Verify all P&L calculations")
     
-    print(f"\n⚠️ WARNING: This will DELETE all current database positions!")
+    print(f"\n WARNING: This will DELETE all current database positions!")
     confirm = input("Are you sure? Type 'YES' to proceed: ")
     
     if confirm == "YES":
         manager = clean_and_sync_database()
-        print(f"\n✅ Database synchronized!")
+        print(f"\n Database synchronized!")
         print(f"   Next automated_trader.py run should show correct P&L")
     else:
         print("Operation cancelled")

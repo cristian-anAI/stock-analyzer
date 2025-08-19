@@ -17,24 +17,24 @@ def show_menu():
     print("         STOCK ANALYZER - SISTEMA DE TRADING")  
     print("="*60)
     print("1. 🤖 Automated Trader")
-    print("2. 🔄 Hybrid Trading System") 
-    print("3. 🎯 Interactive Trading")
-    print("4. 🖥️  Server Trader (24/7)")
-    print("5. 📊 Web Dashboard")
-    print("6. 📈 Web Monitor")
-    print("7. 🔧 Database Manager")
-    print("8. 💰 Position Manager")
-    print("0. ❌ Exit")
+    print("2.  Hybrid Trading System") 
+    print("3.  Interactive Trading")
+    print("4.   Server Trader (24/7)")
+    print("5.  Web Dashboard")
+    print("6.  Web Monitor")
+    print("7.  Database Manager")
+    print("8.  Position Manager")
+    print("0.  Exit")
     print("="*60)
 
 def main():
     """Función principal"""
     while True:
         show_menu()
-        choice = input("\n👉 Choose an option: ").strip()
+        choice = input("\n Choose an option: ").strip()
         
         if choice == "0":
-            print("\n👋 Goodbye!")
+            print("\n Goodbye!")
             break
         elif choice == "1":
             from src.traders.automated_trader import AutomatedTrader
@@ -65,7 +65,7 @@ def main():
             pm = PositionManager()
             print("Position manager initialized")
         else:
-            print("❌ Invalid option. Please try again.")
+            print(" Invalid option. Please try again.")
 
 if __name__ == "__main__":
     main()

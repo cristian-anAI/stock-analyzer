@@ -22,9 +22,9 @@ def add_crypto_positions():
     collector = data_collector.StockDataCollector()
     manager = PositionManager(collector)
     
-    # 🔥 DATOS CALCULADOS BASADOS EN TU SCREENSHOT + PRECIOS DE MERCADO 🔥
+    #  DATOS CALCULADOS BASADOS EN TU SCREENSHOT + PRECIOS DE MERCADO 
     
-    # 📊 SOL POSITION DATA
+    #  SOL POSITION DATA
     sol_data = {
         "symbol": "SOL-USD",
         "quantity": 0.31373242,
@@ -33,7 +33,7 @@ def add_crypto_positions():
         "pnl_display": "+0.61 €"
     }
     
-    # 📊 BNB POSITION DATA  
+    #  BNB POSITION DATA  
     bnb_data = {
         "symbol": "BNB-USD",
         "quantity": 0.15871727,
@@ -106,7 +106,7 @@ def add_crypto_positions():
             
             # Verificar si ya existe
             if symbol in manager.positions:
-                print(f"   ⚠️ {symbol} ya existe en el portfolio")
+                print(f"    {symbol} ya existe en el portfolio")
                 continue
             
             # Añadir como posición MANUAL
@@ -145,11 +145,11 @@ def add_crypto_positions():
                         print(f"   [P&L] P&L calculado: {updated_pos.unrealized_pnl_percent:+.1f}%")
                         print(f"   [USD] P&L en USD: ${updated_pos.unrealized_pnl:+.2f}")
                     else:
-                        print(f"   ⚠️ No se pudo obtener precio de mercado: {stock_data.get('error')}")
+                        print(f"    No se pudo obtener precio de mercado: {stock_data.get('error')}")
                 except Exception as e:
-                    print(f"   ⚠️ Error actualizando precio: {e}")
+                    print(f"    Error actualizando precio: {e}")
             else:
-                print(f"   ❌ Error añadiendo {crypto['name']}")
+                print(f"    Error añadiendo {crypto['name']}")
         
         if added_count > 0:
             print(f"\n[SUCCESS] RESUMEN:")
@@ -161,7 +161,7 @@ def add_crypto_positions():
             print(f"\n[PORTFOLIO] CRYPTO ACTUALIZADO:")
             manager.print_portfolio_dashboard()
         else:
-            print(f"\n⚠️ No se añadieron nuevas posiciones")
+            print(f"\n No se añadieron nuevas posiciones")
     else:
         print("Operación cancelada")
 

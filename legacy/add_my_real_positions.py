@@ -18,7 +18,7 @@ def add_all_real_positions():
     collector = data_collector.StockDataCollector()
     manager = PositionManager(collector)
     
-    print("🏦 ADDING ALL REAL PORTFOLIO POSITIONS")
+    print(" ADDING ALL REAL PORTFOLIO POSITIONS")
     print("=" * 50)
     
     # My real positions with calculated average prices
@@ -113,7 +113,7 @@ def add_all_real_positions():
     
     for pos_data in positions:
         try:
-            print(f"\n📊 Adding {pos_data['symbol']} ({pos_data['broker']})...")
+            print(f"\n Adding {pos_data['symbol']} ({pos_data['broker']})...")
             
             # Calculate position value
             pos_value = pos_data['entry_price'] * pos_data['quantity']
@@ -138,28 +138,28 @@ def add_all_real_positions():
                     if manager.db_manager:
                         manager.db_manager.update_position(asdict(pos))
                 
-                print(f"   ✅ Added: {pos_data['quantity']} @ ${pos_data['entry_price']:.2f}")
-                print(f"   💰 Position value: ${pos_value:,.2f}")
+                print(f"    Added: {pos_data['quantity']} @ ${pos_data['entry_price']:.2f}")
+                print(f"    Position value: ${pos_value:,.2f}")
                 added_count += 1
             else:
-                print(f"   ❌ Failed to add {pos_data['symbol']}")
+                print(f"    Failed to add {pos_data['symbol']}")
                 
         except Exception as e:
-            print(f"   ❌ Error adding {pos_data['symbol']}: {e}")
+            print(f"    Error adding {pos_data['symbol']}: {e}")
     
-    print(f"\n📈 PORTFOLIO SUMMARY:")
+    print(f"\n PORTFOLIO SUMMARY:")
     print(f"   Positions added: {added_count}/{len(positions)}")
     print(f"   Total portfolio value: ${total_value:,.2f}")
     
     # Show detailed portfolio
-    print(f"\n💼 DETAILED PORTFOLIO:")
+    print(f"\n DETAILED PORTFOLIO:")
     manager.print_portfolio_dashboard()
     
     return manager
 
 def update_positions_with_current_prices():
     """Update all positions with current market prices"""
-    print(f"\n🔄 UPDATING WITH CURRENT PRICES...")
+    print(f"\n UPDATING WITH CURRENT PRICES...")
     
     collector = data_collector.StockDataCollector()
     manager = PositionManager(collector)
@@ -173,18 +173,18 @@ def update_positions_with_current_prices():
             if 'error' not in stock_data:
                 current_price = stock_data['price_data']['current_price']
                 manager.update_position(symbol, current_price)
-                print(f"${current_price:.2f} ✅")
+                print(f"${current_price:.2f} ")
                 updated += 1
             else:
-                print(f"Error ❌")
+                print(f"Error ")
         except Exception as e:
-            print(f"Error: {e} ❌")
+            print(f"Error: {e} ")
     
     print(f"\n   Updated {updated} positions with current prices")
     return manager
 
 def main():
-    print("🏦 MY REAL PORTFOLIO SETUP")
+    print(" MY REAL PORTFOLIO SETUP")
     print("=" * 30)
     print("1. Add all positions")
     print("2. Add positions + update prices")
@@ -197,7 +197,7 @@ def main():
     elif choice == "2":
         manager = add_all_real_positions()
         update_positions_with_current_prices()
-        print(f"\n💼 FINAL PORTFOLIO WITH CURRENT P&L:")
+        print(f"\n FINAL PORTFOLIO WITH CURRENT P&L:")
         manager.print_portfolio_dashboard()
     elif choice == "3":
         update_positions_with_current_prices()

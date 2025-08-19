@@ -38,11 +38,11 @@ class StandaloneAutotrader:
     
     async def start(self):
         """Start the standalone autotrader"""
-        logger.info("🚀 Starting 24/7 Standalone Autotrader...")
+        logger.info(" Starting 24/7 Standalone Autotrader...")
         
         # Initialize database
         init_db()
-        logger.info("✅ Database initialized")
+        logger.info(" Database initialized")
         
         # Set up signal handlers for graceful shutdown
         signal.signal(signal.SIGINT, self._signal_handler)
@@ -53,28 +53,28 @@ class StandaloneAutotrader:
         self.running = True
         
         logger.info("🤖 Autotrader is now running 24/7!")
-        logger.info("📊 Press Ctrl+C to stop gracefully")
-        logger.info("💤 You can now go to sleep - the autotrader will keep working!")
+        logger.info(" Press Ctrl+C to stop gracefully")
+        logger.info(" You can now go to sleep - the autotrader will keep working!")
         
         # Keep running until interrupted
         try:
             while self.running:
                 await asyncio.sleep(10)
         except KeyboardInterrupt:
-            logger.info("🛑 Keyboard interrupt received")
+            logger.info(" Keyboard interrupt received")
         
         await self.stop()
     
     def _signal_handler(self, signum, frame):
         """Handle shutdown signals"""
-        logger.info(f"📡 Received signal {signum}, initiating graceful shutdown...")
+        logger.info(f" Received signal {signum}, initiating graceful shutdown...")
         self.running = False
     
     async def stop(self):
         """Stop the autotrader"""
-        logger.info("🛑 Stopping autotrader...")
+        logger.info(" Stopping autotrader...")
         await self.scheduler.stop()
-        logger.info("✅ Autotrader stopped gracefully")
+        logger.info(" Autotrader stopped gracefully")
 
 async def main():
     """Main function"""
@@ -85,7 +85,7 @@ if __name__ == "__main__":
     try:
         asyncio.run(main())
     except KeyboardInterrupt:
-        logger.info("👋 Goodbye!")
+        logger.info(" Goodbye!")
     except Exception as e:
-        logger.error(f"💥 Fatal error: {str(e)}")
+        logger.error(f" Fatal error: {str(e)}")
         sys.exit(1)

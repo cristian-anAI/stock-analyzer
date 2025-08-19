@@ -14,11 +14,11 @@ def debug_all_positions():
     collector = data_collector.StockDataCollector()
     manager = PositionManager(collector)
     
-    print("🔍 DEBUGGING POSITION PRICES")
+    print(" DEBUGGING POSITION PRICES")
     print("=" * 60)
     
     for symbol, position in manager.positions.items():
-        print(f"\n📊 {symbol}:")
+        print(f"\n {symbol}:")
         print(f"   DB Entry Price: ${position.entry_price:.2f}")
         print(f"   DB Quantity: {position.quantity}")
         print(f"   DB Notes: {position.notes}")
@@ -48,7 +48,7 @@ def debug_all_positions():
                 
                 if 'error' not in stock_data:
                     current_price = stock_data['price_data']['current_price']
-                    print(f"${current_price:.2f} ✅")
+                    print(f"${current_price:.2f} ")
                     
                     if best_price is None:
                         best_price = current_price
@@ -61,7 +61,7 @@ def debug_all_positions():
             except Exception as e:
                 print(f"Exception: {e}")
         if best_symbol != symbol:
-            print(f"   💡 RECOMMENDATION: Use {best_symbol} instead of {symbol}")
+            print(f"    RECOMMENDATION: Use {best_symbol} instead of {symbol}")
         print("-" * 40)
 
 def fix_symbol_mappings():
@@ -72,7 +72,7 @@ def fix_symbol_mappings():
         "SXLE.MI": "XLU",
         "XAG-USD": "SLV",
     }
-    print("🔧 SUGGESTED SYMBOL CORRECTIONS:")
+    print(" SUGGESTED SYMBOL CORRECTIONS:")
     print("=" * 60)
     for old_symbol, new_symbol in corrections.items():
         print(f"   {old_symbol:12} → {new_symbol}")
@@ -89,7 +89,7 @@ def check_real_vs_calculated():
         "DFEN": {"current_value_usd": 794.88, "pnl_percent": 0.30},
         "VUSD.L": {"current_value_eur": 934.53, "pnl_percent": 0.91}
     }
-    print("📊 REAL vs CALCULATED P&L:")
+    print(" REAL vs CALCULATED P&L:")
     print("=" * 60)
     collector = data_collector.StockDataCollector()
     manager = PositionManager(collector)
@@ -103,7 +103,7 @@ def check_real_vs_calculated():
             print(f"   Difference: {abs(real_data['pnl_percent'] - position.unrealized_pnl_percent):.1f} percentage points")
 
 def main():
-    print("🔍 POSITION DEBUG TOOL")
+    print(" POSITION DEBUG TOOL")
     print("=" * 30)
     print("1. Debug all positions")
     print("2. Check symbol mappings")

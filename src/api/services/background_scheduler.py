@@ -83,7 +83,7 @@ class BackgroundScheduler:
                 pass
         
         self.stats["status"] = "stopped"
-        logger.info("🛑 Background autotrader scheduler stopped")
+        logger.info(" Background autotrader scheduler stopped")
         
         return {"status": "stopped", "stats": self.stats}
     
@@ -124,7 +124,7 @@ class BackgroundScheduler:
             logger.info(" Scheduler loop cancelled")
             raise
         except Exception as e:
-            logger.error(f"💥 Scheduler loop error: {str(e)}")
+            logger.error(f" Scheduler loop error: {str(e)}")
             self.stats["errors"] += 1
             # Continue running despite errors
             await asyncio.sleep(30)  # Wait 30s before retrying
@@ -155,7 +155,7 @@ class BackgroundScheduler:
             logger.info(" Background data update completed")
             
         except Exception as e:
-            logger.error(f"❌ Background data update error: {str(e)}")
+            logger.error(f"Background data update error: {str(e)}")
             self.stats["errors"] += 1
     
     async def _run_autotrader_cycle(self):
@@ -171,14 +171,14 @@ class BackgroundScheduler:
             
             actions_count = len(results.get("actions_taken", []))
             if actions_count > 0:
-                logger.info(f"🎯 Autotrader completed: {actions_count} actions taken")
+                logger.info(f"Autotrader completed: {actions_count} actions taken")
                 for action in results.get("actions_taken", []):
-                    logger.info(f"  📈 {action['action'].upper()}: {action['symbol']} - {action['quantity']:.2f} @ ${action['price']:.2f}")
+                    logger.info(f"  {action['action'].upper()}: {action['symbol']} - {action['quantity']:.2f} @ ${action['price']:.2f}")
             else:
                 logger.info(" Autotrader completed: No actions taken")
             
         except Exception as e:
-            logger.error(f"❌ Background autotrader error: {str(e)}")
+            logger.error(f"Background autotrader error: {str(e)}")
             self.stats["errors"] += 1
     
     async def _generate_excel_reports(self):
@@ -200,7 +200,7 @@ class BackgroundScheduler:
                 self.stats["errors"] += 1
             
         except Exception as e:
-            logger.error(f"❌ Excel reports generation error: {str(e)}")
+            logger.error(f"Excel reports generation error: {str(e)}")
             self.stats["errors"] += 1
     
     def get_status(self) -> Dict[str, Any]:

@@ -15,7 +15,7 @@ DASHBOARD_HTML = """
 <!DOCTYPE html>
 <html>
 <head>
-    <title>🚀 Trading System Dashboard</title>
+    <title> Trading System Dashboard</title>
     <meta http-equiv="refresh" content="30">
     <style>
         body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
@@ -36,13 +36,13 @@ DASHBOARD_HTML = """
 </head>
 <body>
     <div class="container">
-        <h1 class="header">🚀 Trading System Dashboard</h1>
+        <h1 class="header"> Trading System Dashboard</h1>
         <p class="header">Last updated: {{ current_time }}</p>
         
         <div class="grid">
             <div class="card">
-                <h3>📊 Portfolio Summary</h3>
-                <div class="status running">System Status: Running ✅</div>
+                <h3> Portfolio Summary</h3>
+                <div class="status running">System Status: Running </div>
                 <p><strong>Total Positions:</strong> {{ portfolio.total_positions }}</p>
                 <p><strong>Total P&L:</strong> 
                    <span class="{{ 'positive' if portfolio.total_pnl >= 0 else 'negative' }}">
@@ -53,7 +53,7 @@ DASHBOARD_HTML = """
             </div>
             
             <div class="card">
-                <h3>🎯 Recent Signals</h3>
+                <h3> Recent Signals</h3>
                 {% for signal in recent_signals %}
                 <div class="status">
                     {{ signal.time }} | {{ signal.symbol }}: {{ signal.message }}
@@ -63,7 +63,7 @@ DASHBOARD_HTML = """
         </div>
         
         <div class="card">
-            <h3>💼 Active Positions</h3>
+            <h3> Active Positions</h3>
             <table>
                 <tr>
                     <th>Symbol</th>
