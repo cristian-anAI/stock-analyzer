@@ -84,22 +84,25 @@ async def get_portfolio_positions(portfolio_type: str):
         conn = get_db_connection()
         c = conn.cursor()
         
-        c.execute('''SELECT symbol, quantity, avg_entry_price, total_invested, 
-                            current_price, current_value, unrealized_pnl, unrealized_pnl_percent, 
-                            last_updated
-                     FROM portfolio_positions 
-                     WHERE portfolio_type = ?
-                     ORDER BY total_invested DESC''', (portfolio_type,))
+        # Map portfolio_type to position type  
+        position_type = 'stock' if portfolio_type == 'stocks' else 'crypto'
+        
+        c.execute('''SELECT symbol, quantity, entry_price, value,
+                            current_price, value, pnl, pnl_percent, 
+                            updated_at
+                     FROM positions 
+                     WHERE type = ? AND source = 'autotrader'
+                     ORDER BY value DESC''', (position_type,))
         
         positions = []
         for row in c.fetchall():
-            symbol, quantity, avg_entry_price, total_invested, current_price, current_value, unrealized_pnl, unrealized_pnl_percent, last_updated = row
+            symbol, quantity, entry_price, total_invested, current_price, current_value, unrealized_pnl, unrealized_pnl_percent, last_updated = row
             
             positions.append({
                 "symbol": symbol,
                 "quantity": quantity,
-                "avg_entry_price": avg_entry_price,
-                "total_invested": total_invested,
+                "avg_entry_price": entry_price,  # entry_price from positions table
+                "total_invested": total_invested,  # value from positions table
                 "current_price": current_price,
                 "current_value": current_value,
                 "unrealized_pnl": unrealized_pnl,

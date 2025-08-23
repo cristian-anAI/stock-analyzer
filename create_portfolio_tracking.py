@@ -76,9 +76,9 @@ def create_portfolio_tables():
         total_trades INTEGER
     )''')
     
-    # Initialize with fixed capital amounts
-    initial_stock_capital = 100000.00  # $100k for stocks
-    initial_crypto_capital = 50000.00  # $50k for crypto
+    # Initialize with fixed capital amounts - Total $100k
+    initial_stock_capital = 70000.00   # $70k for stocks (70%)
+    initial_crypto_capital = 30000.00  # $30k for crypto (30%)
     
     # Insert initial portfolio configurations
     c.execute('''INSERT INTO portfolio_config 
@@ -256,8 +256,8 @@ if __name__ == "__main__":
     
     print(f"\n Sistema de portfolios creado exitosamente!")
     print(f"Ahora tienes tracking completo de:")
-    print(f"   Stocks portfolio ($100,000 inicial)")
-    print(f"   Crypto portfolio ($50,000 inicial)")
+    print(f"   Stocks portfolio ($70,000 inicial)")
+    print(f"   Crypto portfolio ($30,000 inicial)")
     print(f"   Transacciones detalladas con razones")
     print(f"   Posiciones actuales y P&L")
     print(f"   Tracking de capital y performance")

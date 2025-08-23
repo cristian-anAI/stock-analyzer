@@ -41,8 +41,8 @@ def create_portfolio_state_table():
             CREATE TABLE IF NOT EXISTS portfolio_state (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 date TEXT NOT NULL,
-                liquid_capital_stocks REAL DEFAULT 10000.0,
-                liquid_capital_crypto REAL DEFAULT 50000.0,
+                liquid_capital_stocks REAL DEFAULT 70000.0,
+                liquid_capital_crypto REAL DEFAULT 30000.0,
                 invested_capital_stocks REAL DEFAULT 0.0,
                 invested_capital_crypto REAL DEFAULT 0.0,
                 total_pnl_stocks REAL DEFAULT 0.0,
@@ -128,8 +128,8 @@ def reset_portfolio_state():
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, (
             datetime.now().isoformat(),
-            10000.0,  # $10k stocks
-            50000.0,  # $50k crypto
+            70000.0,  # $70k stocks  
+            30000.0,  # $30k crypto
             0.0, 0.0, 0.0, 0.0, 0, 0
         ))
         
@@ -255,11 +255,11 @@ def create_portfolio_tracking_tables():
             # Insert initial portfolio configuration
             db_manager.execute_insert("""
                 INSERT INTO portfolio_config (type, initial_capital, current_capital, available_cash, invested_amount)
-                VALUES ('stocks', 10000.0, 10000.0, 10000.0, 0.0)
+                VALUES ('stocks', 70000.0, 70000.0, 70000.0, 0.0)
             """)
             db_manager.execute_insert("""
                 INSERT INTO portfolio_config (type, initial_capital, current_capital, available_cash, invested_amount)
-                VALUES ('crypto', 50000.0, 50000.0, 50000.0, 0.0)
+                VALUES ('crypto', 30000.0, 30000.0, 30000.0, 0.0)
             """)
             logger.info("Initialized portfolio configuration with default values")
         

@@ -260,12 +260,24 @@ class AutotraderService:
             # Update portfolio manager
             portfolio_manager.execute_buy(symbol, current_price, quantity, asset_type)
             
-            # Log transaction
+            # Log transaction in both tables
             db_manager.execute_insert(
                 """INSERT INTO autotrader_transactions 
                    (symbol, action, quantity, price, reason)
                    VALUES (?, 'buy', ?, ?, ?)""",
                 (symbol, quantity, current_price, reason)
+            )
+            
+            # Log transaction in portfolio_transactions for frontend
+            portfolio_type = 'stocks' if asset_type == 'stock' else 'crypto'
+            total_amount = quantity * current_price
+            db_manager.execute_insert(
+                """INSERT INTO portfolio_transactions 
+                   (portfolio_type, symbol, action, quantity, price, total_amount, 
+                    buy_reason, timestamp, source)
+                   VALUES (?, ?, 'buy', ?, ?, ?, ?, ?, 'autotrader')""",
+                (portfolio_type, symbol, quantity, current_price, total_amount, reason, 
+                 datetime.now().isoformat())
             )
             
             action = {
@@ -317,12 +329,24 @@ class AutotraderService:
                 (position['id'],)
             )
             
-            # Log transaction
+            # Log transaction in both tables
             db_manager.execute_insert(
                 """INSERT INTO autotrader_transactions 
                    (symbol, action, quantity, price, reason)
                    VALUES (?, 'sell', ?, ?, ?)""",
                 (symbol, quantity, current_price, reason)
+            )
+            
+            # Log transaction in portfolio_transactions for frontend
+            portfolio_type = 'stocks' if position['type'] == 'stock' else 'crypto'
+            total_amount = quantity * current_price
+            db_manager.execute_insert(
+                """INSERT INTO portfolio_transactions 
+                   (portfolio_type, symbol, action, quantity, price, total_amount, 
+                    sell_reason, timestamp, source)
+                   VALUES (?, ?, 'sell', ?, ?, ?, ?, ?, 'autotrader')""",
+                (portfolio_type, symbol, quantity, current_price, total_amount, reason, 
+                 datetime.now().isoformat())
             )
             
             action = {
@@ -559,12 +583,24 @@ class AutotraderService:
             reason = f"SHORT signal - {', '.join(signal['reasons'])}"
             portfolio_manager.execute_buy(symbol, current_price, quantity, asset_type)
             
-            # Log transaction
+            # Log transaction in both tables
             db_manager.execute_insert(
                 """INSERT INTO autotrader_transactions 
                    (symbol, action, quantity, price, reason)
                    VALUES (?, 'short', ?, ?, ?)""",
                 (symbol, quantity, current_price, reason)
+            )
+            
+            # Log transaction in portfolio_transactions for frontend 
+            portfolio_type = 'stocks' if asset_type == 'stock' else 'crypto'
+            total_amount = quantity * current_price
+            db_manager.execute_insert(
+                """INSERT INTO portfolio_transactions 
+                   (portfolio_type, symbol, action, quantity, price, total_amount, 
+                    buy_reason, timestamp, source)
+                   VALUES (?, ?, 'buy', ?, ?, ?, ?, ?, 'autotrader')""",
+                (portfolio_type, symbol, quantity, current_price, total_amount, reason, 
+                 datetime.now().isoformat())
             )
             
             action = {

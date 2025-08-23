@@ -14,8 +14,8 @@ class PortfolioManager:
     """Manages portfolio capital allocation and position limits"""
     
     def __init__(self):
-        self.liquid_capital_stocks = 10000.0  # $10k para stocks
-        self.liquid_capital_crypto = 50000.0  # $50k para crypto
+        self.liquid_capital_stocks = 70000.0  # $70k para stocks (70% of $100k)
+        self.liquid_capital_crypto = 30000.0  # $30k para crypto (30% of $100k)
         self.invested_capital_stocks = 0.0
         self.invested_capital_crypto = 0.0
         self.total_pnl_stocks = 0.0
@@ -38,8 +38,8 @@ class PortfolioManager:
             
             if result:
                 state = result[0]
-                self.liquid_capital_stocks = state.get('liquid_capital_stocks', 10000.0)
-                self.liquid_capital_crypto = state.get('liquid_capital_crypto', 50000.0)
+                self.liquid_capital_stocks = state.get('liquid_capital_stocks', 70000.0)
+                self.liquid_capital_crypto = state.get('liquid_capital_crypto', 30000.0)
                 self.invested_capital_stocks = state.get('invested_capital_stocks', 0.0)
                 self.invested_capital_crypto = state.get('invested_capital_crypto', 0.0)
                 self.total_pnl_stocks = state.get('total_pnl_stocks', 0.0)
@@ -215,15 +215,15 @@ class PortfolioManager:
                 "total_pnl": total_pnl,
                 "total_portfolio_value": total_portfolio_value,
                 "total_positions": current_positions_stocks + current_positions_crypto,
-                "roi_percent": (total_pnl / (60000)) * 100 if total_pnl != 0 else 0  # $60k initial capital
+                "roi_percent": (total_pnl / (100000)) * 100 if total_pnl != 0 else 0  # $100k initial capital
             }
         }
         
     def reset_portfolio(self):
         """Reset portfolio to initial state"""
         try:
-            self.liquid_capital_stocks = 10000.0
-            self.liquid_capital_crypto = 50000.0
+            self.liquid_capital_stocks = 70000.0
+            self.liquid_capital_crypto = 30000.0
             self.invested_capital_stocks = 0.0
             self.invested_capital_crypto = 0.0
             self.total_pnl_stocks = 0.0

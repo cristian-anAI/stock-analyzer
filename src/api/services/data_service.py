@@ -19,6 +19,9 @@ from ..middleware.rate_limiter import rate_limiter
 import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
+# Import from archive directory
+archive_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))), 'archive', 'legacy-traders')
+sys.path.append(archive_path)
 from expanded_crypto_watchlist import get_diversified_portfolio, get_symbols_only
 from optimized_trading_strategy import ExpandedTradingConfig
 
