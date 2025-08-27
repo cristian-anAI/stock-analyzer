@@ -428,3 +428,82 @@ class DataService:
                 
         except Exception as e:
             logger.error(f"Error upserting crypto {crypto_data['symbol']}: {str(e)}")
+    
+    async def add_new_symbol(self, symbol: str, asset_type: str) -> bool:
+        """
+        Add a new symbol to the trading watchlists for autotrader to consider
+        
+        Args:
+            symbol: Symbol to add (e.g., 'AAPL', 'BTC-USD')
+            asset_type: 'stock' or 'crypto'
+        
+        Returns:
+            bool: Success status
+        """
+        try:
+            symbol = symbol.upper().strip()
+            
+            if asset_type == 'stock':
+                # Add to stock watchlist if not already present
+                if symbol not in self.default_stocks:
+                    self.default_stocks.append(symbol)
+                    logger.info(f"Added {symbol} to stock watchlist (total: {len(self.default_stocks)})")
+                
+                # Also add to trading config if available
+                if hasattr(self, 'trading_config') and self.trading_config:
+                    if symbol not in self.trading_config.all_stock_symbols:
+                        self.trading_config.all_stock_symbols.append(symbol)
+                
+            elif asset_type == 'crypto':
+                # Ensure proper format for crypto
+                if not symbol.endswith('-USD'):
+                    symbol = f"{symbol}-USD"
+                
+                # Add to crypto watchlist if not already present
+                if symbol not in self.default_cryptos:
+                    self.default_cryptos.append(symbol)
+                    logger.info(f"Added {symbol} to crypto watchlist (total: {len(self.default_cryptos)})")
+                
+                # Also add to trading config if available
+                if hasattr(self, 'trading_config') and self.trading_config:
+                    if symbol not in self.trading_config.crypto_symbols:
+                        self.trading_config.crypto_symbols.append(symbol)
+            
+            else:
+                logger.error(f"Invalid asset_type: {asset_type}")
+                return False
+            
+            # Clear relevant cache to force refresh with new symbol
+            await self._clear_symbol_cache(asset_type)
+            
+            return True
+            
+        except Exception as e:
+            logger.error(f"Error adding symbol {symbol} to watchlists: {e}")
+            return False
+    
+    async def _clear_symbol_cache(self, asset_type: str):
+        """Clear cache for the specified asset type to include new symbols"""
+        try:
+            if asset_type == 'stock':
+                await cache_service.delete("stocks:all")
+                logger.info("Cleared stocks cache")
+            elif asset_type == 'crypto':
+                await cache_service.delete("cryptos:all")
+                logger.info("Cleared cryptos cache")
+        except Exception as e:
+            logger.error(f"Error clearing cache for {asset_type}: {e}")
+    
+    def get_current_watchlists(self) -> Dict[str, List[str]]:
+        """
+        Get current watchlists for debugging/info purposes
+        
+        Returns:
+            Dict with current stock and crypto watchlists
+        """
+        return {
+            'stocks': self.default_stocks.copy(),
+            'cryptos': self.default_cryptos.copy(),
+            'stock_count': len(self.default_stocks),
+            'crypto_count': len(self.default_cryptos)
+        }

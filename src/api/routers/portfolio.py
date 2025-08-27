@@ -23,39 +23,72 @@ def get_db_connection():
 
 @router.get("/portfolio/overview")
 async def get_portfolio_overview():
-    """Get complete portfolio overview with stocks and crypto separated"""
+    """Get complete portfolio overview with stocks and crypto separated - FIXED to use REAL position data"""
     try:
         conn = get_db_connection()
         c = conn.cursor()
         
-        # Get portfolio configurations
-        c.execute('''SELECT type, initial_capital, current_capital, available_cash, 
-                            invested_amount, total_pnl, win_rate, total_trades, last_updated
-                     FROM portfolio_config''')
-        
+        # Get REAL portfolio data from actual positions
         portfolios = {}
-        total_initial = 0
         total_current = 0
         total_pnl = 0
         
-        for row in c.fetchall():
-            portfolio_type, initial_capital, current_capital, available_cash, invested_amount, pnl, win_rate, total_trades, last_updated = row
+        for portfolio_type in ['stocks', 'crypto']:
+            position_type = 'stock' if portfolio_type == 'stocks' else 'crypto'
+            
+            # Get real positions data
+            c.execute('''SELECT COUNT(*) as position_count,
+                                SUM(value) as invested_amount,
+                                SUM(pnl) as total_pnl,
+                                AVG(pnl_percent) as avg_pnl_percent
+                         FROM positions 
+                         WHERE type = ? AND source = 'autotrader' ''', (position_type,))
+            
+            position_data = c.fetchone()
+            position_count, invested_amount, pnl, avg_pnl_percent = position_data
+            
+            # Set defaults if no data
+            if invested_amount is None:
+                invested_amount = 0
+            if pnl is None:
+                pnl = 0
+            if avg_pnl_percent is None:
+                avg_pnl_percent = 0
+                
+            # Get trade count from transactions
+            c.execute('''SELECT COUNT(*) as trade_count
+                         FROM autotrader_transactions at
+                         INNER JOIN positions p ON at.symbol = p.symbol AND p.type = ?''', (position_type,))
+            trade_data = c.fetchone()
+            trade_count = trade_data[0] if trade_data[0] else 0
+            
+            # Get initial capital from config (this is correct to keep)
+            c.execute('''SELECT initial_capital FROM portfolio_config WHERE type = ?''', (portfolio_type,))
+            config_data = c.fetchone()
+            initial_capital = config_data[0] if config_data else (70000 if portfolio_type == 'stocks' else 30000)
+            
+            current_capital = initial_capital + pnl
             
             portfolios[portfolio_type] = {
                 "initial_capital": initial_capital,
                 "current_capital": current_capital,
-                "available_cash": available_cash,
-                "invested_amount": invested_amount,
-                "total_pnl": pnl,
-                "win_rate": win_rate,
-                "total_trades": total_trades,
-                "last_updated": last_updated,
+                "available_cash": initial_capital - invested_amount,  # Remaining cash
+                "invested_amount": invested_amount,  # REAL invested amount
+                "total_pnl": pnl,  # REAL P&L
+                "win_rate": avg_pnl_percent,  # Using avg return as proxy
+                "total_trades": trade_count,  # REAL trade count
+                "position_count": position_count,  # REAL position count
+                "last_updated": datetime.now().isoformat(),
                 "roi_percent": (pnl / initial_capital) * 100 if initial_capital > 0 else 0
             }
             
-            total_initial += initial_capital
             total_current += current_capital
             total_pnl += pnl
+        
+        # Calculate total initial from config
+        c.execute('''SELECT SUM(initial_capital) FROM portfolio_config''')
+        total_initial_data = c.fetchone()
+        total_initial = total_initial_data[0] if total_initial_data[0] else 100000
         
         conn.close()
         
@@ -142,7 +175,14 @@ async def get_portfolio_transactions(
         c = conn.cursor()
         
         query = '''SELECT symbol, action, quantity, price, total_amount, fees, 
-                          buy_reason, sell_reason, score, timestamp, source
+                          buy_reason, sell_reason, score, timestamp, source,
+                          CASE 
+                              WHEN action = 'short' THEN 'SHORT ENTRY'
+                              WHEN action = 'cover' THEN 'SHORT EXIT'
+                              WHEN action = 'buy' THEN 'LONG ENTRY'
+                              WHEN action = 'sell' THEN 'LONG EXIT'
+                              ELSE action
+                          END as display_action
                    FROM portfolio_transactions 
                    WHERE portfolio_type = ?'''
         params = [portfolio_type]
@@ -158,16 +198,23 @@ async def get_portfolio_transactions(
         
         transactions = []
         for row in c.fetchall():
-            symbol, action, quantity, price, total_amount, fees, buy_reason, sell_reason, score, timestamp, source = row
+            symbol, action, quantity, price, total_amount, fees, buy_reason, sell_reason, score, timestamp, source, display_action = row
+            
+            # Determine reason based on action type
+            if action in ['buy', 'short']:
+                reason = buy_reason
+            else:  # sell, cover
+                reason = sell_reason
             
             transactions.append({
                 "symbol": symbol,
                 "action": action,
+                "display_action": display_action,
                 "quantity": quantity,
                 "price": price,
                 "total_amount": total_amount,
                 "fees": fees or 0,
-                "reason": buy_reason if action == 'buy' else sell_reason,
+                "reason": reason,
                 "score": score,
                 "timestamp": timestamp,
                 "source": source

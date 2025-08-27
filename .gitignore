@@ -60,5 +60,18 @@ reports/
 
 # Testing and utility scripts
 check_*.py
+test_*.py
+audit_*.py
+fix_*.py
+clean_*.py
+verify_*.py
+diagnose_*.py
 test_excel_content.py
 generate_reports_now.py
+cleanup_temp/
+
+# Windows temp files
+nul
+
+# Cleanup directories
+cleanup_temp/
