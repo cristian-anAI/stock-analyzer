@@ -16,6 +16,9 @@ python-multipart>=0.0.6
 redis>=5.0.0
 aiohttp>=3.9.0
 
+# Market hours and timezone handling
+pytz>=2023.3
+
 # Database (sqlite3 is built into Python)
 
 # Development dependencies

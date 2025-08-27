@@ -10,7 +10,7 @@ import logging
 from typing import List, Optional, Dict, Any
 import uvicorn
 
-from .routers import stocks, cryptos, positions, cache, scheduler, diagnostics, portfolio, reports, short_monitoring, symbol_search
+from .routers import stocks, cryptos, positions, cache, scheduler, diagnostics, portfolio, reports, short_monitoring, symbol_search, market_status
 from .database.database import init_db
 from .middleware.error_handler import ErrorHandlerMiddleware
 from .middleware.logging_middleware import LoggingMiddleware
@@ -68,6 +68,7 @@ app.include_router(portfolio.router, prefix="/api/v1", tags=["portfolio"])
 app.include_router(reports.router, prefix="/api/v1", tags=["reports"])
 app.include_router(short_monitoring.router, prefix="/api/v1", tags=["short-monitoring"])
 app.include_router(symbol_search.router, prefix="/api/v1", tags=["symbol-search"])
+app.include_router(market_status.router, prefix="/api/v1", tags=["market-status"])
 
 @app.on_event("startup")
 async def startup_event():

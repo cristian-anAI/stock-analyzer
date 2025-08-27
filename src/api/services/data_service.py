@@ -14,6 +14,7 @@ from ..database.database import db_manager
 from .scoring_service import ScoringService
 from .cache_service import cache_service
 from ..middleware.rate_limiter import rate_limiter
+from .market_hours_service import market_hours_service
 
 # Import expanded watchlists
 import sys
@@ -62,7 +63,7 @@ class DataService:
         return await cache_service.get("stocks:all")
     
     async def update_stocks_data(self, force_refresh: bool = False) -> None:
-        """Update all stocks data from Yahoo Finance with caching"""
+        """Update all stocks data from Yahoo Finance with caching and market hours optimization"""
         # Check cache first unless forced refresh
         if not force_refresh:
             cached_data = await self.get_cached_stocks_data()
@@ -77,9 +78,26 @@ class DataService:
             # Process in batches to avoid overwhelming the API
             stocks_to_process = self.default_stocks[:self.max_concurrent_stocks]
             
-            for i in range(0, len(stocks_to_process), self.batch_size):
-                batch = stocks_to_process[i:i + self.batch_size]
-                logger.info(f"Processing stock batch {i//self.batch_size + 1}/{(len(stocks_to_process) + self.batch_size - 1)//self.batch_size}")
+            # Filter stocks based on market hours to avoid unnecessary API calls
+            current_time = datetime.now()
+            symbols_to_update, symbols_skipped = market_hours_service.should_update_stocks(
+                stocks_to_process, current_time
+            )
+            
+            # Log market hours optimization
+            if symbols_skipped:
+                logger.info(f"Market hours optimization: Skipped {len(symbols_skipped)} stocks (markets closed)")
+                logger.debug(f"Skipped symbols: {symbols_skipped[:10]}{'...' if len(symbols_skipped) > 10 else ''}")
+            
+            # If no markets are open, use cached data or reduced update
+            if not symbols_to_update:
+                logger.info("No stock markets currently open, using minimal update")
+                # Still update a few key symbols for basic functionality
+                symbols_to_update = stocks_to_process[:5]  # Update just 5 symbols for basic functionality
+            
+            for i in range(0, len(symbols_to_update), self.batch_size):
+                batch = symbols_to_update[i:i + self.batch_size]
+                logger.info(f"Processing stock batch {i//self.batch_size + 1}/{(len(symbols_to_update) + self.batch_size - 1)//self.batch_size}")
                 
                 for symbol in batch:
                     stock_data = await self.update_single_stock(symbol)
@@ -88,12 +106,36 @@ class DataService:
                     await asyncio.sleep(0.15)  # Slightly longer rate limiting
                 
                 # Longer pause between batches
-                if i + self.batch_size < len(stocks_to_process):
+                if i + self.batch_size < len(symbols_to_update):
                     await asyncio.sleep(2.0)
+            
+            # If we have existing cached data and only updated some symbols, merge the data
+            if symbols_skipped:
+                existing_data = await self.get_cached_stocks_data()
+                if existing_data:
+                    # Create a map of updated symbols
+                    updated_symbols = {stock['symbol']: stock for stock in stocks_data}
+                    
+                    # Merge: keep existing data for skipped symbols, use new data for updated symbols
+                    merged_data = []
+                    for existing_stock in existing_data:
+                        symbol = existing_stock['symbol']
+                        if symbol in updated_symbols:
+                            merged_data.append(updated_symbols[symbol])
+                        else:
+                            merged_data.append(existing_stock)
+                    
+                    # Add any completely new symbols
+                    existing_symbols = {stock['symbol'] for stock in existing_data}
+                    for stock in stocks_data:
+                        if stock['symbol'] not in existing_symbols:
+                            merged_data.append(stock)
+                    
+                    stocks_data = merged_data
             
             # Cache the results
             await cache_service.set("stocks:all", stocks_data, "stocks")
-            logger.info(f"Cached {len(stocks_data)} stocks")
+            logger.info(f"Cached {len(stocks_data)} stocks ({len(symbols_to_update)} updated, {len(symbols_skipped)} preserved from cache)")
                 
         except Exception as e:
             logger.error(f"Error updating stocks data: {str(e)}")
