@@ -16,6 +16,8 @@ from .timeframe_data_service import TimeframeDataService
 from .volatility_service import volatility_service
 from .risk_management_service import risk_management_service
 from .overtrading_prevention_service import overtrading_prevention
+from .market_timing_service import market_timing_service
+from .transaction_pnl_service import get_transaction_pnl_service
 from ..strategies.swing_trading_strategy import SwingTradingStrategy
 from ..strategies.crypto_competition_strategy import CryptoCompetitionStrategy
 
@@ -29,27 +31,61 @@ class AutotraderService:
         self.scoring_service = ScoringService()
         self.advanced_scoring = AdvancedScoringService()
         self.timeframe_service = TimeframeDataService()
+        self.market_timing = market_timing_service
+        self.pnl_service = get_transaction_pnl_service(db_manager)
         
         # Initialize new multi-timeframe strategies
         self.swing_strategy = SwingTradingStrategy()  # For stocks
         self.crypto_strategy = CryptoCompetitionStrategy()  # For crypto
         
-        # Trading parameters - updated for new system
-        self.buy_score_threshold = 7.5  # Stocks: 7.5, Crypto: 8.0
-        self.sell_score_threshold = 4.0  # Stocks: 4.0, Crypto: 3.5
-        self.max_position_value = 10000  # Max value per position in USD
-        self.max_total_positions = 20  # Max number of positions
+        # USAR CONFIGURACION CENTRALIZADA VALIDADA EN BACKTESTING
+        from ..strategies.trading_config import TRADING_CONFIG
+        self.config = TRADING_CONFIG
+        
+        # Trading parameters - BACKTEST PROVEN STRATEGY (Sept 1, 2025)
+        # Based on backtest_simplified_20250901_232104.json results:
+        # 30d: 95.8% win rate, 14.40% avg return
+        # 60d: 91.7% win rate, 27.04% avg return
+        self.buy_score_threshold = self.config.buy_score_threshold  # 6.0
+        self.sell_score_threshold = self.config.sell_score_threshold  # 4.5
+        self.short_trading_enabled = self.config.short_trading_enabled  # False - probado en backtest
+        self.high_volatility_bypass = self.config.high_volatility_bypass  # True
+        self.max_position_value = self.config.max_position_value  # $10k per position
+        self.max_total_positions = self.config.max_positions_stocks  # 10 positions
         
         logger.info("Initialized AutoTrader with multi-timeframe strategies")
         
     async def run_trading_cycle(self) -> Dict[str, Any]:
         """Run a complete trading cycle"""
-        logger.info("Starting enhanced autotrader cycle...")
+        logger.info("DEBUG: Starting enhanced autotrader cycle...")
+        logger.info("DEBUG: Autotrader configuration - buy_threshold: {}, short_enabled: {}".format(
+            self.buy_score_threshold, self.short_trading_enabled))
         
         try:
+            # 0. Market timing checks
+            timing_summary = self.market_timing.get_timing_summary()
+            logger.info(f"Market timing check: {timing_summary['market_status']} - {timing_summary['current_time']}")
+            
+            if not timing_summary['is_market_open']:
+                logger.info(f"Market closed - cycle skipped: {timing_summary.get('buy_reason', 'Market not open')}")
+                return {
+                    "cycle_start": datetime.now().isoformat(),
+                    "market_status": "CLOSED",
+                    "market_timing": timing_summary,
+                    "actions_taken": [],
+                    "positions_analyzed": 0,
+                    "buy_signals": 0,
+                    "sell_signals": 0,
+                    "message": "Trading cycle skipped - market closed"
+                }
+            
+            logger.info(f"Market timing: BUY {timing_summary['buy_reason']}, SELL {timing_summary['sell_reason']}")
+            
             # 1. Pre-cycle checks and updates
+            logger.info("DEBUG: Checking portfolio risk limits...")
             risk_within_limits, risk_warnings = risk_management_service.check_portfolio_risk_limits()
             should_reduce_sizes, size_reason = risk_management_service.should_reduce_position_sizes()
+            logger.info(f"DEBUG: Risk within limits: {risk_within_limits}, Should reduce sizes: {should_reduce_sizes}")
             
             # Stop trading if critical risk levels reached
             if not risk_within_limits and any("CRITICAL" in w for w in risk_warnings):
@@ -98,7 +134,9 @@ class AutotraderService:
             results["sell_signals"] = len(sell_results)
             
             # Check for buy signals (enter new positions)
+            logger.info("DEBUG: About to call _check_buy_signals()")
             buy_results = await self._check_buy_signals()
+            logger.info(f"DEBUG: _check_buy_signals() returned {len(buy_results)} results")
             results["actions_taken"].extend(buy_results)
             results["buy_signals"] = len(buy_results)
             
@@ -211,7 +249,9 @@ class AutotraderService:
                 existing_symbols.add(pos['symbol'])
             
             # Process buy signals for stocks using swing trading strategy
+            logger.info(f"DEBUG: Processing {len(candidate_stocks)} stock candidates")
             for stock in candidate_stocks:
+                logger.info(f"DEBUG: Analyzing {stock['symbol']} (score: {stock.get('score', 'N/A')})")
                 if stock['symbol'] not in existing_symbols and len(actions) < 5:
                     # Check overtrading prevention first
                     can_trade, trade_reason = overtrading_prevention.can_trade_symbol(
@@ -219,20 +259,28 @@ class AutotraderService:
                     )
                     
                     if not can_trade:
-                        logger.debug(f"Trading blocked for {stock['symbol']}: {trade_reason}")
+                        logger.info(f"DEBUG: Trading blocked for {stock['symbol']}: {trade_reason}")
                         continue
+                    else:
+                        logger.info(f"DEBUG: Overtrading check passed for {stock['symbol']}")
                     
-                    # Check volatility filter
+                    # Check volatility filter (with high volatility bypass)
                     passes_volatility, vol_reason = volatility_service.check_volatility_filter(
                         stock['symbol'], 'swing'
                     )
                     
-                    if not passes_volatility:
-                        logger.debug(f"Volatility filter blocked {stock['symbol']}: {vol_reason}")
+                    if not passes_volatility and not self.high_volatility_bypass:
+                        logger.info(f"DEBUG: Volatility filter blocked {stock['symbol']}: {vol_reason}")
                         continue
+                    elif not passes_volatility and self.high_volatility_bypass:
+                        logger.info(f"DEBUG: High volatility bypass enabled - allowing {stock['symbol']} despite: {vol_reason}")
+                    else:
+                        logger.info(f"DEBUG: Volatility filter passed for {stock['symbol']}: {vol_reason}")
                     
+                    logger.info(f"DEBUG: About to analyze signal for {stock['symbol']}")
                     signal = await self._analyze_stock_signal(stock)
                     if signal and signal.action == "BUY":
+                        logger.info(f"DEBUG: BUY signal generated for {stock['symbol']}, executing trade")
                         action = await self._execute_strategy_buy(stock, 'stock', signal)
                         if action:
                             actions.append(action)
@@ -255,9 +303,11 @@ class AutotraderService:
                         crypto['symbol'], 'crypto_competition'
                     )
                     
-                    if not passes_volatility:
+                    if not passes_volatility and not self.high_volatility_bypass:
                         logger.debug(f"Volatility filter blocked {crypto['symbol']}: {vol_reason}")
                         continue
+                    elif not passes_volatility and self.high_volatility_bypass:
+                        logger.info(f"High volatility bypass enabled - allowing {crypto['symbol']} despite: {vol_reason}")
                     
                     signal = await self._analyze_crypto_signal(crypto)
                     if signal and signal.action == "BUY":
@@ -266,36 +316,37 @@ class AutotraderService:
                             actions.append(action)
                             existing_symbols.add(crypto['symbol'])
             
-            # Check for SHORT signals (portfolio manager handles capacity)
-            # Get low-scoring cryptos for SHORT signals
-            low_score_cryptos = db_manager.execute_query(
-                "SELECT * FROM cryptos WHERE score < 3.5 ORDER BY score ASC LIMIT 5"
-            )
-            
-            # Get low-scoring stocks for SHORT signals  
-            low_score_stocks = db_manager.execute_query(
-                "SELECT * FROM stocks WHERE score < 2.5 ORDER BY score ASC LIMIT 5"
-            )
+            # Check for SHORT signals - CONTROLLED BY BACKTEST PROVEN FLAG
+            if self.short_trading_enabled:
+                # Get low-scoring cryptos for SHORT signals
+                low_score_cryptos = db_manager.execute_query(
+                    "SELECT * FROM cryptos WHERE score < 3.5 ORDER BY score ASC LIMIT 5"
+                )
+                low_score_stocks = db_manager.execute_query(
+                    "SELECT * FROM stocks WHERE score < 1.8 ORDER BY score ASC LIMIT 5"
+                )
+                    
+                # Process SHORT signals for cryptos
+                for crypto in low_score_cryptos:
+                    if crypto['symbol'] not in existing_symbols and len(actions) < 5:
+                        short_signal = self.evaluate_crypto_short_signals(crypto)
+                        if short_signal:
+                            action = await self._execute_short(crypto, short_signal)
+                            if action:
+                                actions.append(action)
+                                existing_symbols.add(crypto['symbol'])
                 
-            # Process SHORT signals for cryptos
-            for crypto in low_score_cryptos:
-                if crypto['symbol'] not in existing_symbols and len(actions) < 5:
-                    short_signal = self.evaluate_crypto_short_signals(crypto)
-                    if short_signal:
-                        action = await self._execute_short(crypto, short_signal)
-                        if action:
-                            actions.append(action)
-                            existing_symbols.add(crypto['symbol'])
-            
-            # Process SHORT signals for stocks
-            for stock in low_score_stocks:
-                if stock['symbol'] not in existing_symbols and len(actions) < 5:
-                    short_signal = self.evaluate_stock_short_signals(stock)
-                    if short_signal:
-                        action = await self._execute_short(stock, short_signal)
-                        if action:
-                            actions.append(action)
-                            existing_symbols.add(stock['symbol'])
+                # Process SHORT signals for stocks
+                for stock in low_score_stocks:
+                    if stock['symbol'] not in existing_symbols and len(actions) < 5:
+                        short_signal = self.evaluate_stock_short_signals(stock)
+                        if short_signal:
+                            action = await self._execute_short(stock, short_signal)
+                            if action:
+                                actions.append(action)
+                                existing_symbols.add(stock['symbol'])
+            else:
+                logger.info("SHORT trading disabled per backtest results - skipping all SHORT signals")
         
         except Exception as e:
             logger.error(f"Error checking buy signals: {str(e)}")
@@ -307,6 +358,12 @@ class AutotraderService:
         try:
             symbol = asset_data['symbol']
             current_price = asset_data['current_price']
+            
+            # Market timing validation for BUY orders
+            buy_allowed, buy_reason = self.market_timing.is_trading_allowed("BUY")
+            if not buy_allowed:
+                logger.info(f"BUY order blocked for {symbol}: {buy_reason}")
+                return None
             
             if not current_price or current_price <= 0:
                 logger.warning(f"Invalid price for {symbol}: {current_price}")
@@ -346,9 +403,9 @@ class AutotraderService:
             # Log transaction in both tables
             db_manager.execute_insert(
                 """INSERT INTO autotrader_transactions 
-                   (symbol, action, quantity, price, reason)
-                   VALUES (?, 'buy', ?, ?, ?)""",
-                (symbol, quantity, current_price, reason)
+                   (symbol, action, quantity, price, timestamp, reason)
+                   VALUES (?, 'buy', ?, ?, ?, ?)""",
+                (symbol, quantity, current_price, datetime.now().isoformat(), reason)
             )
             
             # Log transaction in portfolio_transactions for frontend
@@ -389,6 +446,12 @@ class AutotraderService:
             current_price = position['current_price']
             entry_price = position['entry_price']
             
+            # Market timing validation for SELL orders
+            sell_allowed, sell_reason = self.market_timing.is_trading_allowed("SELL")
+            if not sell_allowed:
+                logger.info(f"SELL order blocked for {symbol}: {sell_reason}")
+                return None
+            
             if not current_price or current_price <= 0:
                 logger.warning(f"Invalid current price for {symbol}: {current_price}")
                 return None
@@ -415,13 +478,24 @@ class AutotraderService:
                 (position['id'],)
             )
             
-            # Log transaction in both tables
-            db_manager.execute_insert(
+            # Log transaction and get the ID for P&L calculation
+            sell_transaction_id = db_manager.execute_insert(
                 """INSERT INTO autotrader_transactions 
-                   (symbol, action, quantity, price, reason)
-                   VALUES (?, 'sell', ?, ?, ?)""",
-                (symbol, quantity, current_price, reason)
+                   (symbol, action, quantity, price, timestamp, reason)
+                   VALUES (?, 'sell', ?, ?, ?, ?)""",
+                (symbol, quantity, current_price, datetime.now().isoformat(), reason)
             )
+            
+            # Calculate and update realized P&L for this sell transaction
+            if sell_transaction_id:
+                try:
+                    realized_pnl = self.pnl_service.calculate_and_update_pnl_for_sell(sell_transaction_id)
+                    if realized_pnl is not None:
+                        logger.info(f"P&L calculated for {symbol}: ${realized_pnl:.2f}")
+                    else:
+                        logger.warning(f"Could not calculate P&L for sell transaction {sell_transaction_id}")
+                except Exception as e:
+                    logger.error(f"Error calculating P&L for sell transaction {sell_transaction_id}: {e}")
             
             # Log transaction in portfolio_transactions for frontend
             portfolio_type = 'stocks' if position['type'] == 'stock' else 'crypto'
@@ -669,17 +743,18 @@ class AutotraderService:
             score = stock_data.get('score', 0)
             symbol = stock_data.get('symbol', '')
             
-            # More conservative SHORT threshold for stocks
-            if score < 2.5:
-                required_capital = portfolio_manager.get_position_size('stock', (3 - score) * 25)
-                
-                if portfolio_manager.can_open_position('stock', required_capital):
-                    return {
-                        'action': 'SHORT',
-                        'confidence': min(85, (3 - score) * 25),
-                        'reasons': [f'Very low score: {score}', 'Strong bearish signals'],
-                        'required_capital': required_capital
-                    }
+            # SHORT trading temporarily DISABLED - losing -17.64% avg
+            if False and score < 1.8:  # Disabled based on performance analysis
+                # required_capital = portfolio_manager.get_position_size('stock', (3 - score) * 25)
+                # 
+                # if portfolio_manager.can_open_position('stock', required_capital):
+                #     return {
+                #         'action': 'SHORT',
+                #         'confidence': min(85, (3 - score) * 25),
+                #         'reasons': [f'Very low score: {score}', 'Strong bearish signals'],
+                #         'required_capital': required_capital
+                #     }
+                pass
             
             return None
             
@@ -734,9 +809,9 @@ class AutotraderService:
             # Log transaction in both tables
             db_manager.execute_insert(
                 """INSERT INTO autotrader_transactions 
-                   (symbol, action, quantity, price, reason)
-                   VALUES (?, 'short', ?, ?, ?)""",
-                (symbol, quantity, current_price, reason)
+                   (symbol, action, quantity, price, timestamp, reason)
+                   VALUES (?, 'short', ?, ?, ?, ?)""",
+                (symbol, quantity, current_price, datetime.now().isoformat(), reason)
             )
             
             # Log transaction in portfolio_transactions for frontend 
@@ -878,7 +953,7 @@ class AutotraderService:
             
             for tf in required_timeframes:
                 try:
-                    data = await self.timeframe_service.get_stock_data(symbol, tf)
+                    data = self.timeframe_service.get_stock_data(symbol, tf)
                     if data is not None and not data.empty:
                         timeframe_data[tf] = data
                 except Exception as e:
@@ -907,7 +982,7 @@ class AutotraderService:
             
             for tf in required_timeframes:
                 try:
-                    data = await self.timeframe_service.get_crypto_data(symbol, tf)
+                    data = self.timeframe_service.get_crypto_data(symbol, tf)
                     if data is not None and not data.empty:
                         timeframe_data[tf] = data
                 except Exception as e:
@@ -942,7 +1017,7 @@ class AutotraderService:
             
             for tf in required_timeframes:
                 try:
-                    data = await self.timeframe_service.get_stock_data(symbol, tf)
+                    data = self.timeframe_service.get_stock_data(symbol, tf)
                     if data is not None and not data.empty:
                         timeframe_data[tf] = data
                 except Exception as e:
@@ -977,7 +1052,7 @@ class AutotraderService:
             
             for tf in required_timeframes:
                 try:
-                    data = await self.timeframe_service.get_crypto_data(symbol, tf)
+                    data = self.timeframe_service.get_crypto_data(symbol, tf)
                     if data is not None and not data.empty:
                         timeframe_data[tf] = data
                 except Exception as e:
@@ -999,6 +1074,12 @@ class AutotraderService:
         try:
             symbol = asset_data['symbol']
             current_price = asset_data['current_price']
+            
+            # Market timing validation for strategy BUY orders
+            buy_allowed, buy_reason = self.market_timing.is_trading_allowed("BUY")
+            if not buy_allowed:
+                logger.info(f"Strategy BUY order blocked for {symbol}: {buy_reason}")
+                return None
             
             if not current_price or current_price <= 0:
                 logger.warning(f"Invalid price for {symbol}: {current_price}")
@@ -1054,9 +1135,9 @@ class AutotraderService:
             # Log transaction
             db_manager.execute_insert(
                 """INSERT INTO autotrader_transactions 
-                   (symbol, action, quantity, price, reason)
-                   VALUES (?, 'buy', ?, ?, ?)""",
-                (symbol, quantity, current_price, reason)
+                   (symbol, action, quantity, price, timestamp, reason)
+                   VALUES (?, 'buy', ?, ?, ?, ?)""",
+                (symbol, quantity, current_price, datetime.now().isoformat(), reason)
             )
             
             # Log in portfolio transactions

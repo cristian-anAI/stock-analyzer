@@ -109,6 +109,23 @@ class PortfolioManager:
         else:
             return 1.0  # Normal
     
+    def get_total_portfolio_value(self) -> float:
+        """Get total portfolio value (liquid + invested + pnl)"""
+        try:
+            total_liquid = self.liquid_capital_stocks + self.liquid_capital_crypto
+            total_invested = self.invested_capital_stocks + self.invested_capital_crypto
+            total_pnl = self.total_pnl_stocks + self.total_pnl_crypto
+            
+            total_value = total_liquid + total_invested + total_pnl
+            
+            logger.debug(f"Portfolio value: Liquid={total_liquid:.2f}, Invested={total_invested:.2f}, PnL={total_pnl:.2f}, Total={total_value:.2f}")
+            return total_value
+            
+        except Exception as e:
+            logger.error(f"Error calculating total portfolio value: {e}")
+            # Return initial capital as fallback
+            return 100000.0
+    
     def can_open_position(self, asset_type: str, required_capital: float) -> bool:
         """Verificar si se puede abrir nueva posición"""
         if asset_type == 'stock':

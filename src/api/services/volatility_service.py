@@ -78,9 +78,9 @@ class VolatilityService:
         try:
             # Get daily data for volatility calculation
             if asset_type == 'stock':
-                daily_data = await self.timeframe_service.get_stock_data(symbol, "1d", periods=50)
+                daily_data = self.timeframe_service.get_stock_data(symbol, "1d", periods=50)
             else:
-                daily_data = await self.timeframe_service.get_crypto_data(symbol, "1d", periods=50)
+                daily_data = self.timeframe_service.get_crypto_data(symbol, "1d", periods=50)
             
             if daily_data is None or len(daily_data) < 20:
                 return None

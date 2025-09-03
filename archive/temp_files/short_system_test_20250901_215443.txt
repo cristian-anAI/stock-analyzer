@@ -1,0 +1,57 @@
+[21:54:36] INFO: COMPLETE SHORT SYSTEM TEST SUITE
+[21:54:36] INFO: Test Time: 2025-09-01 21:54:36.371116
+[21:54:36] INFO: Database: trading.db
+[21:54:36] INFO: API URL: http://localhost:8000
+[21:54:36] INFO: ============================================================
+[21:54:36] INFO: TEST 1: DATABASE SCHEMA FOR SHORT POSITIONS
+[21:54:36] INFO: ============================================================
+[21:54:36] PASS:  All required columns present
+[21:54:36] PASS:  autotrader_transactions table exists
+[21:54:36] INFO: 
+============================================================
+[21:54:36] INFO: TEST 2: SHORT POSITIONS DATA INTEGRITY
+[21:54:36] INFO: ============================================================
+[21:54:36] INFO: Found 4 SHORT positions
+[21:54:36] PASS:  HP: P&L calculation correct
+[21:54:36] PASS:  HP: Stop loss correct ($22.5180)
+[21:54:36] PASS:  HP: Take profit correct ($19.8075)
+[21:54:36] PASS:  MOH: P&L calculation correct
+[21:54:36] PASS:  MOH: Stop loss correct ($194.6295)
+[21:54:36] PASS:  MOH: Take profit correct ($171.2019)
+[21:54:36] PASS:  UNG: P&L calculation correct
+[21:54:36] PASS:  UNG: Stop loss correct ($13.8241)
+[21:54:36] PASS:  UNG: Take profit correct ($12.1601)
+[21:54:36] PASS:  BABA: P&L calculation correct
+[21:54:36] PASS:  BABA: Stop loss correct ($145.8000)
+[21:54:36] PASS:  BABA: Take profit correct ($128.2500)
+[21:54:36] INFO: 
+============================================================
+[21:54:36] INFO: TEST 3: SHORT MONITORING API ENDPOINTS
+[21:54:36] INFO: ============================================================
+[21:54:38] PASS:  /api/v1/short-positions: Working correctly
+[21:54:40] PASS:  /api/v1/short-performance: Working correctly
+[21:54:43] PASS:  /api/v1/short-alerts: Working correctly
+[21:54:43] INFO: 
+============================================================
+[21:54:43] INFO: TEST 4: AUTOTRADER SHORT LOGIC
+[21:54:43] INFO: ============================================================
+[21:54:43] FAIL: Autotrader SHORT logic test failed: No module named 'src'
+[21:54:43] INFO: 
+============================================================
+[21:54:43] INFO: TEST 5: ADVANCED SCORING SYSTEM
+[21:54:43] INFO: ============================================================
+[21:54:43] FAIL: Advanced scoring test failed: No module named 'src'
+[21:54:43] INFO: 
+============================================================
+[21:54:43] INFO: TEST 6: COMPLETE SHORT FLOW SIMULATION
+[21:54:43] INFO: ============================================================
+[21:54:43] INFO: Testing component integration...
+[21:54:43] FAIL: Complete flow test failed: No module named 'src'
+[21:54:43] INFO: 
+============================================================
+[21:54:43] INFO: FINAL TEST SUMMARY
+[21:54:43] INFO: ============================================================
+[21:54:43] INFO: Total Tests: 6
+[21:54:43] INFO: Passed: 3
+[21:54:43] INFO: Failed: 3
+[21:54:43] WARNING:  3 TESTS FAILED - SYSTEM NEEDS ATTENTION

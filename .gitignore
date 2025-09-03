@@ -75,3 +75,6 @@ nul
 
 # Cleanup directories
 cleanup_temp/
+
+# Books directory for LLaMA training materials
+books/

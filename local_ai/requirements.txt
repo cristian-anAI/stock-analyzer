@@ -1,0 +1,7 @@
+ollama
+pandas
+sqlite3
+openpyxl
+pathlib
+datetime
+json

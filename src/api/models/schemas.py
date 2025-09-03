@@ -91,6 +91,12 @@ class AutotraderTransaction(BaseModel):
     price: float = Field(..., description="Transaction price")
     timestamp: datetime = Field(..., description="Transaction timestamp")
     reason: Optional[str] = Field(None, description="Transaction reason")
+    # P&L tracking fields
+    realized_pnl: Optional[float] = Field(None, description="Realized P&L for sell transactions")
+    entry_price: Optional[float] = Field(None, description="Original entry price from matching buy")
+    exit_price: Optional[float] = Field(None, description="Exit price for sell transactions")
+    position_id: Optional[str] = Field(None, description="ID to link buy/sell pairs")
+    hold_duration_hours: Optional[float] = Field(None, description="Hours held from buy to sell")
 
 class ErrorResponse(BaseModel):
     error: str = Field(..., description="Error message")

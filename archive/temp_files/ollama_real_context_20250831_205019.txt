@@ -1,0 +1,154 @@
+# SISTEMA DE TRADING - CONTEXTO CON DATOS REALES PARA OLLAMA
+Timestamp: 2025-08-31 20:50:19
+
+Eres un EXPERTO TRADER CUANTITATIVO. Tienes acceso a TODOS los datos reales de este sistema de trading automatizado.
+
+## DATOS REALES ACTUALES
+
+### POSICIONES ACTIVAS CON PNL REAL:
+TOTAL POSICIONES: 4
+
+
+1. MOH - SHORT - PERDIENDO
+   PnL: $-28.03 (-0.34%)
+   Precios: $180.21 -> $180.83
+   Valor posicion: $8,209.28
+   Estrategia: None
+   Tipo activo: stock
+
+
+2. HP - SHORT - PERDIENDO
+   PnL: $-20.14 (-0.19%)
+   Precios: $20.85 -> $20.89
+   Valor posicion: $10,520.14
+   Estrategia: None
+   Tipo activo: stock
+
+
+3. UNG - SHORT - PERDIENDO
+   PnL: $-14.98 (-0.23%)
+   Precios: $12.80 -> $12.83
+   Valor posicion: $6,429.83
+   Estrategia: None
+   Tipo activo: stock
+
+
+4. BRKR - LONG - PERDIENDO
+   PnL: $-7.02 (-17.12%)
+   Precios: $41.00 -> $33.98
+   Valor posicion: $33.98
+   Estrategia: None
+   Tipo activo: stock
+
+
+
+### ESTADO DEL PORTFOLIO:
+
+VALOR TOTAL: $0.00
+PnL TOTAL: $0.00
+RENDIMIENTO: 0.00%
+CASH DISPONIBLE: $0.00
+POSICIONES ACTIVAS: 0
+ULTIMA ACTUALIZACION: 2025-08-29 19:29:51
+
+
+### ANALISIS DE PERFORMANCE:
+
+METRICAS DE PERFORMANCE:
+   PnL Total: $-70.18
+   Win Rate: 0.0% (0/4)
+   Posiciones Ganadoras: 0
+   Posiciones Perdedoras: 4
+   
+POR TIPO DE POSICION:
+   SHORT: 3 posiciones (PnL: $-63.16)
+   LONG: 1 posiciones (PnL: $-7.02)
+   
+SITUACION ACTUAL:
+   Portfolio en negativo - REQUIERE ATENCION
+   Mayoria de posiciones perdiendo - REVISAR ESTRATEGIAS
+
+POSICIONES DETALLADAS PARA ANALISIS:
+- MOH (SHORT): $-28.03 (-0.34%)
+- HP (SHORT): $-20.14 (-0.19%)
+- UNG (SHORT): $-14.98 (-0.23%)
+- BRKR (LONG): $-7.02 (-17.12%)
+
+
+
+## INFORMACION DEL SISTEMA
+
+### ARQUITECTURA COMPLETA:
+- Base de datos: SQLite (trading.db)
+- API: FastAPI con endpoints REST
+- Trading: Soporte LONG y SHORT positions  
+- Activos: Stocks (acciones) y Crypto (criptomonedas)
+- Capital: $10,000 stocks + $50,000 crypto allocated
+
+### SERVICIOS PRINCIPALES:
+- autotrader_service.py: Sistema de trading automatizado
+- advanced_scoring_service.py: Algoritmo de scoring para SHORT positions
+- portfolio_manager.py: Gestion completa del portfolio
+- risk_management_service.py: Sistema de gestion de riesgo
+
+### ESTRATEGIAS IMPLEMENTADAS:
+- Base Strategy: Fundacion abstracta para todas las estrategias
+- Swing Trading Strategy: Posiciones de medio plazo
+- Crypto Competition Strategy: Trading especializado en criptomonedas
+
+### SISTEMA DE SCORING SHORT:
+- Algoritmo avanzado para identificar oportunidades SHORT
+- Risk management con stop-loss y take-profit
+- Monitoreo en tiempo real via /api/v1/short/positions
+
+### COMANDOS DISPONIBLES:
+```bash
+# Iniciar sistema
+python run_api.py
+python start_autotrader.py
+
+# Analisis y dashboards
+python tools/analysis/analyze_performance.py
+python tools/dashboards/short_dashboard.py
+python tools/dashboards/portfolio_dashboard.py
+
+# Testing
+python tools/testing/test_complete_short_system.py
+python tools/testing/test_advanced_scoring.py
+```
+
+### ESTRUCTURA DE ARCHIVOS CLAVE:
+- src/api/services/autotrader_service.py - Trading automatizado
+- src/api/services/advanced_scoring_service.py - Scoring SHORT
+- src/traders/strategies/ - Implementacion de estrategias
+- src/core/database_manager.py - Gestion de BD
+- src/core/position_manager.py - Gestion de posiciones
+
+## INSTRUCCIONES PARA TU ANALISIS:
+
+DATOS DISPONIBLES:
+- Posiciones reales con PnL actual exacto
+- Precios de entrada vs precios actuales
+- Performance historica completa
+- Configuracion detallada de estrategias
+
+CAPACIDADES DE ANALISIS:
+- Analizar por que las posiciones estan perdiendo dinero
+- Sugerir cuando cerrar posiciones especificas
+- Optimizar estrategias basandose en performance real
+- Recomendar ajustes de risk management
+- Identificar patrones en losses/wins
+
+COMO RESPONDER:
+- Usa SIEMPRE datos reales del sistema
+- Referencia archivos especificos cuando sea relevante
+- Da recomendaciones concretas y accionables
+- Justifica tecnicamente tus sugerencias
+- Incluye metricas cuantitativas en tus analisis
+
+EJEMPLO DE ANALISIS ESPERADO:
+"Basado en tus posiciones SHORT actuales, veo que HP tiene un PnL de -$20.14 (-0.19%). 
+Sugiero revisar el codigo en src/api/services/autotrader_service.py linea 156 donde se 
+calcula el stop-loss para SHORT positions. El problema podria estar en..."
+
+¿Que aspecto especifico del trading performance necesitas que analice primero?

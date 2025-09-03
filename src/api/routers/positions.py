@@ -16,6 +16,7 @@ from ..models.schemas import (
 )
 from ..database.database import db_manager
 from ..services.data_service import DataService
+from ..services.symbol_on_demand_service import symbol_on_demand_service
 from ..services.autotrader_service import AutotraderService
 
 logger = logging.getLogger(__name__)
@@ -168,6 +169,14 @@ async def create_manual_position(
     try:
         # Generate unique ID
         position_id = str(uuid.uuid4())
+        
+        # Ensure symbol exists in watchlist (add on-demand if not found)
+        symbol_added = await symbol_on_demand_service.ensure_symbol_in_watchlist(
+            position_data.symbol, position_data.type
+        )
+        
+        if symbol_added:
+            logger.info(f"Symbol {position_data.symbol} ensured in {position_data.type} watchlist")
         
         # Get current price for the asset
         current_price = await data_service.get_current_price(position_data.symbol, position_data.type)
@@ -449,6 +458,90 @@ async def get_autotrader_summary(
     except Exception as e:
         logger.error(f"Error getting autotrader summary: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error getting summary: {str(e)}")
+
+@router.get("/autotrader/transactions")
+async def get_autotrader_transactions(
+    limit: int = Query(50, ge=1, le=200),
+    symbol: Optional[str] = None
+):
+    """
+    Get autotrader transaction history with realized P&L calculations
+    """
+    try:
+        from ..services.transaction_pnl_service import get_transaction_pnl_service
+        
+        pnl_service = get_transaction_pnl_service(db_manager)
+        
+        # Get transactions with P&L data
+        transactions = pnl_service.get_transactions_with_pnl(limit)
+        
+        # Filter by symbol if provided
+        if symbol:
+            symbol = symbol.upper()
+            transactions = [t for t in transactions if t['symbol'] == symbol]
+        
+        # Get P&L summary
+        pnl_summary = pnl_service.get_pnl_summary()
+        
+        # Calculate additional statistics
+        buy_transactions = [t for t in transactions if t['action'] == 'buy']
+        sell_transactions = [t for t in transactions if t['action'] == 'sell']
+        realized_transactions = [t for t in transactions if t['realized_pnl'] is not None]
+        
+        return {
+            "transactions": transactions,
+            "summary": {
+                "total_transactions": len(transactions),
+                "buy_transactions": len(buy_transactions),
+                "sell_transactions": len(sell_transactions),
+                "realized_trades": len(realized_transactions),
+                "total_realized_pnl": pnl_summary.get('total_pnl', 0),
+                "average_pnl": pnl_summary.get('average_pnl', 0),
+                "average_hold_hours": pnl_summary.get('average_hold_hours', 0),
+                "win_rate": len([t for t in realized_transactions if t['realized_pnl'] > 0]) / len(realized_transactions) * 100 if realized_transactions else 0
+            }
+        }
+        
+    except Exception as e:
+        logger.error(f"Error getting autotrader transactions: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error retrieving transactions: {str(e)}")
+
+@router.get("/autotrader/pnl/summary")
+async def get_autotrader_pnl_summary():
+    """
+    Get autotrader P&L performance summary
+    """
+    try:
+        from ..services.transaction_pnl_service import get_transaction_pnl_service
+        
+        pnl_service = get_transaction_pnl_service(db_manager)
+        pnl_summary = pnl_service.get_pnl_summary()
+        
+        return pnl_summary
+        
+    except Exception as e:
+        logger.error(f"Error getting autotrader P&L summary: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error retrieving P&L summary: {str(e)}")
+
+@router.post("/autotrader/pnl/recalculate")
+async def recalculate_historical_pnl():
+    """
+    Recalculate P&L for all historical transactions (admin function)
+    """
+    try:
+        from ..services.transaction_pnl_service import get_transaction_pnl_service
+        
+        pnl_service = get_transaction_pnl_service(db_manager)
+        results = pnl_service.recalculate_all_historical_pnl()
+        
+        return {
+            "message": "Historical P&L recalculation completed",
+            "results": results
+        }
+        
+    except Exception as e:
+        logger.error(f"Error recalculating historical P&L: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error recalculating P&L: {str(e)}")
 
 @router.get("/positions/manual/{symbol}/analysis", response_model=ManualPositionAnalysis)
 async def analyze_manual_position(
