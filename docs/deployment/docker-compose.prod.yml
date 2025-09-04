@@ -2,7 +2,9 @@ version: '3.8'
 
 services:
   stock-analyzer-api:
-    build: .
+    build:
+      context: ../..
+      dockerfile: docs/deployment/Dockerfile
     container_name: stock-analyzer-prod
     restart: unless-stopped
     ports:
