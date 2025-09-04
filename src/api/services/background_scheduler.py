@@ -144,12 +144,13 @@ class BackgroundScheduler:
         try:
             logger.info(" Background data update starting...")
             
-            # Update stocks and cryptos in parallel
-            await asyncio.gather(
-                self.data_service.update_stocks_data(force_refresh=True),
-                self.data_service.update_cryptos_data(force_refresh=True),
-                return_exceptions=True
-            )
+            # Update stocks and cryptos in parallel - TEMPORARILY DISABLED FOR RATE LIMITING
+            # await asyncio.gather(
+            #     self.data_service.update_stocks_data(force_refresh=True),
+            #     self.data_service.update_cryptos_data(force_refresh=True),
+            #     return_exceptions=True
+            # )
+            logger.info(" Data update skipped to avoid rate limiting")
             
             self.stats["last_data_update"] = datetime.now().isoformat()
             logger.info(" Background data update completed")

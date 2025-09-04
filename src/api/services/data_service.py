@@ -54,9 +54,10 @@ class DataService:
             ]
         
         # For performance, limit concurrent updates to avoid overwhelming APIs
-        self.batch_size = 50  # Process 50 symbols at a time
-        self.max_concurrent_stocks = 300  # Increased limit for full watchlist coverage
-        self.max_concurrent_cryptos = 30   # Limit cryptos for API safety
+        self.batch_size = 5  # Process only 5 symbols at a time to avoid rate limiting
+        self.max_concurrent_stocks = 50  # Much smaller limit to avoid Yahoo Finance rate limits
+        self.max_concurrent_cryptos = 10   # Reduced crypto limit for API safety
+        self.use_fallback_data = True  # Use cached/fallback data when rate limited
     
     async def get_cached_stocks_data(self) -> Optional[List[Dict[str, Any]]]:
         """Get stocks data from cache"""
@@ -103,11 +104,11 @@ class DataService:
                     stock_data = await self.update_single_stock(symbol)
                     if stock_data:
                         stocks_data.append(stock_data)
-                    await asyncio.sleep(0.15)  # Slightly longer rate limiting
+                    await asyncio.sleep(1.0)  # Longer delay to avoid rate limiting
                 
                 # Longer pause between batches
                 if i + self.batch_size < len(symbols_to_update):
-                    await asyncio.sleep(2.0)
+                    await asyncio.sleep(5.0)  # Much longer pause between batches
             
             # If we have existing cached data and only updated some symbols, merge the data
             if symbols_skipped:
@@ -227,11 +228,11 @@ class DataService:
                     crypto_data = await self.update_single_crypto(crypto_symbol)
                     if crypto_data:
                         cryptos_data.append(crypto_data)
-                    await asyncio.sleep(0.2)  # Longer rate limiting for crypto
+                    await asyncio.sleep(1.5)  # Much longer delay to avoid rate limiting
                 
                 # Longer pause between batches
                 if i + 20 < len(cryptos_to_process):
-                    await asyncio.sleep(3.0)
+                    await asyncio.sleep(8.0)  # Much longer pause between crypto batches
             
             # Cache the results  
             await cache_service.set("cryptos:all", cryptos_data, "cryptos")

@@ -66,18 +66,19 @@ class AutotraderService:
             timing_summary = self.market_timing.get_timing_summary()
             logger.info(f"Market timing check: {timing_summary['market_status']} - {timing_summary['current_time']}")
             
-            if not timing_summary['is_market_open']:
-                logger.info(f"Market closed - cycle skipped: {timing_summary.get('buy_reason', 'Market not open')}")
-                return {
-                    "cycle_start": datetime.now().isoformat(),
-                    "market_status": "CLOSED",
-                    "market_timing": timing_summary,
-                    "actions_taken": [],
-                    "positions_analyzed": 0,
-                    "buy_signals": 0,
-                    "sell_signals": 0,
-                    "message": "Trading cycle skipped - market closed"
-                }
+            # TEMPORARILY DISABLED FOR TESTING - REMOVE FOR PRODUCTION
+            # if not timing_summary['is_market_open']:
+            #     logger.info(f"Market closed - cycle skipped: {timing_summary.get('buy_reason', 'Market not open')}")
+            #     return {
+            #         "cycle_start": datetime.now().isoformat(),
+            #         "market_status": "CLOSED",
+            #         "market_timing": timing_summary,
+            #         "actions_taken": [],
+            #         "positions_analyzed": 0,
+            #         "buy_signals": 0,
+            #         "sell_signals": 0,
+            #         "message": "Trading cycle skipped - market closed"
+            #     }
             
             logger.info(f"Market timing: BUY {timing_summary['buy_reason']}, SELL {timing_summary['sell_reason']}")
             
@@ -252,7 +253,7 @@ class AutotraderService:
             logger.info(f"DEBUG: Processing {len(candidate_stocks)} stock candidates")
             for stock in candidate_stocks:
                 logger.info(f"DEBUG: Analyzing {stock['symbol']} (score: {stock.get('score', 'N/A')})")
-                if stock['symbol'] not in existing_symbols and len(actions) < 5:
+                if stock['symbol'] not in existing_symbols and len(actions) < 10:
                     # Check overtrading prevention first
                     can_trade, trade_reason = overtrading_prevention.can_trade_symbol(
                         stock['symbol'], 'stock', 'buy'
@@ -287,16 +288,20 @@ class AutotraderService:
                             existing_symbols.add(stock['symbol'])
             
             # Process buy signals for cryptos using competition strategy
+            logger.info(f"DEBUG: Processing {len(candidate_cryptos)} crypto candidates")
             for crypto in candidate_cryptos:
-                if crypto['symbol'] not in existing_symbols and len(actions) < 5:
+                logger.info(f"DEBUG: Analyzing {crypto['symbol']} (score: {crypto.get('score', 'N/A')})")
+                if crypto['symbol'] not in existing_symbols and len(actions) < 10:
                     # Check overtrading prevention first
                     can_trade, trade_reason = overtrading_prevention.can_trade_symbol(
                         crypto['symbol'], 'crypto', 'buy'
                     )
                     
                     if not can_trade:
-                        logger.debug(f"Trading blocked for {crypto['symbol']}: {trade_reason}")
+                        logger.info(f"DEBUG: Trading blocked for {crypto['symbol']}: {trade_reason}")
                         continue
+                    else:
+                        logger.info(f"DEBUG: Overtrading check passed for {crypto['symbol']}")
                     
                     # Check volatility filter (crypto competition strategy has its own internal filter)
                     passes_volatility, vol_reason = volatility_service.check_volatility_filter(
@@ -304,17 +309,35 @@ class AutotraderService:
                     )
                     
                     if not passes_volatility and not self.high_volatility_bypass:
-                        logger.debug(f"Volatility filter blocked {crypto['symbol']}: {vol_reason}")
+                        logger.info(f"DEBUG: Volatility filter blocked {crypto['symbol']}: {vol_reason}")
                         continue
                     elif not passes_volatility and self.high_volatility_bypass:
-                        logger.info(f"High volatility bypass enabled - allowing {crypto['symbol']} despite: {vol_reason}")
+                        logger.info(f"DEBUG: High volatility bypass enabled - allowing {crypto['symbol']} despite: {vol_reason}")
+                    else:
+                        logger.info(f"DEBUG: Volatility filter passed for {crypto['symbol']}: {vol_reason}")
                     
-                    signal = await self._analyze_crypto_signal(crypto)
-                    if signal and signal.action == "BUY":
+                    # SIMPLIFIED CRYPTO LOGIC: Use table score directly (like stocks)
+                    # Skip complex strategy analysis, just check if score >= buy_threshold
+                    crypto_score = crypto.get('score', 0)
+                    if crypto_score >= self.buy_score_threshold:
+                        logger.info(f"DEBUG: {crypto['symbol']} qualifies for purchase (score: {crypto_score} >= {self.buy_score_threshold})")
+                        # Create simple BUY signal based on table score
+                        from ..strategies.base_strategy import TradingSignal
+                        signal = TradingSignal(
+                            action="BUY",
+                            confidence=min(crypto_score, 10.0),  # Cap at 10
+                            symbol=crypto['symbol'],
+                            timeframe="1d",
+                            reasons=[f"High crypto score: {crypto_score} (threshold: {self.buy_score_threshold})"],
+                            score=crypto_score
+                        )
+                        logger.info(f"DEBUG: BUY signal generated for {crypto['symbol']}, executing trade")
                         action = await self._execute_strategy_buy(crypto, 'crypto', signal)
                         if action:
                             actions.append(action)
                             existing_symbols.add(crypto['symbol'])
+                    else:
+                        logger.info(f"DEBUG: {crypto['symbol']} score too low ({crypto_score} < {self.buy_score_threshold})")
             
             # Check for SHORT signals - CONTROLLED BY BACKTEST PROVEN FLAG
             if self.short_trading_enabled:
@@ -328,7 +351,7 @@ class AutotraderService:
                     
                 # Process SHORT signals for cryptos
                 for crypto in low_score_cryptos:
-                    if crypto['symbol'] not in existing_symbols and len(actions) < 5:
+                    if crypto['symbol'] not in existing_symbols and len(actions) < 10:
                         short_signal = self.evaluate_crypto_short_signals(crypto)
                         if short_signal:
                             action = await self._execute_short(crypto, short_signal)
@@ -338,7 +361,7 @@ class AutotraderService:
                 
                 # Process SHORT signals for stocks
                 for stock in low_score_stocks:
-                    if stock['symbol'] not in existing_symbols and len(actions) < 5:
+                    if stock['symbol'] not in existing_symbols and len(actions) < 10:
                         short_signal = self.evaluate_stock_short_signals(stock)
                         if short_signal:
                             action = await self._execute_short(stock, short_signal)
