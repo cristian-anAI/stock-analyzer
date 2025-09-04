@@ -24,9 +24,8 @@ RUN pip install --no-cache-dir --upgrade pip \
 
 # Copy application source code
 COPY src/ ./src/
-COPY expanded_crypto_watchlist.py .
-COPY optimized_trading_strategy.py .
-COPY reset_production_database.py .
+COPY run_api.py .
+COPY main.py .
 
 # Create necessary directories
 RUN mkdir -p /app/src/logs \
@@ -46,7 +45,7 @@ echo "🗄️  Initializing database..."\n\
 python -c "from src.api.database.database import init_db; init_db(); print(\"✅ Database ready\")" || { echo "❌ Database error"; exit 1; }\n\
 echo ""\n\
 echo "🌐 Starting FastAPI server..."\n\
-cd /app && python -m uvicorn src.api.main:app --host 0.0.0.0 --port 8000 --workers 1\n\
+cd /app && python run_api.py\n\
 ' > /app/start_production.sh && chmod +x /app/start_production.sh
 
 # Health check
