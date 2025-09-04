@@ -20,11 +20,8 @@ from .market_hours_service import market_hours_service
 import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
-# Import from archive directory
-archive_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))), 'archive', 'legacy-traders')
-sys.path.append(archive_path)
-from expanded_crypto_watchlist import get_diversified_portfolio, get_symbols_only
-from optimized_trading_strategy import ExpandedTradingConfig
+# Legacy imports removed for Docker compatibility
+# Using fallback watchlists instead
 
 logger = logging.getLogger(__name__)
 
@@ -34,24 +31,19 @@ class DataService:
     def __init__(self):
         self.scoring_service = ScoringService()
         
-        # Initialize expanded trading configuration
-        try:
-            self.trading_config = ExpandedTradingConfig()
-            self.default_stocks = self.trading_config.all_stock_symbols
-            self.default_cryptos = self.trading_config.crypto_symbols
-            logger.info(f"Loaded expanded watchlists: {len(self.default_stocks)} stocks, {len(self.default_cryptos)} cryptos")
-        except Exception as e:
-            logger.warning(f"Could not load expanded watchlists, using fallback: {e}")
-            # Fallback to original small lists if expanded config fails
-            self.default_stocks = [
-                "AAPL", "MSFT", "GOOGL", "AMZN", "TSLA", "META", "NVDA", "NFLX",
-                "AMD", "INTC", "CRM", "ORCL", "ADBE", "NOW", "SNOW", "PLTR",
-                "BABA", "DIS", "V", "MA", "JPM", "BAC", "WMT", "HD", "UNH"
-            ]
-            self.default_cryptos = [
-                "BTC-USD", "ETH-USD", "BNB-USD", "ADA-USD", "XRP-USD", "SOL-USD",
-                "DOGE-USD", "DOT-USD", "AVAX-USD", "LINK-USD", "LTC-USD", "BCH-USD"
-            ]
+        # Use built-in watchlists (legacy config removed for Docker compatibility)
+        self.default_stocks = [
+            "AAPL", "MSFT", "GOOGL", "AMZN", "TSLA", "META", "NVDA", "NFLX",
+            "AMD", "INTC", "CRM", "ORCL", "ADBE", "NOW", "SNOW", "PLTR",
+            "BABA", "DIS", "V", "MA", "JPM", "BAC", "WMT", "HD", "UNH",
+            "IBM", "CISCO", "TXN", "CNC", "GS", "MS", "C", "WFC"
+        ]
+        self.default_cryptos = [
+            "BTC-USD", "ETH-USD", "BNB-USD", "ADA-USD", "XRP-USD", "SOL-USD",
+            "DOGE-USD", "DOT-USD", "AVAX-USD", "LINK-USD", "LTC-USD", "BCH-USD",
+            "MATIC-USD", "ALGO-USD", "XLM-USD", "VET-USD"
+        ]
+        logger.info(f"Loaded built-in watchlists: {len(self.default_stocks)} stocks, {len(self.default_cryptos)} cryptos")
         
         # For performance, limit concurrent updates to avoid overwhelming APIs
         self.batch_size = 5  # Process only 5 symbols at a time to avoid rate limiting
