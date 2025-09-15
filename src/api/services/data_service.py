@@ -31,13 +31,35 @@ class DataService:
     def __init__(self):
         self.scoring_service = ScoringService()
         
-        # Use built-in watchlists (legacy config removed for Docker compatibility)
-        self.default_stocks = [
-            "AAPL", "MSFT", "GOOGL", "AMZN", "TSLA", "META", "NVDA", "NFLX",
-            "AMD", "INTC", "CRM", "ORCL", "ADBE", "NOW", "SNOW", "PLTR",
-            "BABA", "DIS", "V", "MA", "JPM", "BAC", "WMT", "HD", "UNH",
-            "IBM", "CISCO", "TXN", "CNC", "GS", "MS", "C", "WFC"
-        ]
+        # Load comprehensive stock list (200+ stocks from temp_all_stocks.json)
+        try:
+            import json
+            import os
+            stocks_file = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))), 'archive', 'temp-files', 'temp_all_stocks.json')
+            
+            if os.path.exists(stocks_file):
+                with open(stocks_file, 'r') as f:
+                    stocks_data = json.load(f)
+                self.default_stocks = [stock['symbol'] for stock in stocks_data[:200]]  # Use first 200 stocks
+                logger.info(f"Loaded {len(self.default_stocks)} stocks from comprehensive list")
+            else:
+                # Fallback to basic list if file not found
+                self.default_stocks = [
+                    "AAPL", "MSFT", "GOOGL", "AMZN", "TSLA", "META", "NVDA", "NFLX",
+                    "AMD", "INTC", "CRM", "ORCL", "ADBE", "NOW", "SNOW", "PLTR",
+                    "BABA", "DIS", "V", "MA", "JPM", "BAC", "WMT", "HD", "UNH",
+                    "IBM", "CISCO", "TXN", "CNC", "GS", "MS", "C", "WFC"
+                ]
+                logger.warning(f"Stock list file not found, using fallback list: {len(self.default_stocks)} stocks")
+        except Exception as e:
+            # Fallback to basic list on any error
+            self.default_stocks = [
+                "AAPL", "MSFT", "GOOGL", "AMZN", "TSLA", "META", "NVDA", "NFLX",
+                "AMD", "INTC", "CRM", "ORCL", "ADBE", "NOW", "SNOW", "PLTR",
+                "BABA", "DIS", "V", "MA", "JPM", "BAC", "WMT", "HD", "UNH",
+                "IBM", "CISCO", "TXN", "CNC", "GS", "MS", "C", "WFC"
+            ]
+            logger.error(f"Error loading stock list: {e}, using fallback list: {len(self.default_stocks)} stocks")
         self.default_cryptos = [
             "BTC-USD", "ETH-USD", "BNB-USD", "ADA-USD", "XRP-USD", "SOL-USD",
             "DOGE-USD", "DOT-USD", "AVAX-USD", "LINK-USD", "LTC-USD", "BCH-USD",
@@ -46,9 +68,9 @@ class DataService:
         logger.info(f"Loaded built-in watchlists: {len(self.default_stocks)} stocks, {len(self.default_cryptos)} cryptos")
         
         # For performance, limit concurrent updates to avoid overwhelming APIs
-        self.batch_size = 5  # Process only 5 symbols at a time to avoid rate limiting
-        self.max_concurrent_stocks = 50  # Much smaller limit to avoid Yahoo Finance rate limits
-        self.max_concurrent_cryptos = 10   # Reduced crypto limit for API safety
+        self.batch_size = 10  # Increase batch size for better throughput
+        self.max_concurrent_stocks = len(self.default_stocks)  # Process all loaded stocks
+        self.max_concurrent_cryptos = len(self.default_cryptos)  # Process all default cryptos
         self.use_fallback_data = True  # Use cached/fallback data when rate limited
     
     async def get_cached_stocks_data(self) -> Optional[List[Dict[str, Any]]]:
@@ -85,8 +107,9 @@ class DataService:
             # If no markets are open, use cached data or reduced update
             if not symbols_to_update:
                 logger.info("No stock markets currently open, using minimal update")
-                # Still update a few key symbols for basic functionality
-                symbols_to_update = stocks_to_process[:5]  # Update just 5 symbols for basic functionality
+                # Still update all symbols for deployment compatibility (Docker/VM timezone issues)
+                # DEPLOYMENT FIX: Always update all symbols to avoid 6-stock limitation
+                symbols_to_update = stocks_to_process  # Update ALL symbols for deployment compatibility
             
             for i in range(0, len(symbols_to_update), self.batch_size):
                 batch = symbols_to_update[i:i + self.batch_size]
