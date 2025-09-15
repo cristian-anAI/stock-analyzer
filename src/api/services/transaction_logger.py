@@ -49,7 +49,11 @@ class TransactionLogger:
             is_short_position = self._is_short_related(symbol, action, reason)
             
             # Log to autotrader_transactions (this table is already correct)
-            self._log_autotrader_transaction(symbol, action, quantity, price, reason)
+            transaction_id = self._log_autotrader_transaction(symbol, action, quantity, price, reason)
+            
+            # Calculate P&L if this is a sell transaction
+            if action == 'sell' and transaction_id:
+                self._calculate_pnl_for_sell(transaction_id)
             
             # Log to portfolio_transactions with consistent action mapping
             portfolio_action = self._map_action_for_portfolio(action, is_short_position)
@@ -92,9 +96,9 @@ class TransactionLogger:
             return action   # 'buy' and 'sell' stay as-is for LONG positions
     
     def _log_autotrader_transaction(self, symbol: str, action: str, quantity: float, 
-                                  price: float, reason: str) -> None:
-        """Log to autotrader_transactions table"""
-        db_manager.execute_insert(
+                                  price: float, reason: str) -> int:
+        """Log to autotrader_transactions table and return transaction ID"""
+        return db_manager.execute_insert(
             """INSERT INTO autotrader_transactions 
                (symbol, action, quantity, price, timestamp, reason)
                VALUES (?, ?, ?, ?, ?, ?)""",
@@ -124,6 +128,19 @@ class TransactionLogger:
             (portfolio_type, symbol, action, quantity, price, total_amount,
              buy_reason, sell_reason, datetime.now().isoformat(), source)
         )
+    
+    def _calculate_pnl_for_sell(self, sell_transaction_id: int) -> None:
+        """Calculate P&L for a sell transaction using TransactionPnLService"""
+        try:
+            from .transaction_pnl_service import get_transaction_pnl_service
+            pnl_service = get_transaction_pnl_service(db_manager)
+            pnl = pnl_service.calculate_and_update_pnl_for_sell(sell_transaction_id)
+            if pnl is not None:
+                logger.info(f"P&L calculated for sell transaction {sell_transaction_id}: ${pnl:.2f}")
+            else:
+                logger.warning(f"Could not calculate P&L for sell transaction {sell_transaction_id}")
+        except Exception as e:
+            logger.error(f"Error calculating P&L for sell transaction {sell_transaction_id}: {e}")
     
     def get_transaction_summary(self) -> Dict[str, Any]:
         """Get summary of logged transactions"""

@@ -341,3 +341,4 @@ def get_total_portfolio_value(self) -> float:
 #### Issue: Market Stress Blocking All Trades
 **MARKET CONDITIONS**: 55.1% symbols high volatility, 148.6% max volatility detected
 **RESPONSE**: Implemented temporary bypass allowing qualified trades (score ≥ 6.0) during market stress.
+- Memoriza la nueva forma de cambiar entre estrategias y la forma de guardar nuevas estrategias

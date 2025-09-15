@@ -27,6 +27,12 @@ def run_portfolio_migrations():
         # Migration 5: Create portfolio tracking tables
         create_portfolio_tracking_tables()
         
+        # Migration 6: Add P&L tracking columns to autotrader_transactions
+        add_pnl_tracking_columns()
+        
+        # Migration 7: Create MTSS scores cache table
+        create_mtss_scores_table()
+        
         logger.info("Portfolio migrations completed successfully")
         return True
         
@@ -211,6 +217,38 @@ def update_autotrader_transactions_constraint():
         logger.error(f"Error updating autotrader_transactions constraint: {e}")
         return False
 
+def add_pnl_tracking_columns():
+    """Add P&L tracking columns to autotrader_transactions table"""
+    try:
+        # Check if columns already exist
+        columns = db_manager.execute_query("PRAGMA table_info(autotrader_transactions)")
+        existing_columns = [row['name'] for row in columns]
+        
+        pnl_columns = [
+            ("realized_pnl", "REAL"),
+            ("entry_price", "REAL"), 
+            ("exit_price", "REAL"),
+            ("position_id", "TEXT"),
+            ("hold_duration_hours", "REAL")
+        ]
+        
+        for col_name, col_type in pnl_columns:
+            if col_name not in existing_columns:
+                try:
+                    db_manager.execute_update(f"ALTER TABLE autotrader_transactions ADD COLUMN {col_name} {col_type}")
+                    logger.info(f"Added P&L column: {col_name}")
+                except Exception as col_error:
+                    logger.warning(f"Failed to add column {col_name}: {col_error}")
+            else:
+                logger.info(f"P&L column {col_name} already exists")
+        
+        logger.info("P&L tracking columns migration completed")
+        return True
+        
+    except Exception as e:
+        logger.error(f"Error adding P&L tracking columns: {e}")
+        return False
+
 def create_portfolio_tracking_tables():
     """Create portfolio tracking tables (config and transactions)"""
     try:
@@ -268,4 +306,59 @@ def create_portfolio_tracking_tables():
         
     except Exception as e:
         logger.error(f"Error creating portfolio tracking tables: {e}")
+        return False
+
+def create_mtss_scores_table():
+    """Create MTSS scores cache table for multi-timeframe scoring"""
+    try:
+        db_manager.execute_update("""
+            CREATE TABLE IF NOT EXISTS mtss_scores (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                symbol TEXT NOT NULL,
+                timeframe TEXT NOT NULL, -- '1h', '1d', '1W', '1M'
+                score REAL NOT NULL,
+                timeframe_scores TEXT, -- JSON of all timeframe scores
+                unified_score REAL,
+                trading_signal TEXT,
+                confidence REAL,
+                monthly_filter_passed BOOLEAN,
+                data_quality_score REAL,
+                breakdown TEXT, -- JSON of full analysis breakdown
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                UNIQUE(symbol, timeframe)
+            )
+        """)
+        
+        # Create indexes for efficient queries
+        db_manager.execute_update("""
+            CREATE INDEX IF NOT EXISTS idx_mtss_scores_symbol 
+            ON mtss_scores(symbol)
+        """)
+        
+        db_manager.execute_update("""
+            CREATE INDEX IF NOT EXISTS idx_mtss_scores_timeframe 
+            ON mtss_scores(timeframe)
+        """)
+        
+        db_manager.execute_update("""
+            CREATE INDEX IF NOT EXISTS idx_mtss_scores_updated 
+            ON mtss_scores(updated_at)
+        """)
+        
+        db_manager.execute_update("""
+            CREATE INDEX IF NOT EXISTS idx_mtss_scores_score 
+            ON mtss_scores(score)
+        """)
+        
+        db_manager.execute_update("""
+            CREATE INDEX IF NOT EXISTS idx_mtss_scores_symbol_timeframe 
+            ON mtss_scores(symbol, timeframe, updated_at)
+        """)
+        
+        logger.info("Created MTSS scores cache table with indexes")
+        return True
+        
+    except Exception as e:
+        logger.error(f"Error creating MTSS scores table: {e}")
         return False

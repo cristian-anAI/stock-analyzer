@@ -182,7 +182,8 @@ async def get_portfolio_transactions(
                               WHEN action = 'buy' THEN 'LONG ENTRY'
                               WHEN action = 'sell' THEN 'LONG EXIT'
                               ELSE action
-                          END as display_action
+                          END as display_action,
+                          realized_pnl, entry_price, exit_price, hold_duration_hours
                    FROM portfolio_transactions 
                    WHERE portfolio_type = ?'''
         params = [portfolio_type]
@@ -198,7 +199,7 @@ async def get_portfolio_transactions(
         
         transactions = []
         for row in c.fetchall():
-            symbol, action, quantity, price, total_amount, fees, buy_reason, sell_reason, score, timestamp, source, display_action = row
+            symbol, action, quantity, price, total_amount, fees, buy_reason, sell_reason, score, timestamp, source, display_action, realized_pnl, entry_price, exit_price, hold_duration_hours = row
             
             # Determine reason based on action type
             if action in ['buy', 'short']:
@@ -217,7 +218,11 @@ async def get_portfolio_transactions(
                 "reason": reason,
                 "score": score,
                 "timestamp": timestamp,
-                "source": source
+                "source": source,
+                "realized_pnl": realized_pnl,
+                "entry_price": entry_price,
+                "exit_price": exit_price,
+                "hold_duration_hours": hold_duration_hours
             })
         
         conn.close()

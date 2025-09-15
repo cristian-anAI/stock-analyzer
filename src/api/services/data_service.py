@@ -250,11 +250,19 @@ class DataService:
             finally:
                 rate_limiter.release("yahoo_finance")
             
-            if history.empty:
-                logger.warning(f"No data found for crypto {symbol}")
-                return {}
-            
-            current_price = history['Close'].iloc[-1]
+            # Try to get current price from fast_info first (most recent)
+            try:
+                current_price = ticker.fast_info.last_price
+                if not current_price or current_price == 0:
+                    raise ValueError("fast_info price not available")
+                logger.debug(f"Using fast_info price for {symbol}: ${current_price:.2f}")
+            except:
+                # Fallback to history data
+                if history.empty:
+                    logger.warning(f"No data found for crypto {symbol}")
+                    return {}
+                current_price = history['Close'].iloc[-1]
+                logger.debug(f"Using history price for {symbol}: ${current_price:.2f}")
             
             # Calculate proper 24h change
             change_amount, change_percent = self._calculate_24h_change(history)

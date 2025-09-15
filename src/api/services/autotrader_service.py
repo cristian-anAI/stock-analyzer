@@ -11,6 +11,7 @@ from ..database.database import db_manager
 from .data_service import DataService
 from .scoring_service import ScoringService
 from .advanced_scoring_service import AdvancedScoringService
+from .unified_scoring_service import UnifiedScoringService
 from .portfolio_manager import portfolio_manager
 from .timeframe_data_service import TimeframeDataService
 from .volatility_service import volatility_service
@@ -20,6 +21,7 @@ from .market_timing_service import market_timing_service
 from .transaction_pnl_service import get_transaction_pnl_service
 from ..strategies.swing_trading_strategy import SwingTradingStrategy
 from ..strategies.crypto_competition_strategy import CryptoCompetitionStrategy
+from ..strategies.mtss_crypto_strategy import MTSSCryptoStrategy
 
 logger = logging.getLogger(__name__)
 
@@ -30,6 +32,7 @@ class AutotraderService:
         self.data_service = DataService()
         self.scoring_service = ScoringService()
         self.advanced_scoring = AdvancedScoringService()
+        self.unified_scoring = UnifiedScoringService()  # NEW: Unified scoring system
         self.timeframe_service = TimeframeDataService()
         self.market_timing = market_timing_service
         self.pnl_service = get_transaction_pnl_service(db_manager)
@@ -37,6 +40,7 @@ class AutotraderService:
         # Initialize new multi-timeframe strategies
         self.swing_strategy = SwingTradingStrategy()  # For stocks
         self.crypto_strategy = CryptoCompetitionStrategy()  # For crypto
+        self.mtss_crypto_strategy = MTSSCryptoStrategy()  # MTSS for crypto (alternative)
         
         # USAR CONFIGURACION CENTRALIZADA VALIDADA EN BACKTESTING
         from ..strategies.trading_config import TRADING_CONFIG
@@ -316,22 +320,17 @@ class AutotraderService:
                     else:
                         logger.info(f"DEBUG: Volatility filter passed for {crypto['symbol']}: {vol_reason}")
                     
-                    # SIMPLIFIED CRYPTO LOGIC: Use table score directly (like stocks)
-                    # Skip complex strategy analysis, just check if score >= buy_threshold
-                    crypto_score = crypto.get('score', 0)
-                    if crypto_score >= self.buy_score_threshold:
-                        logger.info(f"DEBUG: {crypto['symbol']} qualifies for purchase (score: {crypto_score} >= {self.buy_score_threshold})")
-                        # Create simple BUY signal based on table score
-                        from ..strategies.base_strategy import TradingSignal
-                        signal = TradingSignal(
-                            action="BUY",
-                            confidence=min(crypto_score, 10.0),  # Cap at 10
-                            symbol=crypto['symbol'],
-                            timeframe="1d",
-                            reasons=[f"High crypto score: {crypto_score} (threshold: {self.buy_score_threshold})"],
-                            score=crypto_score
-                        )
-                        logger.info(f"DEBUG: BUY signal generated for {crypto['symbol']}, executing trade")
+                    # Use configured crypto strategy (competition or MTSS)
+                    logger.info(f"DEBUG: About to analyze signal for {crypto['symbol']} using {self.config.crypto_strategy} strategy")
+                    
+                    # Select crypto strategy based on configuration
+                    if self.config.crypto_strategy == "mtss":
+                        signal = await self._analyze_crypto_signal_mtss(crypto)
+                    else:
+                        signal = await self._analyze_crypto_signal(crypto)  # Competition strategy (default)
+                    
+                    if signal and signal.action == "BUY":
+                        logger.info(f"DEBUG: BUY signal generated for {crypto['symbol']} using {self.config.crypto_strategy} strategy, executing trade")
                         action = await self._execute_strategy_buy(crypto, 'crypto', signal)
                         if action:
                             actions.append(action)
@@ -965,61 +964,166 @@ class AutotraderService:
             return False  # Conservative default
     
     async def _analyze_stock_signal(self, stock_data: Dict[str, Any]) -> Optional[Any]:
-        """Analyze stock using swing trading strategy"""
+        """Analyze stock using traditional pre-filtering + unified scoring for high-score candidates"""
         try:
             symbol = stock_data['symbol']
             current_price = stock_data['current_price']
             
-            # Fetch multi-timeframe data
-            required_timeframes = self.swing_strategy.get_required_timeframes()
-            timeframe_data = {}
+            # STEP 1: Traditional pre-filtering (fast, no API calls)
+            traditional_score = self.scoring_service.calculate_stock_score(stock_data)
+            logger.debug(f"Traditional pre-filter for {symbol}: {traditional_score:.1f}")
             
-            for tf in required_timeframes:
-                try:
-                    data = self.timeframe_service.get_stock_data(symbol, tf)
-                    if data is not None and not data.empty:
-                        timeframe_data[tf] = data
-                except Exception as e:
-                    logger.warning(f"Failed to get {tf} data for {symbol}: {e}")
-            
-            if not timeframe_data:
+            # Skip expensive unified analysis if traditional score is too low
+            if traditional_score < self.buy_score_threshold:
+                logger.debug(f"❌ Stock {symbol} skipped: traditional score {traditional_score:.1f} < {self.buy_score_threshold}")
                 return None
             
-            # Generate signal using swing trading strategy
-            signal = self.swing_strategy.generate_signal(symbol, current_price, timeframe_data)
-            return signal if signal.action == "BUY" else None
+            logger.info(f"✅ Stock {symbol} passed pre-filter: {traditional_score:.1f} >= {self.buy_score_threshold} - performing unified analysis")
+            
+            # STEP 2: Full unified scoring only for high-score candidates
+            unified_result = self.unified_scoring.calculate_unified_score(
+                symbol=symbol,
+                asset_type='stock',
+                market_data=stock_data
+            )
+            
+            # Check unified score and filters
+            unified_score = unified_result.get('unified_score', 0)
+            trading_signal = unified_result.get('trading_signal', 'HOLD')
+            monthly_filter_passed = unified_result.get('breakdown', {}).get('mtss', {}).get('monthly_filter_passed', False)
+            confidence = unified_result.get('confidence', 0)
+            
+            logger.info(f"Stock {symbol}: Traditional={traditional_score:.1f}, Unified={unified_score:.2f}, Monthly={monthly_filter_passed}, Confidence={confidence:.1%}")
+            
+            # Decision logic: unified score must also pass threshold + monthly filter
+            if (unified_score >= self.buy_score_threshold and 
+                trading_signal == 'BUY' and 
+                monthly_filter_passed and 
+                confidence >= 0.5):
+                
+                # Convert unified result to signal format
+                signal = type('Signal', (), {
+                    'action': 'BUY',
+                    'confidence': unified_score,
+                    'symbol': symbol,
+                    'traditional_score': traditional_score,
+                    'unified_result': unified_result,
+                    'reasons': unified_result.get('recommendations', {}).get('reasoning', []),
+                    'stop_loss': unified_result.get('recommendations', {}).get('stop_loss'),
+                    'take_profit': unified_result.get('recommendations', {}).get('take_profit')
+                })()
+                
+                logger.info(f"🎯 Stock BUY signal for {symbol}: Traditional={traditional_score:.1f}, Unified={unified_score:.2f}")
+                return signal
+            else:
+                logger.debug(f"❌ Stock {symbol} failed unified criteria: score={unified_score:.2f}, monthly={monthly_filter_passed}")
+                return None
             
         except Exception as e:
             logger.error(f"Error analyzing stock signal for {symbol}: {e}")
             return None
     
     async def _analyze_crypto_signal(self, crypto_data: Dict[str, Any]) -> Optional[Any]:
-        """Analyze crypto using competition strategy"""
+        """Analyze crypto using traditional pre-filtering + unified scoring for high-score candidates"""
         try:
             symbol = crypto_data['symbol']
             current_price = crypto_data['current_price']
             
-            # Fetch multi-timeframe data
-            required_timeframes = self.crypto_strategy.get_required_timeframes()
-            timeframe_data = {}
+            # STEP 1: Traditional pre-filtering (fast, no API calls)
+            traditional_score = self.scoring_service.calculate_crypto_score(crypto_data)
+            logger.debug(f"Traditional pre-filter for {symbol}: {traditional_score:.1f}")
             
+            # Skip expensive unified analysis if traditional score is too low
+            if traditional_score < self.buy_score_threshold:
+                logger.debug(f"❌ Crypto {symbol} skipped: traditional score {traditional_score:.1f} < {self.buy_score_threshold}")
+                return None
+            
+            logger.info(f"✅ Crypto {symbol} passed pre-filter: {traditional_score:.1f} >= {self.buy_score_threshold} - performing unified analysis")
+            
+            # STEP 2: Full unified scoring only for high-score candidates
+            unified_result = self.unified_scoring.calculate_unified_score(
+                symbol=symbol,
+                asset_type='crypto',
+                market_data=crypto_data
+            )
+            
+            # Check unified score and filters
+            unified_score = unified_result.get('unified_score', 0)
+            trading_signal = unified_result.get('trading_signal', 'HOLD')
+            monthly_filter_passed = unified_result.get('breakdown', {}).get('mtss', {}).get('monthly_filter_passed', False)
+            confidence = unified_result.get('confidence', 0)
+            
+            logger.info(f"Crypto {symbol}: Traditional={traditional_score:.1f}, Unified={unified_score:.2f}, Monthly={monthly_filter_passed}, Confidence={confidence:.1%}")
+            
+            # Decision logic: unified score must also pass threshold + monthly filter
+            if (unified_score >= self.buy_score_threshold and 
+                trading_signal == 'BUY' and 
+                monthly_filter_passed and 
+                confidence >= 0.5):
+                
+                # Convert unified result to signal format
+                signal = type('Signal', (), {
+                    'action': 'BUY',
+                    'confidence': unified_score,
+                    'symbol': symbol,
+                    'traditional_score': traditional_score,
+                    'unified_result': unified_result,
+                    'reasons': unified_result.get('recommendations', {}).get('reasoning', []),
+                    'stop_loss': unified_result.get('recommendations', {}).get('stop_loss'),
+                    'take_profit': unified_result.get('recommendations', {}).get('take_profit')
+                })()
+                
+                logger.info(f"🎯 Crypto BUY signal for {symbol}: Traditional={traditional_score:.1f}, Unified={unified_score:.2f}")
+                return signal
+            else:
+                logger.debug(f"❌ Crypto {symbol} failed unified criteria: score={unified_score:.2f}, monthly={monthly_filter_passed}")
+                return None
+            
+        except Exception as e:
+            logger.error(f"Error analyzing crypto signal for {symbol}: {e}")
+            return None
+    
+    async def _analyze_crypto_signal_mtss(self, crypto_data: Dict[str, Any]) -> Optional[Any]:
+        """Analyze crypto using MTSS (Multi-Timeframe Scoring Strategy)"""
+        try:
+            symbol = crypto_data['symbol']
+            current_price = crypto_data['current_price']
+            
+            logger.debug(f"MTSS Crypto analysis for {symbol} at ${current_price}")
+            
+            # Fetch multi-timeframe data for MTSS
+            required_timeframes = self.mtss_crypto_strategy.get_required_timeframes()
+            logger.debug(f"Fetching MTSS timeframes for {symbol}: {required_timeframes}")
+            
+            timeframe_data = {}
             for tf in required_timeframes:
                 try:
                     data = self.timeframe_service.get_crypto_data(symbol, tf)
                     if data is not None and not data.empty:
                         timeframe_data[tf] = data
-                except Exception as e:
-                    logger.warning(f"Failed to get {tf} data for {symbol}: {e}")
+                        logger.debug(f"Fetched {len(data)} periods of {tf} data for {symbol}")
+                    else:
+                        logger.warning(f"No {tf} data available for {symbol}")
+                except Exception as tf_error:
+                    logger.warning(f"Could not fetch {tf} data for {symbol}: {tf_error}")
             
             if not timeframe_data:
+                logger.warning(f"No timeframe data available for MTSS analysis of {symbol}")
                 return None
             
-            # Generate signal using crypto competition strategy
-            signal = self.crypto_strategy.generate_signal(symbol, current_price, timeframe_data)
-            return signal if signal.action == "BUY" else None
+            # Generate MTSS signal
+            signal = self.mtss_crypto_strategy.generate_signal(symbol, current_price, timeframe_data)
             
+            if signal.action == "BUY":
+                logger.info(f"🎯 MTSS Crypto BUY signal for {symbol}: Score={signal.score:.2f}, Confidence={signal.confidence:.1f}")
+                logger.info(f"MTSS Reasons: {', '.join(signal.reasons)}")
+                return signal
+            else:
+                logger.debug(f"❌ MTSS Crypto {symbol}: {signal.action} (Score={signal.score:.2f}) - {', '.join(signal.reasons)}")
+                return None
+                
         except Exception as e:
-            logger.error(f"Error analyzing crypto signal for {symbol}: {e}")
+            logger.error(f"Error in MTSS crypto analysis for {symbol}: {e}")
             return None
     
     async def _analyze_stock_exit_signal(self, position: Dict[str, Any]) -> Any:
@@ -1110,7 +1214,7 @@ class AutotraderService:
             
             # Use signal's suggested position size and risk level
             confidence = signal.confidence
-            risk_level = signal.risk_level
+            risk_level = getattr(signal, 'risk_level', 'MEDIUM')  # Default to MEDIUM if not present
             
             # Adjust position size based on risk level
             risk_multiplier = {"LOW": 1.2, "MEDIUM": 1.0, "HIGH": 0.8}.get(risk_level, 1.0)
@@ -1184,7 +1288,7 @@ class AutotraderService:
                 "reason": reason,
                 "strategy": signal.timeframe,
                 "confidence": signal.confidence,
-                "risk_level": signal.risk_level,
+                "risk_level": getattr(signal, 'risk_level', 'MEDIUM'),
                 "timestamp": now
             }
             

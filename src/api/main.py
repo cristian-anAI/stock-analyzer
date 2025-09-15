@@ -10,7 +10,7 @@ import logging
 from typing import List, Optional, Dict, Any
 import uvicorn
 
-from .routers import stocks, cryptos, positions, cache, scheduler, diagnostics, portfolio, reports, short_monitoring, symbol_search, market_status
+from .routers import stocks, cryptos, positions, cache, scheduler, diagnostics, portfolio, reports, short_monitoring, symbol_search, market_status, position_monitoring, mtss_analysis, unified_scoring, mtss_bulk_scores, strategy_config
 from .database.database import init_db
 from .middleware.error_handler import ErrorHandlerMiddleware
 from .middleware.logging_middleware import LoggingMiddleware
@@ -44,7 +44,7 @@ app = FastAPI(
 # Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -69,6 +69,11 @@ app.include_router(reports.router, prefix="/api/v1", tags=["reports"])
 app.include_router(short_monitoring.router, prefix="/api/v1", tags=["short-monitoring"])
 app.include_router(symbol_search.router, prefix="/api/v1", tags=["symbol-search"])
 app.include_router(market_status.router, prefix="/api/v1", tags=["market-status"])
+app.include_router(position_monitoring.router)
+app.include_router(mtss_analysis.router, tags=["mtss-analysis"])
+app.include_router(unified_scoring.router, tags=["unified-scoring"])
+app.include_router(mtss_bulk_scores.router, tags=["mtss-bulk-scores"])
+app.include_router(strategy_config.router, tags=["strategy-config"])
 
 @app.on_event("startup")
 async def startup_event():
