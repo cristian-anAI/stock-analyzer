@@ -78,3 +78,21 @@ cleanup_temp/
 
 # Books directory for LLaMA training materials
 books/
+
+# Development and testing files
+chunk_book.py
+create_training_data.py
+integrate_training_data.py
+train_model.py
+
+# Backtest results and temporary data
+mtss_results_*.json
+run_*_backtest.py
+
+# AI Training data and models
+local_ai/training_data/
+local_ai/Modelfile_*
+
+# Frontend examples and documentation
+frontend_integration_example.js
+MONTHLY_SCORING_SOLUTION_SUMMARY.md

@@ -23,7 +23,7 @@ class TimeframeDataService:
         # Timeframe mappings for yfinance
         self.valid_timeframes = {
             "1m": "1m", "5m": "5m", "15m": "15m", "30m": "30m",
-            "1h": "1h", "4h": "1h", "1d": "1d", "1wk": "1wk"
+            "1h": "1h", "4h": "1h", "1d": "1d", "1W": "1wk", "1wk": "1wk", "1M": "1mo"
         }
         
         # Default periods for each timeframe
@@ -32,10 +32,12 @@ class TimeframeDataService:
             "5m": 288,     # 1 day of 5m data  
             "15m": 192,    # 2 days of 15m data
             "30m": 168,    # 3.5 days of 30m data
-            "1h": 168,     # 1 week of hourly data
+            "1h": 200,     # ~30 trading days of hourly data (increased for MTSS)
             "4h": 168,     # 4 weeks of 4h data (need to process from 1h)
-            "1d": 60,      # 2 months of daily data
-            "1wk": 52      # 1 year of weekly data
+            "1d": 100,     # ~3-4 months of daily data (increased for MTSS)
+            "1W": 60,      # ~1 year of weekly data (increased for MTSS)
+            "1wk": 60,     # ~1 year of weekly data (increased for MTSS)
+            "1M": 36       # 3 years of monthly data (increased for reliable MACD)
         }
     
     def get_stock_data(self, symbol: str, timeframe: str = "1d", periods: int = None) -> Optional[pd.DataFrame]:
@@ -78,12 +80,35 @@ class TimeframeDataService:
                 # For intraday, use period in days
                 period_days = max(1, periods // (390 // int(timeframe[:-1])))  # 390 mins in trading day
                 period = f"{period_days}d"
+            elif timeframe == "1h":
+                # For hourly data, we need enough days to get the requested periods
+                # Stocks trade ~6.5 hours/day, so for 168 periods we need ~26 trading days
+                # Add buffer for weekends and holidays
+                trading_hours_per_day = 6.5
+                trading_days_needed = max(30, int(periods / trading_hours_per_day) * 2)  # 2x buffer
+                if trading_days_needed > 365:
+                    period = "2y"  # Max reliable period for hourly data
+                else:
+                    period = f"{trading_days_needed}d"
+            elif timeframe == "1M":
+                # For monthly data, we need enough history for reliable MACD
+                # 24 periods = 2 years minimum, but extend for better MACD calculation
+                # MACD needs at least 26+9=35 periods to be meaningful
+                periods_needed = max(36, periods)  # At least 3 years for reliable monthly MACD
+                years_needed = max(3, (periods_needed * 30) // 365)
+                period = f"{years_needed}y"
+                logger.info(f"Fetching {years_needed} years of monthly data for {symbol} (need {periods_needed} periods)")
             else:
                 # For longer timeframes, calculate period more intelligently
-                if timeframe == "1h":
-                    period = f"{max(1, periods // 24)}d"
-                elif timeframe == "1d":
+                if timeframe == "1d":
                     period = f"{max(30, periods)}d" if periods < 365 else f"{periods // 365}y"
+                elif timeframe in ["1wk", "1W"]:
+                    # Weekly data - each period is ~1 week
+                    weeks_needed = max(52, periods)  # At least 1 year
+                    if weeks_needed > 260:  # More than 5 years
+                        period = f"{weeks_needed // 52}y"
+                    else:
+                        period = f"{weeks_needed * 7}d"
                 else:
                     period = f"{periods}d"
             
@@ -98,13 +123,33 @@ class TimeframeDataService:
                     prepost=False
                 )
             except Exception as e:
-                logger.warning(f"Failed to fetch with period {period}, trying max period for {symbol}")
-                data = ticker.history(
-                    period="max",
-                    interval=yf_timeframe,
-                    auto_adjust=True,
-                    prepost=False
-                )
+                logger.warning(f"Failed to fetch with period {period} for {symbol}: {e}")
+                # For monthly data, try progressively shorter periods
+                if timeframe == "1M":
+                    fallback_periods = ["max", "5y", "3y", "2y"]
+                    for fallback in fallback_periods:
+                        try:
+                            logger.info(f"Trying fallback period {fallback} for monthly data {symbol}")
+                            data = ticker.history(
+                                period=fallback,
+                                interval=yf_timeframe,
+                                auto_adjust=True,
+                                prepost=False
+                            )
+                            if not data.empty:
+                                logger.info(f"Successfully fetched {len(data)} monthly periods with {fallback} for {symbol}")
+                                break
+                        except Exception as fallback_e:
+                            logger.warning(f"Fallback {fallback} also failed for {symbol}: {fallback_e}")
+                            continue
+                else:
+                    # For other timeframes, try max period
+                    data = ticker.history(
+                        period="max",
+                        interval=yf_timeframe,
+                        auto_adjust=True,
+                        prepost=False
+                    )
             
             if data.empty:
                 logger.warning(f"No data retrieved for {symbol} {timeframe}")
