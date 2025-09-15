@@ -343,3 +343,5 @@ def get_total_portfolio_value(self) -> float:
 **RESPONSE**: Implemented temporary bypass allowing qualified trades (score ≥ 6.0) during market stress.
 - Memoriza la nueva forma de cambiar entre estrategias y la forma de guardar nuevas estrategias
 - Memoriza todo lo que tenga que ver con el nuevo sistema
+- Para el docker estoy usando docker-compose -f docs/deployment/docker-compose.prod.yml up -d --build
+asi que si hay algun problema de bvuild hay que empezar a mirar por aqui
