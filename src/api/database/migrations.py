@@ -382,8 +382,8 @@ def create_volatility_tracking_table():
                 volatility REAL NOT NULL,
                 timeframe TEXT NOT NULL DEFAULT '1d',
                 market_stress_level TEXT, -- 'low', 'medium', 'high', 'extreme'
-                timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                UNIQUE(symbol, timeframe, DATE(timestamp))
+                created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+                UNIQUE(symbol, timeframe)
             )
         """)
         
@@ -395,7 +395,7 @@ def create_volatility_tracking_table():
         
         db_manager.execute_update("""
             CREATE INDEX IF NOT EXISTS idx_volatility_timestamp 
-            ON volatility_tracking(timestamp)
+            ON volatility_tracking(created_at)
         """)
         
         logger.info("Created volatility_tracking table")
@@ -412,9 +412,9 @@ def create_trading_cooldowns_table():
             CREATE TABLE IF NOT EXISTS trading_cooldowns (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 symbol TEXT NOT NULL UNIQUE,
-                cooldown_until TIMESTAMP NOT NULL,
+                cooldown_until TEXT NOT NULL,
                 reason TEXT,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                created_at TEXT DEFAULT CURRENT_TIMESTAMP
             )
         """)
         
@@ -444,9 +444,9 @@ def create_symbol_blacklist_table():
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 symbol TEXT NOT NULL UNIQUE,
                 reason TEXT NOT NULL,
-                blacklisted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                blacklisted_until TIMESTAMP, -- NULL for permanent blacklist
-                auto_added BOOLEAN DEFAULT FALSE,
+                blacklisted_at TEXT DEFAULT CURRENT_TIMESTAMP,
+                blacklisted_until TEXT, -- NULL for permanent blacklist
+                auto_added INTEGER DEFAULT 0, -- 0=false, 1=true (SQLite doesn't have BOOLEAN)
                 notes TEXT
             )
         """)
@@ -457,15 +457,16 @@ def create_symbol_blacklist_table():
             ON symbol_blacklist(symbol)
         """)
         
-        db_manager.execute_update("""
-            CREATE INDEX IF NOT EXISTS idx_blacklist_until 
-            ON symbol_blacklist(blacklisted_until)
-        """)
+        # Note: Skip index on blacklisted_until since it can be NULL
+        # db_manager.execute_update("""
+        #     CREATE INDEX IF NOT EXISTS idx_blacklist_until 
+        #     ON symbol_blacklist(blacklisted_until)
+        # """)
         
         # Add problematic symbols that we've identified
         problematic_symbols = [
-            ("CISCO", "Delisted symbol - no price data found", True),
-            ("MATIC-USD", "Possibly delisted crypto - no price data found", True)
+            ("CISCO", "Delisted symbol - no price data found", 1),
+            ("MATIC-USD", "Possibly delisted crypto - no price data found", 1)
         ]
         
         for symbol, reason, auto_added in problematic_symbols:
