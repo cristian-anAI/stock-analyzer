@@ -26,23 +26,30 @@ RUN pip install --no-cache-dir --upgrade pip \
 COPY src/ ./src/
 COPY run_api.py .
 COPY main.py .
+# Copy archive directory for stock lists
+COPY archive/ ./archive/
 
 # Create necessary directories
 RUN mkdir -p /app/src/logs \
     && mkdir -p /app/data \
-    && mkdir -p /app/reports
+    && mkdir -p /app/reports \
+    && chmod 755 /app/data
 
 # Create production startup script
 RUN echo '#!/bin/bash\n\
 echo "🚀 Stock Analyzer API - Production Mode"\n\
 echo "Time: $(date)"\n\
 echo "Python version: $(python --version)"\n\
+echo "Database path: ${SQLITE_DB_PATH:-trading.db}"\n\
 echo ""\n\
 echo "🔧 Checking dependencies..."\n\
 python -c "import yfinance, pandas, fastapi, uvicorn; print(\"✅ All dependencies OK\")" || { echo "❌ Dependency error"; exit 1; }\n\
 echo ""\n\
+echo "🗄️  Checking database directory..."\n\
+mkdir -p "$(dirname "${SQLITE_DB_PATH:-trading.db}")" && echo "✅ Database directory ready"\n\
+echo ""\n\
 echo "🗄️  Initializing database..."\n\
-python -c "from src.api.database.database import init_db; init_db(); print(\"✅ Database ready\")" || { echo "❌ Database error"; exit 1; }\n\
+python -c "from src.api.database.database import init_db, DATABASE_PATH; print(f\"Database location: {DATABASE_PATH}\"); init_db(); print(\"✅ Database ready\")" || { echo "❌ Database error"; exit 1; }\n\
 echo ""\n\
 echo "🌐 Starting FastAPI server..."\n\
 cd /app && python run_api.py\n\

@@ -19,7 +19,8 @@ router = APIRouter()
 
 def get_db_connection():
     """Get database connection"""
-    return sqlite3.connect('trading.db', check_same_thread=False)
+    from ..database.database import DATABASE_PATH
+    return sqlite3.connect(DATABASE_PATH, check_same_thread=False)
 
 @router.get("/portfolio/overview")
 async def get_portfolio_overview():

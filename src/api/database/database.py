@@ -10,7 +10,8 @@ from contextlib import contextmanager
 
 logger = logging.getLogger(__name__)
 
-DATABASE_PATH = "trading.db"
+# Use environment variable for database path, fallback to local for development
+DATABASE_PATH = os.getenv("SQLITE_DB_PATH", "trading.db")
 
 class DatabaseManager:
     """Database manager for Stock Analyzer API"""

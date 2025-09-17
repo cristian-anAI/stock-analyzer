@@ -22,7 +22,8 @@ class ExcelReportsService:
         
     def get_db_connection(self):
         """Get database connection"""
-        return sqlite3.connect('trading.db', check_same_thread=False)
+        from ..database.database import DATABASE_PATH
+        return sqlite3.connect(DATABASE_PATH, check_same_thread=False)
     
     def generate_all_reports(self):
         """Generate all Excel reports"""

@@ -33,6 +33,15 @@ def run_portfolio_migrations():
         # Migration 7: Create MTSS scores cache table
         create_mtss_scores_table()
         
+        # Migration 8: Create volatility tracking table
+        create_volatility_tracking_table()
+        
+        # Migration 9: Create trading cooldowns table
+        create_trading_cooldowns_table()
+        
+        # Migration 10: Create symbol blacklist table
+        create_symbol_blacklist_table()
+        
         logger.info("Portfolio migrations completed successfully")
         return True
         
@@ -361,4 +370,116 @@ def create_mtss_scores_table():
         
     except Exception as e:
         logger.error(f"Error creating MTSS scores table: {e}")
+        return False
+
+def create_volatility_tracking_table():
+    """Create volatility tracking table for market stress monitoring"""
+    try:
+        db_manager.execute_update("""
+            CREATE TABLE IF NOT EXISTS volatility_tracking (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                symbol TEXT NOT NULL,
+                volatility REAL NOT NULL,
+                timeframe TEXT NOT NULL DEFAULT '1d',
+                market_stress_level TEXT, -- 'low', 'medium', 'high', 'extreme'
+                timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                UNIQUE(symbol, timeframe, DATE(timestamp))
+            )
+        """)
+        
+        # Create indexes for efficient queries
+        db_manager.execute_update("""
+            CREATE INDEX IF NOT EXISTS idx_volatility_symbol 
+            ON volatility_tracking(symbol)
+        """)
+        
+        db_manager.execute_update("""
+            CREATE INDEX IF NOT EXISTS idx_volatility_timestamp 
+            ON volatility_tracking(timestamp)
+        """)
+        
+        logger.info("Created volatility_tracking table")
+        return True
+        
+    except Exception as e:
+        logger.error(f"Error creating volatility_tracking table: {e}")
+        return False
+
+def create_trading_cooldowns_table():
+    """Create trading cooldowns table for position management"""
+    try:
+        db_manager.execute_update("""
+            CREATE TABLE IF NOT EXISTS trading_cooldowns (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                symbol TEXT NOT NULL UNIQUE,
+                cooldown_until TIMESTAMP NOT NULL,
+                reason TEXT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        """)
+        
+        # Create index for efficient symbol lookups
+        db_manager.execute_update("""
+            CREATE INDEX IF NOT EXISTS idx_cooldowns_symbol 
+            ON trading_cooldowns(symbol)
+        """)
+        
+        db_manager.execute_update("""
+            CREATE INDEX IF NOT EXISTS idx_cooldowns_until 
+            ON trading_cooldowns(cooldown_until)
+        """)
+        
+        logger.info("Created trading_cooldowns table")
+        return True
+        
+    except Exception as e:
+        logger.error(f"Error creating trading_cooldowns table: {e}")
+        return False
+
+def create_symbol_blacklist_table():
+    """Create symbol blacklist table for managing problematic symbols"""
+    try:
+        db_manager.execute_update("""
+            CREATE TABLE IF NOT EXISTS symbol_blacklist (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                symbol TEXT NOT NULL UNIQUE,
+                reason TEXT NOT NULL,
+                blacklisted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                blacklisted_until TIMESTAMP, -- NULL for permanent blacklist
+                auto_added BOOLEAN DEFAULT FALSE,
+                notes TEXT
+            )
+        """)
+        
+        # Create index for efficient symbol lookups
+        db_manager.execute_update("""
+            CREATE INDEX IF NOT EXISTS idx_blacklist_symbol 
+            ON symbol_blacklist(symbol)
+        """)
+        
+        db_manager.execute_update("""
+            CREATE INDEX IF NOT EXISTS idx_blacklist_until 
+            ON symbol_blacklist(blacklisted_until)
+        """)
+        
+        # Add problematic symbols that we've identified
+        problematic_symbols = [
+            ("CISCO", "Delisted symbol - no price data found", True),
+            ("MATIC-USD", "Possibly delisted crypto - no price data found", True)
+        ]
+        
+        for symbol, reason, auto_added in problematic_symbols:
+            try:
+                db_manager.execute_insert("""
+                    INSERT OR IGNORE INTO symbol_blacklist (symbol, reason, auto_added)
+                    VALUES (?, ?, ?)
+                """, (symbol, reason, auto_added))
+            except:
+                pass  # Ignore if already exists
+        
+        logger.info("Created symbol_blacklist table")
+        return True
+        
+    except Exception as e:
+        logger.error(f"Error creating symbol_blacklist table: {e}")
         return False

@@ -33,11 +33,15 @@ if __name__ == "__main__":
     print("Watch autotrader logs in real-time!")
     print("=" * 50)
     
+    # Check environment for production mode
+    environment = os.getenv("ENVIRONMENT", "development").lower()
+    is_production = environment == "production"
+    
     # Run the API server
     uvicorn.run(
         "api.main:app",
         host="0.0.0.0",
         port=8000,
-        reload=True,
+        reload=not is_production,  # Disable reload in production
         log_level="info"
     )

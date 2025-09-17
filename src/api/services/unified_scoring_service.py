@@ -1039,3 +1039,49 @@ class UnifiedScoringService:
         except Exception as e:
             logger.error(f"Error caching unified score for {symbol}: {e}")
             # Don't raise - caching errors shouldn't break scoring
+
+    async def analyze_symbol(self, symbol: str, asset_type: str = 'stock', focus_timeframe: str = None) -> Dict[str, Any]:
+        """
+        Analyze a single symbol and return unified scoring result
+        
+        Args:
+            symbol: Symbol to analyze (e.g., 'AAPL', 'BTC-USD')
+            asset_type: 'stock' or 'crypto'
+            focus_timeframe: Optional specific timeframe to focus on
+            
+        Returns:
+            Dict containing unified score, color indicator, and breakdown
+        """
+        try:
+            # Get cached result if available
+            cached_result = self._get_cached_score(symbol)
+            if cached_result:
+                return cached_result
+            
+            # Calculate unified score
+            result = self.calculate_unified_score(symbol, asset_type, focus_timeframe=focus_timeframe)
+            
+            # Add color indicator for frontend
+            result['color_indicator'] = self.get_color_indicator(result['unified_score'])
+            
+            # Cache the result
+            self._cache_score(symbol, result)
+            
+            return result
+            
+        except Exception as e:
+            logger.error(f"Error analyzing symbol {symbol}: {e}")
+            return {
+                'symbol': symbol,
+                'asset_type': asset_type,
+                'unified_score': 0.0,
+                'color_indicator': 'gray',
+                'trading_signal': 'HOLD',
+                'confidence': 0.0,
+                'error': str(e),
+                'breakdown': {
+                    'traditional': {'score': 0.0, 'error': str(e)},
+                    'advanced': {'score': 0.0, 'error': str(e)},
+                    'mtss': {'score': 0.0, 'error': str(e)}
+                }
+            }
