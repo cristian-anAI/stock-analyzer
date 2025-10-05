@@ -98,7 +98,7 @@ class MonthlyScoreDebugLogger:
         
         summary = (f"UNIFIED: {symbol} | Score: {unified_result.get('unified_score', 0):.2f} | "
                   f"Signal: {unified_result.get('trading_signal', 'HOLD')} | "
-                  f"Monthly: {'✅' if monthly_filter else '❌'} | "
+                  f"Monthly: {'PASS' if monthly_filter else 'FAIL'} | "
                   f"TF Scores: {timeframe_scores}")
         
         self.debug_logger.info(summary)

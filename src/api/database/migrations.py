@@ -41,7 +41,13 @@ def run_portfolio_migrations():
         
         # Migration 10: Create symbol blacklist table
         create_symbol_blacklist_table()
-        
+
+        # Migration 11: Fix volatility_tracking constraint issue
+        fix_volatility_tracking_constraint()
+
+        # Migration 12: Create decision logs table for transparency
+        create_decision_logs_table()
+
         logger.info("Portfolio migrations completed successfully")
         return True
         
@@ -375,15 +381,59 @@ def create_mtss_scores_table():
 def create_volatility_tracking_table():
     """Create volatility tracking table for market stress monitoring"""
     try:
+        # First try to add missing columns to existing table
+        try:
+            db_manager.execute_update("ALTER TABLE volatility_tracking ADD COLUMN date TEXT")
+        except:
+            pass  # Column might already exist
+
+        try:
+            db_manager.execute_update("ALTER TABLE volatility_tracking ADD COLUMN daily_volatility REAL")
+        except:
+            pass
+
+        try:
+            db_manager.execute_update("ALTER TABLE volatility_tracking ADD COLUMN atr_14 REAL")
+        except:
+            pass
+
+        try:
+            db_manager.execute_update("ALTER TABLE volatility_tracking ADD COLUMN volatility_percentile REAL")
+        except:
+            pass
+
+        try:
+            db_manager.execute_update("ALTER TABLE volatility_tracking ADD COLUMN is_high_volatility INTEGER DEFAULT 0")
+        except:
+            pass
+
+        try:
+            db_manager.execute_update("ALTER TABLE volatility_tracking ADD COLUMN price_range_percent REAL")
+        except:
+            pass
+
+        try:
+            db_manager.execute_update("ALTER TABLE volatility_tracking ADD COLUMN volume_volatility REAL")
+        except:
+            pass
+
+        # Create table with all required columns if it doesn't exist
         db_manager.execute_update("""
             CREATE TABLE IF NOT EXISTS volatility_tracking (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 symbol TEXT NOT NULL,
-                volatility REAL NOT NULL,
+                date TEXT,
+                volatility REAL,
+                daily_volatility REAL,
+                atr_14 REAL,
+                volatility_percentile REAL,
+                is_high_volatility INTEGER DEFAULT 0,
+                price_range_percent REAL,
+                volume_volatility REAL,
                 timeframe TEXT NOT NULL DEFAULT '1d',
-                market_stress_level TEXT, -- 'low', 'medium', 'high', 'extreme'
+                market_stress_level TEXT,
                 created_at TEXT DEFAULT CURRENT_TIMESTAMP,
-                UNIQUE(symbol, timeframe)
+                UNIQUE(symbol, date)
             )
         """)
         
@@ -480,7 +530,176 @@ def create_symbol_blacklist_table():
         
         logger.info("Created symbol_blacklist table")
         return True
-        
+
     except Exception as e:
         logger.error(f"Error creating symbol_blacklist table: {e}")
+        return False
+
+def fix_volatility_tracking_constraint():
+    """Fix volatility_tracking table constraint issue - remove NOT NULL from legacy volatility column"""
+    try:
+        # First, check current table schema
+        columns = db_manager.execute_query("PRAGMA table_info(volatility_tracking)")
+        if not columns:
+            logger.info("volatility_tracking table does not exist - creating from scratch")
+            return create_volatility_tracking_table()
+
+        logger.info("Fixing volatility_tracking constraint issue...")
+
+        # Get existing data
+        existing_data = db_manager.execute_query("SELECT * FROM volatility_tracking")
+        logger.info(f"Found {len(existing_data)} existing volatility tracking records")
+
+        # Drop existing table and recreate with fixed schema
+        db_manager.execute_update("DROP TABLE IF EXISTS volatility_tracking_backup")
+        db_manager.execute_update("ALTER TABLE volatility_tracking RENAME TO volatility_tracking_backup")
+
+        # Create new table with correct schema (no NOT NULL constraint on volatility column)
+        db_manager.execute_update("""
+            CREATE TABLE volatility_tracking (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                symbol TEXT NOT NULL,
+                date TEXT,
+                volatility REAL,  -- Removed NOT NULL constraint here
+                daily_volatility REAL,
+                atr_14 REAL,
+                volatility_percentile REAL,
+                is_high_volatility INTEGER DEFAULT 0,
+                price_range_percent REAL,
+                volume_volatility REAL,
+                timeframe TEXT NOT NULL DEFAULT '1d',
+                market_stress_level TEXT,
+                created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+                UNIQUE(symbol, date)
+            )
+        """)
+
+        # Migrate existing data - handle NULL volatility values
+        for row in existing_data:
+            try:
+                db_manager.execute_insert("""
+                    INSERT OR REPLACE INTO volatility_tracking
+                    (symbol, date, volatility, daily_volatility, atr_14, volatility_percentile,
+                     is_high_volatility, price_range_percent, volume_volatility, timeframe,
+                     market_stress_level, created_at)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """, (
+                    row.get('symbol'),
+                    row.get('date'),
+                    row.get('volatility'),  # Allow NULL values now
+                    row.get('daily_volatility'),
+                    row.get('atr_14'),
+                    row.get('volatility_percentile'),
+                    row.get('is_high_volatility', 0),
+                    row.get('price_range_percent'),
+                    row.get('volume_volatility'),
+                    row.get('timeframe', '1d'),
+                    row.get('market_stress_level'),
+                    row.get('created_at')
+                ))
+            except Exception as e:
+                logger.warning(f"Failed to migrate volatility record for {row.get('symbol', 'unknown')}: {e}")
+
+        # Recreate indexes
+        db_manager.execute_update("""
+            CREATE INDEX IF NOT EXISTS idx_volatility_symbol
+            ON volatility_tracking(symbol)
+        """)
+
+        db_manager.execute_update("""
+            CREATE INDEX IF NOT EXISTS idx_volatility_timestamp
+            ON volatility_tracking(created_at)
+        """)
+
+        # Clean up backup table
+        db_manager.execute_update("DROP TABLE volatility_tracking_backup")
+
+        logger.info("Successfully fixed volatility_tracking constraint issue")
+        return True
+
+    except Exception as e:
+        logger.error(f"Error fixing volatility_tracking constraint: {e}")
+        # Try to rollback if possible
+        try:
+            db_manager.execute_update("DROP TABLE IF EXISTS volatility_tracking")
+            db_manager.execute_update("ALTER TABLE volatility_tracking_backup RENAME TO volatility_tracking")
+            logger.info("Rolled back changes due to error")
+        except:
+            pass
+        return False
+
+def create_decision_logs_table():
+    """Create decision logs table for tracking all autotrader buy/sell decisions"""
+    try:
+        db_manager.execute_update("""
+            CREATE TABLE IF NOT EXISTS decision_logs (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                symbol TEXT NOT NULL,
+                asset_type TEXT NOT NULL,
+                decision_type TEXT NOT NULL CHECK (decision_type IN ('buy_signal', 'sell_signal', 'no_buy', 'no_sell')),
+                action_taken TEXT CHECK (action_taken IN ('buy', 'sell', 'none')),
+                score REAL,
+                current_price REAL,
+
+                -- Decision factors (JSON strings for complex data)
+                filters_passed TEXT,  -- JSON: {"volatility": true, "overtrading": true, ...}
+                filters_failed TEXT,  -- JSON: {"monthly_filter": false, ...}
+                scoring_breakdown TEXT,  -- JSON: complete scoring breakdown
+
+                -- Buy decision factors
+                buy_threshold REAL,
+                confidence REAL,
+                position_size REAL,
+
+                -- Sell decision factors
+                sell_threshold REAL,
+                entry_price REAL,
+                pnl_percent REAL,
+                days_held INTEGER,
+                trailing_stop_price REAL,
+                stop_loss_price REAL,
+                take_profit_price REAL,
+
+                -- Exit reason details
+                exit_reason TEXT,
+                exit_details TEXT,  -- JSON with full exit analysis
+
+                -- Market context
+                market_status TEXT,
+                risk_within_limits INTEGER DEFAULT 1,
+                portfolio_status TEXT,  -- JSON with portfolio snapshot
+
+                -- Metadata
+                cycle_id TEXT,  -- Links decisions from same cycle
+                timestamp TEXT DEFAULT CURRENT_TIMESTAMP,
+                notes TEXT
+            )
+        """)
+
+        # Create indexes for efficient queries
+        db_manager.execute_update("""
+            CREATE INDEX IF NOT EXISTS idx_decision_logs_symbol
+            ON decision_logs(symbol)
+        """)
+
+        db_manager.execute_update("""
+            CREATE INDEX IF NOT EXISTS idx_decision_logs_timestamp
+            ON decision_logs(timestamp)
+        """)
+
+        db_manager.execute_update("""
+            CREATE INDEX IF NOT EXISTS idx_decision_logs_cycle
+            ON decision_logs(cycle_id)
+        """)
+
+        db_manager.execute_update("""
+            CREATE INDEX IF NOT EXISTS idx_decision_logs_decision_type
+            ON decision_logs(decision_type)
+        """)
+
+        logger.info("Created decision_logs table")
+        return True
+
+    except Exception as e:
+        logger.error(f"Error creating decision_logs table: {e}")
         return False

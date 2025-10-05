@@ -183,20 +183,20 @@ class BackgroundScheduler:
     async def _update_stocks_data(self):
         """Update stocks data during market hours"""
         try:
-            logger.info("🏦 Background stocks data update starting...")
+            logger.info("STOCKS: Background stocks data update starting...")
             await self.data_service.update_stocks_data(force_refresh=True)
             
             self.stats["last_data_update"] = datetime.now().isoformat()
-            logger.info("✅ Background stocks data update completed")
+            logger.info("STOCKS: Background stocks data update completed")
             
         except Exception as e:
-            logger.error(f"❌ Background stocks data update error: {str(e)}")
+            logger.error(f"STOCKS ERROR: Background stocks data update error: {str(e)}")
             self.stats["errors"] += 1
     
     async def _update_crypto_data(self):
         """Update crypto data 24/7 with focus on BTC, ETH, SOL"""
         try:
-            logger.info("₿ Background crypto data update starting...")
+            logger.info("CRYPTO: Background crypto data update starting...")
             
             # Focus on high-priority cryptos: BTC, ETH, SOL
             priority_cryptos = ["BTC-USD", "ETH-USD", "SOL-USD"]
@@ -213,10 +213,10 @@ class BackgroundScheduler:
                 logger.info("💎 Updating remaining cryptos...")
                 await self.data_service.update_cryptos_data(force_refresh=True)
             
-            logger.info("✅ Background crypto data update completed")
+            logger.info("CRYPTO: Background crypto data update completed")
             
         except Exception as e:
-            logger.error(f"❌ Background crypto data update error: {str(e)}")
+            logger.error(f"CRYPTO ERROR: Background crypto data update error: {str(e)}")
             self.stats["errors"] += 1
     
     async def _run_autotrader_cycle(self):
@@ -289,7 +289,7 @@ class BackgroundScheduler:
                 self.market_open_update_done_today = True
                 self.stats["last_position_update"] = spanish_time.isoformat()
                 
-                logger.info(f"✅ Market open update completed: {update_result.get('message', 'Update done')}")
+                logger.info(f"MARKET: Market open update completed: {update_result.get('message', 'Update done')}")
                 
         except Exception as e:
             logger.error(f"Error in market open update check: {e}")
@@ -342,7 +342,7 @@ class BackgroundScheduler:
             total_cached = sum(r.get('cached', 0) for r in cycle_results.values())
             
             if total_processed > 0 or total_cached > 0:
-                logger.info(f"✅ MTSS cycle completed: {total_processed} analyzed, {total_cached} cached, {len(cycle_results)} timeframes active")
+                logger.info(f"MTSS: MTSS cycle completed: {total_processed} analyzed, {total_cached} cached, {len(cycle_results)} timeframes active")
             else:
                 logger.debug("💤 MTSS cycle: No timeframes ready for update")
             
@@ -367,7 +367,7 @@ class BackgroundScheduler:
             successful_updates = len([r for r in crypto_results.values() if 'error' not in r])
             failed_updates = len([r for r in crypto_results.values() if 'error' in r])
             
-            logger.info(f"✅ Crypto scoring update completed: {successful_updates} success, {failed_updates} errors")
+            logger.info(f"CRYPTO SCORING: Crypto scoring update completed: {successful_updates} success, {failed_updates} errors")
             
             self.stats["last_crypto_scoring_update"] = datetime.now().isoformat()
             

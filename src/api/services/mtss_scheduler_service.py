@@ -59,6 +59,16 @@ class MTSSSchedulerService:
             TimeframeType.WEEKLY: 5.5,   # Medium-high scores
             TimeframeType.MONTHLY: 5.0   # All relevant scores
         }
+
+        # MANDATORY: Ensure ALL stocks have MTSS analysis at least once
+        # Maximum age before MTSS becomes stale and MUST be refreshed
+        self.max_stale_age_hours = 168  # 7 days (1 week)
+
+        # Backup queue for stocks without MTSS or with stale data
+        self.backup_queue = []
+
+        # Reserved API budget for backup queue (ensures all stocks get coverage)
+        self.backup_api_budget = 5  # Reserve 5 calls per cycle for forgotten stocks
         
         # Last run tracking
         self.last_runs = {
@@ -127,9 +137,25 @@ class MTSSSchedulerService:
         # Get symbols to process for this timeframe
         symbols_to_process = await self._get_symbols_for_timeframe(timeframe)
         api_budget = self.api_budget_per_timeframe[timeframe]
-        
-        # Limit to budget
-        symbols_to_process = symbols_to_process[:api_budget]
+
+        # CRITICAL: Reserve budget for backup queue (stocks without MTSS)
+        backup_budget = min(self.backup_api_budget, len(self.backup_queue))
+        regular_budget = max(0, api_budget - backup_budget)
+
+        # Process backup queue first (highest priority)
+        backup_symbols = self.backup_queue[:backup_budget] if backup_budget > 0 else []
+
+        # Then process regular symbols
+        regular_symbols = symbols_to_process[:regular_budget]
+
+        # Combine queues (backup queue has priority)
+        symbols_to_process = backup_symbols + regular_symbols
+
+        if backup_symbols:
+            logger.warning(f"🔧 BACKUP PROCESSING: {len(backup_symbols)} forgotten stocks get priority")
+            logger.info(f"📊 Regular processing: {len(regular_symbols)} symbols (remaining budget)")
+        else:
+            logger.info(f"📊 Regular processing: {len(regular_symbols)} symbols (no backup needed)")
         
         processed = 0
         cached = 0
@@ -180,6 +206,15 @@ class MTSSSchedulerService:
         
         # Update last run time
         self.last_runs[timeframe] = datetime.now()
+
+        # CRITICAL: Remove successfully processed symbols from backup queue
+        if backup_symbols:
+            processed_backup_symbols = {s["symbol"] for s in backup_symbols if s["symbol"] in [r["symbol"] for r in results if r["status"] == "processed"]}
+            self.backup_queue = [s for s in self.backup_queue if s["symbol"] not in processed_backup_symbols]
+
+            if processed_backup_symbols:
+                logger.warning(f"🎯 BACKUP SUCCESS: {len(processed_backup_symbols)} forgotten stocks now have MTSS data")
+                logger.warning(f"🔧 BACKUP REMAINING: {len(self.backup_queue)} stocks still need MTSS analysis")
         
         # Update stats
         self.stats["total_symbols_processed"] += processed
@@ -231,6 +266,64 @@ class MTSSSchedulerService:
             
             self.processing_queues[timeframe] = qualified_symbols
             logger.info(f"📊 {timeframe.value}: {len(qualified_symbols)} symbols (score >= {threshold})")
+
+        # CRITICAL: Initialize backup queue for stocks without MTSS or with stale data
+        await self._initialize_backup_queue(all_symbols)
+
+    async def _initialize_backup_queue(self, all_symbols: List[Dict[str, Any]]):
+        """Initialize backup queue for stocks without MTSS or with stale data"""
+        logger.info("🔍 Checking for stocks without MTSS or with stale data...")
+
+        stale_cutoff = datetime.now() - timedelta(hours=self.max_stale_age_hours)
+        backup_candidates = []
+
+        for symbol_data in all_symbols:
+            symbol = symbol_data["symbol"]
+
+            # Check if symbol has ANY MTSS data
+            existing_mtss = db_manager.execute_query(
+                "SELECT symbol, updated_at FROM mtss_scores WHERE symbol = ? ORDER BY updated_at DESC LIMIT 1",
+                (symbol,)
+            )
+
+            if not existing_mtss:
+                # No MTSS data at all - CRITICAL priority
+                backup_candidates.append({
+                    "symbol": symbol,
+                    "asset_type": symbol_data["asset_type"],
+                    "traditional_score": symbol_data["score"],
+                    "reason": "no_mtss_data",
+                    "priority": 10  # Highest priority
+                })
+                logger.debug(f"🚨 {symbol}: NO MTSS DATA - adding to backup queue")
+
+            else:
+                # Check if existing MTSS is stale
+                last_updated = datetime.fromisoformat(existing_mtss[0]["updated_at"])
+                if last_updated < stale_cutoff:
+                    backup_candidates.append({
+                        "symbol": symbol,
+                        "asset_type": symbol_data["asset_type"],
+                        "traditional_score": symbol_data["score"],
+                        "reason": "stale_mtss_data",
+                        "priority": 5,  # Medium priority
+                        "last_updated": existing_mtss[0]["updated_at"]
+                    })
+                    logger.debug(f"⏰ {symbol}: STALE MTSS ({last_updated.strftime('%Y-%m-%d')}) - adding to backup queue")
+
+        # Sort backup queue by priority (highest first), then by traditional score
+        backup_candidates.sort(key=lambda x: (-x["priority"], -x["traditional_score"]))
+        self.backup_queue = backup_candidates
+
+        no_mtss_count = len([x for x in backup_candidates if x["reason"] == "no_mtss_data"])
+        stale_count = len([x for x in backup_candidates if x["reason"] == "stale_mtss_data"])
+
+        logger.warning(f"🔧 BACKUP QUEUE: {len(backup_candidates)} stocks need MTSS analysis")
+        logger.warning(f"   - {no_mtss_count} stocks with NO MTSS data")
+        logger.warning(f"   - {stale_count} stocks with STALE MTSS data (>{self.max_stale_age_hours}h old)")
+
+        if backup_candidates:
+            logger.warning(f"   - Next 3 priorities: {[x['symbol'] for x in backup_candidates[:3]]}")
 
     def _should_run_timeframe(self, timeframe: TimeframeType) -> bool:
         """Check if it's time to run a specific timeframe"""
@@ -354,7 +447,15 @@ class MTSSSchedulerService:
                          for tf, last_run in self.last_runs.items()},
             "next_scheduled_runs": self._get_next_scheduled_runs(),
             "api_budgets": {tf.value: budget for tf, budget in self.api_budget_per_timeframe.items()},
-            "priority_thresholds": {tf.value: threshold for tf, threshold in self.priority_thresholds.items()}
+            "priority_thresholds": {tf.value: threshold for tf, threshold in self.priority_thresholds.items()},
+            "backup_queue": {
+                "size": len(self.backup_queue),
+                "no_mtss_count": len([x for x in self.backup_queue if x["reason"] == "no_mtss_data"]),
+                "stale_count": len([x for x in self.backup_queue if x["reason"] == "stale_mtss_data"]),
+                "next_priorities": [x["symbol"] for x in self.backup_queue[:5]],
+                "max_stale_age_hours": self.max_stale_age_hours,
+                "backup_api_budget": self.backup_api_budget
+            }
         }
 
     def _get_next_scheduled_runs(self) -> Dict[str, Optional[str]]:

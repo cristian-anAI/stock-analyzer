@@ -12,6 +12,8 @@ from .data_service import DataService
 from .scoring_service import ScoringService
 from .advanced_scoring_service import AdvancedScoringService
 from .unified_scoring_service import UnifiedScoringService
+from .improved_scoring_service import ImprovedScoringService
+from .decision_logger import decision_logger
 from .portfolio_manager import portfolio_manager
 from .timeframe_data_service import TimeframeDataService
 from .volatility_service import volatility_service
@@ -22,49 +24,70 @@ from .transaction_pnl_service import get_transaction_pnl_service
 from ..strategies.swing_trading_strategy import SwingTradingStrategy
 from ..strategies.crypto_competition_strategy import CryptoCompetitionStrategy
 from ..strategies.mtss_crypto_strategy import MTSSCryptoStrategy
+from ..strategies.optimized_trading_config import OptimizedTradingConfig
 
 logger = logging.getLogger(__name__)
 
 class AutotraderService:
     """Service for automated trading based on scores"""
     
-    def __init__(self):
+    def __init__(self, use_optimized_config: bool = True):
         self.data_service = DataService()
         self.scoring_service = ScoringService()
         self.advanced_scoring = AdvancedScoringService()
-        self.unified_scoring = UnifiedScoringService()  # NEW: Unified scoring system
+        self.unified_scoring = UnifiedScoringService()
+        self.improved_scoring = ImprovedScoringService()  # NEW: Optimized scoring
+        self.decision_logger = decision_logger  # NEW: Decision transparency
         self.timeframe_service = TimeframeDataService()
         self.market_timing = market_timing_service
         self.pnl_service = get_transaction_pnl_service(db_manager)
-        
+
         # Initialize new multi-timeframe strategies
         self.swing_strategy = SwingTradingStrategy()  # For stocks
         self.crypto_strategy = CryptoCompetitionStrategy()  # For crypto
         self.mtss_crypto_strategy = MTSSCryptoStrategy()  # MTSS for crypto (alternative)
-        
-        # USAR CONFIGURACION CENTRALIZADA VALIDADA EN BACKTESTING
-        from ..strategies.trading_config import TRADING_CONFIG
-        self.config = TRADING_CONFIG
-        
-        # Trading parameters - BACKTEST PROVEN STRATEGY (Sept 1, 2025)
-        # Based on backtest_simplified_20250901_232104.json results:
-        # 30d: 95.8% win rate, 14.40% avg return
-        # 60d: 91.7% win rate, 27.04% avg return
-        self.buy_score_threshold = self.config.buy_score_threshold  # 6.0
-        self.sell_score_threshold = self.config.sell_score_threshold  # 4.5
-        self.short_trading_enabled = self.config.short_trading_enabled  # False - probado en backtest
+
+        # Choose configuration based on parameter
+        if use_optimized_config:
+            # NEW: OPTIMIZED CONFIGURATION - Proven in 1-year backtest
+            # Results: 18.79% return, Sharpe 2.43, 83.33% monthly win rate
+            self.config = OptimizedTradingConfig.get_optimized_config()
+            logger.info("🚀 Using OPTIMIZED trading configuration (backtest proven: 18.79% CAGR)")
+        else:
+            # Legacy configuration
+            from ..strategies.trading_config import TRADING_CONFIG
+            self.config = TRADING_CONFIG
+            logger.info("Using legacy trading configuration")
+
+        # Trading parameters from optimized config
+        self.buy_score_threshold = self.config.buy_score_threshold  # 6.5 (optimized)
+        self.sell_score_threshold = self.config.sell_score_threshold  # 5.5 (optimized)
+        self.short_trading_enabled = self.config.short_trading_enabled  # False
         self.high_volatility_bypass = self.config.high_volatility_bypass  # True
         self.max_position_value = self.config.max_position_value  # $10k per position
         self.max_total_positions = self.config.max_positions_stocks  # 10 positions
-        
-        logger.info("Initialized AutoTrader with multi-timeframe strategies")
+        self.use_improved_scoring = self.config.use_improved_scoring  # True (NEW)
+        self.use_trailing_stop = self.config.use_trailing_stop  # True (NEW)
+        self.trailing_stop_percent = self.config.trailing_stop_percent  # 5.0% (NEW)
+        self.min_hold_days = self.config.swing_min_hold_days  # 7 days (NEW)
+        self.max_hold_days = self.config.swing_max_hold_days  # 30 days (NEW)
+        self.cooldown_days = self.config.symbol_cooldown_days  # 7 days (NEW)
+
+        # Track trailing stops for positions
+        self.trailing_stops = {}  # {position_id: {highest_price, trailing_stop_price}}
+
+        logger.info(f"Initialized AutoTrader with optimized config: buy={self.buy_score_threshold}, sell={self.sell_score_threshold}, trailing_stop={self.trailing_stop_percent}%")
         
     async def run_trading_cycle(self) -> Dict[str, Any]:
         """Run a complete trading cycle"""
-        logger.info("DEBUG: Starting enhanced autotrader cycle...")
-        logger.info("DEBUG: Autotrader configuration - buy_threshold: {}, short_enabled: {}".format(
-            self.buy_score_threshold, self.short_trading_enabled))
-        
+        # Start decision logging cycle
+        cycle_id = self.decision_logger.start_cycle()
+
+        logger.info("=" * 70)
+        logger.info(f"🔄 Starting optimized autotrader cycle {cycle_id[:8]}...")
+        logger.info(f"Config: buy>={self.buy_score_threshold}, sell<={self.sell_score_threshold}, trailing_stop={self.trailing_stop_percent}%")
+        logger.info("=" * 70)
+
         try:
             # 0. Market timing checks
             timing_summary = self.market_timing.get_timing_summary()
@@ -162,68 +185,190 @@ class AutotraderService:
                 "sell_signals": 0
             }
     
+    def _update_trailing_stop(self, position: Dict[str, Any], current_price: float) -> tuple:
+        """
+        Update trailing stop for a position
+
+        Returns:
+            (trailing_stop_price, highest_price, should_sell, sell_reason)
+        """
+        position_id = position['id']
+        entry_price = position['entry_price']
+
+        # Initialize trailing stop data if not exists
+        if position_id not in self.trailing_stops:
+            self.trailing_stops[position_id] = {
+                'highest_price': max(entry_price, current_price),
+                'trailing_stop_price': entry_price * (1 - self.trailing_stop_percent / 100)
+            }
+
+        # Update highest price seen
+        if current_price > self.trailing_stops[position_id]['highest_price']:
+            self.trailing_stops[position_id]['highest_price'] = current_price
+            # Update trailing stop price
+            self.trailing_stops[position_id]['trailing_stop_price'] = current_price * (1 - self.trailing_stop_percent / 100)
+
+        trailing_stop_price = self.trailing_stops[position_id]['trailing_stop_price']
+        highest_price = self.trailing_stops[position_id]['highest_price']
+
+        # Check if trailing stop hit
+        should_sell = current_price < trailing_stop_price
+        sell_reason = None
+        if should_sell:
+            pnl_from_highest = ((current_price - highest_price) / highest_price) * 100
+            sell_reason = f"Trailing stop hit: ${current_price:.2f} < ${trailing_stop_price:.2f} (down {abs(pnl_from_highest):.2f}% from peak)"
+
+        return (trailing_stop_price, highest_price, should_sell, sell_reason)
+
     async def _check_sell_signals(self) -> List[Dict[str, Any]]:
-        """Check existing positions for sell signals"""
+        """Check existing positions for sell signals with OPTIMIZED strategy"""
         actions = []
-        
+
         try:
             # Get all autotrader positions
             positions = db_manager.execute_query(
                 "SELECT * FROM positions WHERE source = 'autotrader'"
             )
-            
+
+            logger.info(f"Checking sell signals for {len(positions)} positions")
+
             for position in positions:
                 symbol = position['symbol']
                 position_type = position['type']
                 position_side = position.get('position_side', 'LONG')
                 entry_price = position['entry_price']
                 current_price = position.get('current_price', entry_price)
-                stop_loss = position.get('stop_loss_updated')
-                take_profit = position.get('take_profit_updated')
-                
-                # Get current asset data
+                created_at = position.get('created_at', datetime.now().isoformat())
+
+                # Calculate days held
+                days_held = (datetime.now() - datetime.fromisoformat(created_at)).days
+
+                # Get current asset data and score
                 if position_type == 'stock':
                     asset_data = db_manager.execute_query(
-                        "SELECT score, current_price FROM stocks WHERE symbol = ?", (symbol,)
+                        "SELECT * FROM stocks WHERE symbol = ?", (symbol,)
                     )
                 else:  # crypto
                     asset_data = db_manager.execute_query(
-                        "SELECT score, current_price FROM cryptos WHERE symbol = ?", (symbol,)
+                        "SELECT * FROM cryptos WHERE symbol = ?", (symbol,)
                     )
-                
-                if asset_data:
-                    current_score = asset_data[0]['score']
-                    latest_price = asset_data[0]['current_price']
-                    
-                    sell_reason = None
-                    
-                    if position_side == 'SHORT':
-                        # SHORT position exit logic
-                        # 1. Score improvement (exit when score rises above 3.0)
-                        if current_score >= 3.0:
-                            sell_reason = f"Score improved to {current_score} - EXIT SHORT"
-                        # 2. Stop loss triggered (price rose 8%)
-                        elif stop_loss and latest_price >= stop_loss:
-                            sell_reason = f"Stop loss triggered at ${latest_price:.4f} (limit: ${stop_loss:.4f})"
-                        # 3. Take profit triggered (price fell 5%)
-                        elif take_profit and latest_price <= take_profit:
-                            sell_reason = f"Take profit triggered at ${latest_price:.4f} (target: ${take_profit:.4f})"
-                        # 4. Emergency exit if multiple SHORTs hitting stops
-                        elif self._emergency_short_exit_check():
-                            sell_reason = "Emergency SHORT exit - multiple positions at risk"
+
+                if not asset_data:
+                    logger.warning(f"No data found for {symbol}, skipping sell check")
+                    continue
+
+                asset = asset_data[0]
+                latest_price = asset['current_price']
+
+                # Calculate current score using improved scoring if enabled
+                if self.use_improved_scoring and position_side == 'LONG':
+                    try:
+                        # Get historical data for improved scoring
+                        import yfinance as yf
+                        ticker_symbol = symbol if position_type == 'stock' else symbol
+                        ticker = yf.Ticker(ticker_symbol)
+                        hist = ticker.history(period="60d")
+
+                        if not hist.empty:
+                            current_score = self.improved_scoring.calculate_stock_score_from_data(hist)
+                        else:
+                            current_score = asset.get('score', 5.0)
+                    except:
+                        current_score = asset.get('score', 5.0)
+                else:
+                    current_score = asset.get('score', 5.0)
+
+                # Calculate P&L
+                pnl_percent = ((latest_price - entry_price) / entry_price) * 100 if position_side == 'LONG' else ((entry_price - latest_price) / entry_price) * 100
+
+                sell_reason = None
+                exit_details = {}
+
+                if position_side == 'SHORT':
+                    # SHORT exit logic (unchanged)
+                    stop_loss = position.get('stop_loss_updated')
+                    take_profit = position.get('take_profit_updated')
+
+                    if current_score >= 3.0:
+                        sell_reason = f"Score improved to {current_score} - EXIT SHORT"
+                    elif stop_loss and latest_price >= stop_loss:
+                        sell_reason = f"Stop loss triggered"
+                    elif take_profit and latest_price <= take_profit:
+                        sell_reason = f"Take profit triggered"
+                    elif self._emergency_short_exit_check():
+                        sell_reason = "Emergency SHORT exit"
+                else:
+                    # OPTIMIZED LONG EXIT LOGIC
+                    exit_details = {
+                        'current_score': current_score,
+                        'days_held': days_held,
+                        'pnl_percent': pnl_percent,
+                        'min_hold_days': self.min_hold_days,
+                        'max_hold_days': self.max_hold_days,
+                        'sell_threshold': self.sell_score_threshold
+                    }
+
+                    # 1. Check minimum hold time
+                    if days_held < self.min_hold_days:
+                        # Only sell if stop loss hit (significant loss)
+                        if pnl_percent <= -self.config.stop_loss_percent:
+                            sell_reason = f"Stop loss hit: {pnl_percent:.2f}% (before min hold)"
+                            exit_details['exit_type'] = 'stop_loss'
                     else:
-                        # LONG position exit logic (original)
-                        if current_score <= self.sell_score_threshold:
-                            sell_reason = f"Score dropped to {current_score}"
-                    
-                    if sell_reason:
-                        action = await self._execute_sell(position, sell_reason)
-                        if action:
-                            actions.append(action)
-        
+                        # 2. Check trailing stop
+                        if self.use_trailing_stop:
+                            trailing_stop_price, highest_price, should_sell, ts_reason = self._update_trailing_stop(position, latest_price)
+                            exit_details['trailing_stop_price'] = trailing_stop_price
+                            exit_details['highest_price'] = highest_price
+
+                            if should_sell:
+                                sell_reason = ts_reason
+                                exit_details['exit_type'] = 'trailing_stop'
+
+                        # 3. Check take profit
+                        if not sell_reason and pnl_percent >= self.config.take_profit_percent:
+                            sell_reason = f"Take profit target hit: {pnl_percent:.2f}%"
+                            exit_details['exit_type'] = 'take_profit'
+
+                        # 4. Check score threshold
+                        if not sell_reason and current_score <= self.sell_score_threshold:
+                            sell_reason = f"Score dropped to {current_score:.2f}"
+                            exit_details['exit_type'] = 'score_threshold'
+
+                        # 5. Check max hold time
+                        if not sell_reason and days_held >= self.max_hold_days:
+                            sell_reason = f"Max hold time reached: {days_held} days"
+                            exit_details['exit_type'] = 'max_hold'
+
+                # Log sell evaluation
+                self.decision_logger.log_sell_evaluation(
+                    symbol=symbol,
+                    asset_type=position_type,
+                    score=current_score,
+                    current_price=latest_price,
+                    action_taken='sell' if sell_reason else 'none',
+                    entry_price=entry_price,
+                    days_held=days_held,
+                    pnl_percent=pnl_percent,
+                    exit_reason=sell_reason,
+                    exit_details=exit_details,
+                    sell_threshold=self.sell_score_threshold,
+                    trailing_stop_price=self.trailing_stops.get(position['id'], {}).get('trailing_stop_price'),
+                    stop_loss_price=entry_price * (1 - self.config.stop_loss_percent / 100),
+                    take_profit_price=entry_price * (1 + self.config.take_profit_percent / 100)
+                )
+
+                if sell_reason:
+                    action = await self._execute_sell(position, sell_reason)
+                    if action:
+                        actions.append(action)
+                        # Clean up trailing stop data
+                        if position['id'] in self.trailing_stops:
+                            del self.trailing_stops[position['id']]
+
         except Exception as e:
             logger.error(f"Error checking sell signals: {str(e)}")
-        
+
         return actions
     
     async def _check_buy_signals(self) -> List[Dict[str, Any]]:
@@ -253,90 +398,265 @@ class AutotraderService:
             for pos in existing_positions:
                 existing_symbols.add(pos['symbol'])
             
-            # Process buy signals for stocks using swing trading strategy
-            logger.info(f"DEBUG: Processing {len(candidate_stocks)} stock candidates")
+            # Process buy signals for stocks with OPTIMIZED strategy
+            logger.info(f"🔍 Processing {len(candidate_stocks)} stock candidates")
             for stock in candidate_stocks:
-                logger.info(f"DEBUG: Analyzing {stock['symbol']} (score: {stock.get('score', 'N/A')})")
-                if stock['symbol'] not in existing_symbols and len(actions) < 10:
-                    # Check overtrading prevention first
+                symbol = stock['symbol']
+                current_price = stock.get('current_price', 0)
+
+                if symbol in existing_symbols:
+                    logger.debug(f"⏭️  {symbol}: Already have position")
+                    continue
+
+                if len(actions) >= 10:
+                    logger.info("🛑 Maximum 10 buys per cycle reached")
+                    break
+
+                filters_passed = {}
+                filters_failed = {}
+                scoring_breakdown = {}
+
+                try:
+                    # Filter 1: Overtrading prevention
                     can_trade, trade_reason = overtrading_prevention.can_trade_symbol(
-                        stock['symbol'], 'stock', 'buy'
+                        symbol, 'stock', 'buy'
                     )
-                    
+                    filters_passed['overtrading'] = can_trade
                     if not can_trade:
-                        logger.info(f"DEBUG: Trading blocked for {stock['symbol']}: {trade_reason}")
-                        continue
-                    else:
-                        logger.info(f"DEBUG: Overtrading check passed for {stock['symbol']}")
-                    
-                    # Check volatility filter (with high volatility bypass)
+                        filters_failed['overtrading'] = trade_reason
+
+                    # Filter 2: Volatility check
                     passes_volatility, vol_reason = volatility_service.check_volatility_filter(
-                        stock['symbol'], 'swing'
+                        symbol, 'swing'
                     )
-                    
-                    if not passes_volatility and not self.high_volatility_bypass:
-                        logger.info(f"DEBUG: Volatility filter blocked {stock['symbol']}: {vol_reason}")
-                        continue
-                    elif not passes_volatility and self.high_volatility_bypass:
-                        logger.info(f"DEBUG: High volatility bypass enabled - allowing {stock['symbol']} despite: {vol_reason}")
+                    if passes_volatility or self.high_volatility_bypass:
+                        filters_passed['volatility'] = True
                     else:
-                        logger.info(f"DEBUG: Volatility filter passed for {stock['symbol']}: {vol_reason}")
-                    
-                    logger.info(f"DEBUG: About to analyze signal for {stock['symbol']}")
-                    signal = await self._analyze_stock_signal(stock)
-                    if signal and signal.action == "BUY":
-                        logger.info(f"DEBUG: BUY signal generated for {stock['symbol']}, executing trade")
+                        filters_failed['volatility'] = vol_reason
+
+                    # Filter 3: Score calculation using improved scoring
+                    if self.use_improved_scoring:
+                        try:
+                            import yfinance as yf
+                            ticker = yf.Ticker(symbol)
+                            hist = ticker.history(period="60d")
+
+                            if not hist.empty:
+                                improved_score = self.improved_scoring.calculate_stock_score_from_data(hist)
+                                scoring_breakdown = {
+                                    'improved_score': improved_score,
+                                    'method': 'ImprovedScoringService',
+                                    'period': '60d'
+                                }
+                            else:
+                                improved_score = stock.get('score', 5.0)
+                                scoring_breakdown = {
+                                    'score': improved_score,
+                                    'method': 'fallback',
+                                    'reason': 'no_historical_data'
+                                }
+                        except Exception as e:
+                            improved_score = stock.get('score', 5.0)
+                            scoring_breakdown = {
+                                'score': improved_score,
+                                'method': 'fallback',
+                                'error': str(e)
+                            }
+                    else:
+                        improved_score = stock.get('score', 5.0)
+                        scoring_breakdown = {'score': improved_score, 'method': 'traditional'}
+
+                    # Filter 4: Score threshold
+                    score_passes = improved_score >= self.buy_score_threshold
+                    filters_passed['score_threshold'] = score_passes
+                    if not score_passes:
+                        filters_failed['score_threshold'] = f"Score {improved_score:.2f} < {self.buy_score_threshold}"
+
+                    # Filter 5: Portfolio capacity
+                    confidence = min(100, (improved_score - 5) * 10) if improved_score > 5 else 0
+                    position_size = portfolio_manager.get_position_size('stock', confidence)
+                    can_open = portfolio_manager.can_open_position('stock', position_size)
+                    filters_passed['portfolio_capacity'] = can_open
+                    if not can_open:
+                        filters_failed['portfolio_capacity'] = "Insufficient capital or max positions reached"
+
+                    # Determine if buy should execute
+                    all_filters_passed = (
+                        can_trade and
+                        (passes_volatility or self.high_volatility_bypass) and
+                        score_passes and
+                        can_open
+                    )
+
+                    # Log buy evaluation
+                    self.decision_logger.log_buy_evaluation(
+                        symbol=symbol,
+                        asset_type='stock',
+                        score=improved_score,
+                        current_price=current_price,
+                        action_taken='buy' if all_filters_passed else 'none',
+                        filters_passed=filters_passed,
+                        filters_failed=filters_failed,
+                        scoring_breakdown=scoring_breakdown,
+                        buy_threshold=self.buy_score_threshold,
+                        confidence=confidence,
+                        position_size=position_size if all_filters_passed else None
+                    )
+
+                    # Execute buy if all filters passed
+                    if all_filters_passed:
+                        # Create simplified signal object for execution
+                        signal = type('Signal', (), {
+                            'action': 'BUY',
+                            'confidence': improved_score,
+                            'symbol': symbol,
+                            'score': improved_score,
+                            'reasons': [f'Improved score: {improved_score:.2f}'],
+                            'stop_loss': current_price * (1 - self.config.stop_loss_percent / 100),
+                            'take_profit': current_price * (1 + self.config.take_profit_percent / 100),
+                            'timeframe': 'optimized',
+                            'max_hold_days': self.max_hold_days,
+                            'risk_level': 'MEDIUM'
+                        })()
+
                         action = await self._execute_strategy_buy(stock, 'stock', signal)
                         if action:
                             actions.append(action)
-                            existing_symbols.add(stock['symbol'])
+                            existing_symbols.add(symbol)
+
+                except Exception as e:
+                    logger.error(f"Error evaluating buy signal for {symbol}: {e}")
+                    continue
             
-            # Process buy signals for cryptos using competition strategy
-            logger.info(f"DEBUG: Processing {len(candidate_cryptos)} crypto candidates")
+            # Process buy signals for cryptos with OPTIMIZED strategy
+            logger.info(f"🔍 Processing {len(candidate_cryptos)} crypto candidates")
             for crypto in candidate_cryptos:
-                logger.info(f"DEBUG: Analyzing {crypto['symbol']} (score: {crypto.get('score', 'N/A')})")
-                if crypto['symbol'] not in existing_symbols and len(actions) < 10:
-                    # Check overtrading prevention first
+                symbol = crypto['symbol']
+                current_price = crypto.get('current_price', 0)
+
+                if symbol in existing_symbols:
+                    logger.debug(f"⏭️  {symbol}: Already have position")
+                    continue
+
+                if len(actions) >= 10:
+                    logger.info("🛑 Maximum 10 buys per cycle reached")
+                    break
+
+                filters_passed = {}
+                filters_failed = {}
+                scoring_breakdown = {}
+
+                try:
+                    # Filter 1: Overtrading prevention
                     can_trade, trade_reason = overtrading_prevention.can_trade_symbol(
-                        crypto['symbol'], 'crypto', 'buy'
+                        symbol, 'crypto', 'buy'
                     )
-                    
+                    filters_passed['overtrading'] = can_trade
                     if not can_trade:
-                        logger.info(f"DEBUG: Trading blocked for {crypto['symbol']}: {trade_reason}")
-                        continue
-                    else:
-                        logger.info(f"DEBUG: Overtrading check passed for {crypto['symbol']}")
-                    
-                    # Check volatility filter (crypto competition strategy has its own internal filter)
+                        filters_failed['overtrading'] = trade_reason
+
+                    # Filter 2: Volatility check
                     passes_volatility, vol_reason = volatility_service.check_volatility_filter(
-                        crypto['symbol'], 'crypto_competition'
+                        symbol, 'crypto_competition'
                     )
-                    
-                    if not passes_volatility and not self.high_volatility_bypass:
-                        logger.info(f"DEBUG: Volatility filter blocked {crypto['symbol']}: {vol_reason}")
-                        continue
-                    elif not passes_volatility and self.high_volatility_bypass:
-                        logger.info(f"DEBUG: High volatility bypass enabled - allowing {crypto['symbol']} despite: {vol_reason}")
+                    if passes_volatility or self.high_volatility_bypass:
+                        filters_passed['volatility'] = True
                     else:
-                        logger.info(f"DEBUG: Volatility filter passed for {crypto['symbol']}: {vol_reason}")
-                    
-                    # Use configured crypto strategy (competition or MTSS)
-                    logger.info(f"DEBUG: About to analyze signal for {crypto['symbol']} using {self.config.crypto_strategy} strategy")
-                    
-                    # Select crypto strategy based on configuration
-                    if self.config.crypto_strategy == "mtss":
-                        signal = await self._analyze_crypto_signal_mtss(crypto)
+                        filters_failed['volatility'] = vol_reason
+
+                    # Filter 3: Score calculation using improved scoring
+                    if self.use_improved_scoring:
+                        try:
+                            import yfinance as yf
+                            ticker = yf.Ticker(symbol)
+                            hist = ticker.history(period="60d")
+
+                            if not hist.empty:
+                                improved_score = self.improved_scoring.calculate_crypto_score_from_data(hist)
+                                scoring_breakdown = {
+                                    'improved_score': improved_score,
+                                    'method': 'ImprovedScoringService',
+                                    'period': '60d'
+                                }
+                            else:
+                                improved_score = crypto.get('score', 5.0)
+                                scoring_breakdown = {
+                                    'score': improved_score,
+                                    'method': 'fallback',
+                                    'reason': 'no_historical_data'
+                                }
+                        except Exception as e:
+                            improved_score = crypto.get('score', 5.0)
+                            scoring_breakdown = {
+                                'score': improved_score,
+                                'method': 'fallback',
+                                'error': str(e)
+                            }
                     else:
-                        signal = await self._analyze_crypto_signal(crypto)  # Competition strategy (default)
-                    
-                    if signal and signal.action == "BUY":
-                        logger.info(f"DEBUG: BUY signal generated for {crypto['symbol']} using {self.config.crypto_strategy} strategy, executing trade")
+                        improved_score = crypto.get('score', 5.0)
+                        scoring_breakdown = {'score': improved_score, 'method': 'traditional'}
+
+                    # Filter 4: Score threshold
+                    score_passes = improved_score >= self.buy_score_threshold
+                    filters_passed['score_threshold'] = score_passes
+                    if not score_passes:
+                        filters_failed['score_threshold'] = f"Score {improved_score:.2f} < {self.buy_score_threshold}"
+
+                    # Filter 5: Portfolio capacity
+                    confidence = min(100, (improved_score - 5) * 10) if improved_score > 5 else 0
+                    position_size = portfolio_manager.get_position_size('crypto', confidence)
+                    can_open = portfolio_manager.can_open_position('crypto', position_size)
+                    filters_passed['portfolio_capacity'] = can_open
+                    if not can_open:
+                        filters_failed['portfolio_capacity'] = "Insufficient capital or max positions reached"
+
+                    # Determine if buy should execute
+                    all_filters_passed = (
+                        can_trade and
+                        (passes_volatility or self.high_volatility_bypass) and
+                        score_passes and
+                        can_open
+                    )
+
+                    # Log buy evaluation
+                    self.decision_logger.log_buy_evaluation(
+                        symbol=symbol,
+                        asset_type='crypto',
+                        score=improved_score,
+                        current_price=current_price,
+                        action_taken='buy' if all_filters_passed else 'none',
+                        filters_passed=filters_passed,
+                        filters_failed=filters_failed,
+                        scoring_breakdown=scoring_breakdown,
+                        buy_threshold=self.buy_score_threshold,
+                        confidence=confidence,
+                        position_size=position_size if all_filters_passed else None
+                    )
+
+                    # Execute buy if all filters passed
+                    if all_filters_passed:
+                        # Create simplified signal object for execution
+                        signal = type('Signal', (), {
+                            'action': 'BUY',
+                            'confidence': improved_score,
+                            'symbol': symbol,
+                            'score': improved_score,
+                            'reasons': [f'Improved score: {improved_score:.2f}'],
+                            'stop_loss': current_price * (1 - self.config.stop_loss_percent / 100),
+                            'take_profit': current_price * (1 + self.config.take_profit_percent / 100),
+                            'timeframe': 'optimized',
+                            'max_hold_days': self.max_hold_days,
+                            'risk_level': 'MEDIUM'
+                        })()
+
                         action = await self._execute_strategy_buy(crypto, 'crypto', signal)
                         if action:
                             actions.append(action)
-                            existing_symbols.add(crypto['symbol'])
-                    else:
-                        logger.info(f"DEBUG: {crypto['symbol']} score too low ({crypto_score} < {self.buy_score_threshold})")
+                            existing_symbols.add(symbol)
+
+                except Exception as e:
+                    logger.error(f"Error evaluating buy signal for {symbol}: {e}")
+                    continue
             
             # Check for SHORT signals - CONTROLLED BY BACKTEST PROVEN FLAG
             if self.short_trading_enabled:

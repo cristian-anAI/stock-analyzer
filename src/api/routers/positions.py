@@ -18,6 +18,7 @@ from ..database.database import db_manager
 from ..services.data_service import DataService
 from ..services.symbol_on_demand_service import symbol_on_demand_service
 from ..services.autotrader_service import AutotraderService
+from ..services.decision_logger import decision_logger
 
 logger = logging.getLogger(__name__)
 
@@ -553,8 +554,8 @@ async def analyze_manual_position(
     exit strategies, risk metrics, and recommendations
     """
     try:
-        symbol = symbol.upper()
-        
+        symbol = symbol.strip().upper()
+
         # Get manual position from database
         position_data = db_manager.execute_query(
             "SELECT * FROM positions WHERE symbol = ? AND source = 'manual'",
@@ -833,7 +834,127 @@ async def get_position_analysis(
         
         logger.info(f"Generated fundamental analysis for: {symbol}")
         return response
-        
+
     except Exception as e:
         logger.error(f"Error getting position analysis for {symbol}: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error getting analysis: {str(e)}")
+
+
+@router.get("/positions/autotrader/decisions")
+async def get_autotrader_decisions(
+    limit: int = Query(50, description="Maximum number of decisions to return"),
+    decision_type: Optional[str] = Query(None, description="Filter by decision type: buy_signal, sell_signal, no_buy, no_sell")
+):
+    """
+    Get recent autotrader trading decisions with full context
+
+    This endpoint provides complete transparency into why the autotrader
+    made specific buy/sell decisions or chose not to trade.
+
+    Returns:
+        List of decision log entries with filters passed/failed, scoring breakdown, etc.
+    """
+    try:
+        decisions = decision_logger.get_recent_decisions(limit=limit, decision_type=decision_type)
+        logger.info(f"Retrieved {len(decisions)} trading decisions (type={decision_type})")
+        return {
+            "count": len(decisions),
+            "decisions": decisions,
+            "limit": limit,
+            "decision_type": decision_type
+        }
+    except Exception as e:
+        logger.error(f"Error retrieving trading decisions: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error retrieving decisions: {str(e)}")
+
+
+@router.get("/positions/autotrader/decisions/cycle/{cycle_id}")
+async def get_cycle_decisions(
+    cycle_id: str = Path(..., description="Trading cycle ID")
+):
+    """
+    Get all decisions from a specific trading cycle
+
+    Each trading cycle has a unique ID. This endpoint returns all
+    buy/sell evaluations that occurred during that cycle.
+
+    Args:
+        cycle_id: The unique trading cycle identifier
+
+    Returns:
+        List of all decisions from that cycle
+    """
+    try:
+        decisions = decision_logger.get_decisions_by_cycle(cycle_id)
+        logger.info(f"Retrieved {len(decisions)} decisions for cycle {cycle_id}")
+        return {
+            "cycle_id": cycle_id,
+            "count": len(decisions),
+            "decisions": decisions
+        }
+    except Exception as e:
+        logger.error(f"Error retrieving cycle decisions: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error retrieving cycle decisions: {str(e)}")
+
+
+@router.get("/positions/autotrader/decisions/symbol/{symbol}")
+async def get_symbol_decisions(
+    symbol: str = Path(..., description="Stock/crypto symbol"),
+    limit: int = Query(20, description="Maximum number of decisions to return")
+):
+    """
+    Get decision history for a specific symbol
+
+    Shows why the autotrader decided to buy, sell, or not trade this symbol
+    over time. Useful for understanding trading patterns for specific assets.
+
+    Args:
+        symbol: The stock/crypto symbol (e.g., AAPL, BTC-USD)
+        limit: Maximum number of decisions to return
+
+    Returns:
+        List of decisions for this symbol
+    """
+    try:
+        symbol = symbol.upper()
+        decisions = decision_logger.get_symbol_decision_history(symbol, limit=limit)
+        logger.info(f"Retrieved {len(decisions)} decisions for symbol {symbol}")
+        return {
+            "symbol": symbol,
+            "count": len(decisions),
+            "decisions": decisions,
+            "limit": limit
+        }
+    except Exception as e:
+        logger.error(f"Error retrieving symbol decisions: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error retrieving symbol decisions: {str(e)}")
+
+
+@router.get("/positions/autotrader/decisions/stats")
+async def get_decision_stats(
+    hours: int = Query(24, description="Time window in hours")
+):
+    """
+    Get statistics about recent trading decisions
+
+    Provides aggregated stats like:
+    - Number of buy signals vs no-buy decisions
+    - Number of sell signals vs hold decisions
+    - Average scores for buys vs no-buys
+
+    Args:
+        hours: Time window to analyze (default 24 hours)
+
+    Returns:
+        Decision statistics
+    """
+    try:
+        stats = decision_logger.get_decision_stats(hours=hours)
+        logger.info(f"Retrieved decision stats for last {hours} hours")
+        return {
+            "period_hours": hours,
+            "stats": stats
+        }
+    except Exception as e:
+        logger.error(f"Error retrieving decision stats: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error retrieving decision stats: {str(e)}")

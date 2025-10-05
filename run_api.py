@@ -43,5 +43,6 @@ if __name__ == "__main__":
         host="0.0.0.0",
         port=8000,
         reload=not is_production,  # Disable reload in production
+        reload_excludes=["logs/*", "*.db", "*.db-journal", "*.db-wal", "*.pyc", "__pycache__/*", "*.backup_*"],
         log_level="info"
     )
