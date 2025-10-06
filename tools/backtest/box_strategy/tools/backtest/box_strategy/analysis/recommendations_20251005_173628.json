@@ -1,0 +1,64 @@
+[
+  {
+    "category": "Best Risk-Adjusted Returns",
+    "recommendation": "Focus on SPX, NDX, ASX",
+    "rationale": "Highest Sharpe ratios (avg: 4.80)",
+    "markets": [
+      {
+        "market": "SPX",
+        "sharpe_ratio": 5.779845157023089,
+        "win_rate": 62.5,
+        "profit_factor": 3.018018018018018
+      },
+      {
+        "market": "NDX",
+        "sharpe_ratio": 5.779845157023089,
+        "win_rate": 62.5,
+        "profit_factor": 3.018018018018018
+      },
+      {
+        "market": "ASX",
+        "sharpe_ratio": 2.8492314469754763,
+        "win_rate": 57.14285714285714,
+        "profit_factor": 1.7027712424482462
+      }
+    ]
+  },
+  {
+    "category": "Best Regional Focus",
+    "recommendation": "Prioritize AMERICAS markets",
+    "rationale": "Avg return: 25.48%, Win rate: 62.50%",
+    "best_market": "SPX"
+  },
+  {
+    "category": "High Execution Efficiency",
+    "recommendation": "Markets with >50% execution rate: HSI",
+    "rationale": "Higher probability of order fills reduces missed opportunities",
+    "avg_execution_rate": 63.1578947368421
+  },
+  {
+    "category": "Consistent Performers",
+    "recommendation": "All-around strong markets: ASX, SPX, NDX",
+    "rationale": "Meet multiple quality criteria (WR>50%, PF>1.5, Sharpe>1.0)",
+    "markets": [
+      {
+        "market": "ASX",
+        "win_rate": 57.14285714285714,
+        "profit_factor": 1.7027712424482462,
+        "sharpe_ratio": 2.8492314469754763
+      },
+      {
+        "market": "SPX",
+        "win_rate": 62.5,
+        "profit_factor": 3.018018018018018,
+        "sharpe_ratio": 5.779845157023089
+      },
+      {
+        "market": "NDX",
+        "win_rate": 62.5,
+        "profit_factor": 3.018018018018018,
+        "sharpe_ratio": 5.779845157023089
+      }
+    ]
+  }
+]

@@ -1,0 +1,17 @@
+characteristic,performance_metric,correlation,strength
+avg_duration_hours,profit_factor,0.8963124981068913,Strong
+liquidity_rating,win_rate,0.8754810476266307,Strong
+avg_duration_hours,return_pct,0.8186960494778813,Strong
+avg_duration_hours,sharpe_ratio,0.798791284815622,Strong
+liquidity_rating,profit_factor,0.6378973207569807,Moderate
+avg_box_range,profit_factor,0.6234328673885751,Moderate
+avg_box_range,return_pct,0.6016640443499236,Moderate
+execution_rate,win_rate,0.5660258396106438,Moderate
+avg_duration_hours,win_rate,0.5481544259758814,Moderate
+avg_box_range,sharpe_ratio,0.5473065186305598,Moderate
+liquidity_rating,return_pct,0.4594562649915665,Moderate
+avg_box_range,win_rate,0.3909618706584808,Moderate
+execution_rate,profit_factor,0.24745082984537387,Weak
+liquidity_rating,sharpe_ratio,0.13138636671495343,Weak
+execution_rate,sharpe_ratio,-0.07413093479274004,Weak
+execution_rate,return_pct,0.07358956604256606,Weak

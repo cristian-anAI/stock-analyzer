@@ -1,0 +1,243 @@
+{
+  "symbol": "SPX",
+  "initial_capital": 100000,
+  "final_capital": 98681.25,
+  "total_pnl": -1318.75,
+  "return_pct": -1.3187500000000019,
+  "total_trades": 3,
+  "total_setups": 6,
+  "valid_entries": 3,
+  "invalid_trades": 3,
+  "trades": [
+    {
+      "date": "2025-09-30",
+      "box_high": 6710.5,
+      "box_low": 6696.75,
+      "box_range": 13.75,
+      "direction": "LONG",
+      "entry_time": "2025-09-30T11:05:00-04:00",
+      "entry_price": 6711.5,
+      "stop_loss": 6696.75,
+      "risk_points": 14.75,
+      "exit_time": "2025-09-30T11:25:00-04:00",
+      "exit_price": 6695.75,
+      "status": "STOPPED_OUT",
+      "pnl_points": -15.75,
+      "pnl_r": -1.0677966101694916,
+      "partial_exits": [],
+      "holding_time_minutes": 20.0
+    },
+    {
+      "date": "2025-10-01",
+      "box_high": 6729.0,
+      "box_low": 6705.25,
+      "box_range": 23.75,
+      "direction": "LONG",
+      "entry_time": "2025-10-01T10:30:00-04:00",
+      "entry_price": 6730.0,
+      "stop_loss": 6705.25,
+      "risk_points": 24.75,
+      "exit_time": "2025-10-03T16:55:00-04:00",
+      "exit_price": 6763.0,
+      "status": "TP3_HIT",
+      "pnl_points": 28.875,
+      "pnl_r": 1.1666666666666667,
+      "partial_exits": [
+        {
+          "time": "2025-10-01T13:25:00-04:00",
+          "price": 6754.75,
+          "size": 0.5,
+          "reason": "TP1 (1:1)"
+        }
+      ],
+      "holding_time_minutes": 3265.0
+    },
+    {
+      "date": "2025-10-03",
+      "box_high": 6788.25,
+      "box_low": 6766.5,
+      "box_range": 21.75,
+      "direction": "LONG",
+      "entry_time": "2025-10-03T10:35:00-04:00",
+      "entry_price": 6789.25,
+      "stop_loss": 6766.5,
+      "risk_points": 22.75,
+      "exit_time": "2025-10-03T13:50:00-04:00",
+      "exit_price": 6765.5,
+      "status": "STOPPED_OUT",
+      "pnl_points": -23.75,
+      "pnl_r": -1.043956043956044,
+      "partial_exits": [],
+      "holding_time_minutes": 195.0
+    }
+  ],
+  "equity_curve": [
+    {
+      "date": "2025-09-30",
+      "equity": 98425.0,
+      "pnl": -1575.0,
+      "pnl_r": -1.0677966101694916
+    },
+    {
+      "date": "2025-10-01",
+      "equity": 99868.75,
+      "pnl": 1443.75,
+      "pnl_r": 1.1666666666666667
+    },
+    {
+      "date": "2025-10-03",
+      "equity": 98681.25,
+      "pnl": -1187.5,
+      "pnl_r": -1.043956043956044
+    }
+  ],
+  "metrics": {
+    "basic_stats": {
+      "total_trades": 3,
+      "executed_trades": 3,
+      "invalid_trades": 0,
+      "total_pnl": -1318.75,
+      "avg_pnl_per_trade": -439.5833333333333,
+      "best_trade": 28.875,
+      "worst_trade": -23.75,
+      "avg_pnl_points": -3.5416666666666665,
+      "median_pnl_points": -15.75
+    },
+    "win_rate": {
+      "win_rate": 33.33333333333333,
+      "winning_trades": 1,
+      "losing_trades": 2,
+      "breakeven_trades": 0,
+      "avg_win": 28.875,
+      "avg_loss": -19.75,
+      "largest_win": 28.875,
+      "largest_loss": -23.75,
+      "win_loss_ratio": 1.4620253164556962
+    },
+    "profit_factor": {
+      "profit_factor": 0.7310126582278481,
+      "gross_profit": 28.875,
+      "gross_loss": 39.5,
+      "net_profit": -10.625
+    },
+    "sharpe_ratio": {
+      "sharpe_ratio": -4.774161270724307,
+      "annual_return": -79.387222946545,
+      "annual_volatility": 16.632706446989754,
+      "daily_avg_return": -0.31502866248628963,
+      "daily_std": 1.0477620211589431
+    },
+    "sortino_ratio": {
+      "sortino_ratio": -419.63641446831986,
+      "downside_deviation": 0.1892286279472531
+    },
+    "max_drawdown": {
+      "max_drawdown_pct": 1.1890606420927468,
+      "max_drawdown_value": 1187.5,
+      "drawdown_start_date": "2025-10-01",
+      "drawdown_bottom_date": "2025-10-03",
+      "drawdown_recovery_date": "Not recovered",
+      "current_drawdown_pct": -1.1890606420927468
+    },
+    "monthly_returns": {
+      "avg_monthly_return": -659.375,
+      "median_monthly_return": -659.375,
+      "best_month": 256.25,
+      "worst_month": -1575.0,
+      "positive_months": 1,
+      "negative_months": 1,
+      "monthly_win_rate": 50.0,
+      "monthly_returns": {
+        "2025-09-30 00:00:00": -1575.0,
+        "2025-10-31 00:00:00": 256.25
+      }
+    },
+    "r_distribution": {
+      "avg_r_multiple": -0.31502866248628963,
+      "median_r_multiple": -1.043956043956044,
+      "max_r_multiple": 1.1666666666666667,
+      "min_r_multiple": -1.0677966101694916,
+      "std_r_multiple": 1.0477620211589431,
+      "r_distribution": {
+        "< -3R": 0,
+        "-3R to -2R": 0,
+        "-2R to -1R": 2,
+        "-1R to 0R": 0,
+        "0R to 1R": 0,
+        "1R to 2R": 1,
+        "2R to 3R": 0,
+        "3R to 5R": 0,
+        "5R to 10R": 0,
+        "> 10R": 0
+      },
+      "trades_above_1r": 1,
+      "trades_above_2r": 0,
+      "trades_above_3r": 0
+    },
+    "trade_duration": {
+      "avg_duration_minutes": 1160.0,
+      "median_duration_minutes": 195.0,
+      "min_duration_minutes": 20.0,
+      "max_duration_minutes": 3265.0,
+      "avg_duration_hours": 19.333333333333332,
+      "trades_under_1hour": 1,
+      "trades_1to3_hours": 0,
+      "trades_over_3hours": 2
+    },
+    "directional_stats": {
+      "long": {
+        "count": 3,
+        "win_rate": 33.33333333333333,
+        "avg_pnl": -3.5416666666666665,
+        "total_pnl": -10.625
+      },
+      "short": {
+        "count": 0,
+        "win_rate": 0,
+        "avg_pnl": 0,
+        "total_pnl": 0
+      }
+    },
+    "take_profit_analysis": {
+      "status_distribution": {
+        "STOPPED_OUT": 2,
+        "TP3_HIT": 1
+      },
+      "stopped_out": 2,
+      "tp1_achieved": 1,
+      "tp2_achieved": 0,
+      "tp3_achieved": 1,
+      "total_partial_exits": 1,
+      "avg_partials_per_trade": 0.3333333333333333
+    },
+    "box_range_analysis": {
+      "avg_box_range": 19.75,
+      "median_box_range": 21.75,
+      "min_box_range": 13.75,
+      "max_box_range": 23.75,
+      "small_ranges": {
+        "count": 1,
+        "win_rate": 0.0,
+        "avg_pnl": -15.75
+      },
+      "medium_ranges": {
+        "count": 2,
+        "win_rate": 50.0,
+        "avg_pnl": 2.5625
+      },
+      "large_ranges": {
+        "count": 0,
+        "win_rate": 0,
+        "avg_pnl": 0
+      }
+    }
+  },
+  "charts": [
+    "tools\\backtest\\box_strategy\\charts\\SPX_equity_curve.png",
+    "tools\\backtest\\box_strategy\\charts\\SPX_drawdown.png",
+    "tools\\backtest\\box_strategy\\charts\\SPX_r_distribution.png",
+    "tools\\backtest\\box_strategy\\charts\\SPX_monthly_heatmap.png",
+    "tools\\backtest\\box_strategy\\charts\\SPX_trade_dashboard.png",
+    "tools\\backtest\\box_strategy\\charts\\SPX_box_analysis.png"
+  ]
+}

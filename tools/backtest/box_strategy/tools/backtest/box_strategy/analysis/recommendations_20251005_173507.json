@@ -1,0 +1,46 @@
+[
+  {
+    "category": "Best Risk-Adjusted Returns",
+    "recommendation": "Focus on SPX, NDX",
+    "rationale": "Highest Sharpe ratios (avg: 5.78)",
+    "markets": [
+      {
+        "market": "SPX",
+        "sharpe_ratio": 5.779845157023089,
+        "win_rate": 62.5,
+        "profit_factor": 3.018018018018018
+      },
+      {
+        "market": "NDX",
+        "sharpe_ratio": 5.779845157023089,
+        "win_rate": 62.5,
+        "profit_factor": 3.018018018018018
+      }
+    ]
+  },
+  {
+    "category": "Best Regional Focus",
+    "recommendation": "Prioritize AMERICAS markets",
+    "rationale": "Avg return: 25.48%, Win rate: 62.50%",
+    "best_market": "SPX"
+  },
+  {
+    "category": "Consistent Performers",
+    "recommendation": "All-around strong markets: SPX, NDX",
+    "rationale": "Meet multiple quality criteria (WR>50%, PF>1.5, Sharpe>1.0)",
+    "markets": [
+      {
+        "market": "SPX",
+        "win_rate": 62.5,
+        "profit_factor": 3.018018018018018,
+        "sharpe_ratio": 5.779845157023089
+      },
+      {
+        "market": "NDX",
+        "win_rate": 62.5,
+        "profit_factor": 3.018018018018018,
+        "sharpe_ratio": 5.779845157023089
+      }
+    ]
+  }
+]

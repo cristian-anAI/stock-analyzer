@@ -1,0 +1,2909 @@
+{
+  "FTSE": {
+    "symbol": "FTSE",
+    "error": "No data returned for ^FTSE",
+    "success": false
+  },
+  "DAX": {
+    "symbol": "DAX",
+    "error": "No data returned for FDAX=F",
+    "success": false
+  },
+  "STOXX": {
+    "symbol": "STOXX",
+    "initial_capital": 100000,
+    "final_capital": 94740.859375,
+    "total_pnl": -5259.140625,
+    "return_pct": -5.259140625000002,
+    "total_trades": 9,
+    "total_setups": 20,
+    "valid_entries": 9,
+    "invalid_trades": 11,
+    "trades": [
+      {
+        "date": "2025-09-10",
+        "box_high": 7802.169921875,
+        "box_low": 7763.0498046875,
+        "box_range": 39.1201171875,
+        "direction": "LONG",
+        "entry_time": "2025-09-10T10:20:00+02:00",
+        "entry_price": 7803.169921875,
+        "stop_loss": 7763.0498046875,
+        "risk_points": 40.1201171875,
+        "exit_time": "2025-09-10T10:50:00+02:00",
+        "exit_price": 7762.0498046875,
+        "status": "STOPPED_OUT",
+        "pnl_points": -41.1201171875,
+        "pnl_r": -1.0249251515225275,
+        "partial_exits": [],
+        "holding_time_minutes": 30.0
+      },
+      {
+        "date": "2025-09-15",
+        "box_high": 7885.2900390625,
+        "box_low": 7843.4599609375,
+        "box_range": 41.830078125,
+        "direction": "LONG",
+        "entry_time": "2025-09-15T09:40:00+02:00",
+        "entry_price": 7886.2900390625,
+        "stop_loss": 7843.4599609375,
+        "risk_points": 42.830078125,
+        "exit_time": "2025-09-15T16:00:00+02:00",
+        "exit_price": 7885.2900390625,
+        "status": "STOPPED_OUT",
+        "pnl_points": 20.9150390625,
+        "pnl_r": 0.48832596105613574,
+        "partial_exits": [
+          {
+            "time": "2025-09-15T13:50:00+02:00",
+            "price": 7929.1201171875,
+            "size": 0.5,
+            "reason": "TP1 (1:1)"
+          }
+        ],
+        "holding_time_minutes": 380.0
+      },
+      {
+        "date": "2025-09-16",
+        "box_high": 7890.56005859375,
+        "box_low": 7862.3798828125,
+        "box_range": 28.18017578125,
+        "direction": "LONG",
+        "entry_time": "2025-09-16T10:30:00+02:00",
+        "entry_price": 7891.56005859375,
+        "stop_loss": 7862.3798828125,
+        "risk_points": 29.18017578125,
+        "exit_time": "2025-09-16T15:30:00+02:00",
+        "exit_price": 7861.3798828125,
+        "status": "STOPPED_OUT",
+        "pnl_points": -30.18017578125,
+        "pnl_r": -1.0342698415354494,
+        "partial_exits": [],
+        "holding_time_minutes": 300.0
+      },
+      {
+        "date": "2025-09-19",
+        "box_high": 7900.41015625,
+        "box_low": 7870.009765625,
+        "box_range": 30.400390625,
+        "direction": "LONG",
+        "entry_time": "2025-09-19T09:35:00+02:00",
+        "entry_price": 7901.41015625,
+        "stop_loss": 7870.009765625,
+        "risk_points": 31.400390625,
+        "exit_time": "2025-09-19T11:10:00+02:00",
+        "exit_price": 7900.41015625,
+        "status": "STOPPED_OUT",
+        "pnl_points": 15.2001953125,
+        "pnl_r": 0.48407663121229083,
+        "partial_exits": [
+          {
+            "time": "2025-09-19T10:15:00+02:00",
+            "price": 7932.810546875,
+            "size": 0.5,
+            "reason": "TP1 (1:1)"
+          }
+        ],
+        "holding_time_minutes": 95.0
+      },
+      {
+        "date": "2025-09-23",
+        "box_high": 7883.02001953125,
+        "box_low": 7857.10986328125,
+        "box_range": 25.91015625,
+        "direction": "LONG",
+        "entry_time": "2025-09-23T09:50:00+02:00",
+        "entry_price": 7884.02001953125,
+        "stop_loss": 7857.10986328125,
+        "risk_points": 26.91015625,
+        "exit_time": "2025-09-23T12:20:00+02:00",
+        "exit_price": 7883.02001953125,
+        "status": "STOPPED_OUT",
+        "pnl_points": 12.955078125,
+        "pnl_r": 0.48141965452170127,
+        "partial_exits": [
+          {
+            "time": "2025-09-23T10:50:00+02:00",
+            "price": 7910.93017578125,
+            "size": 0.5,
+            "reason": "TP1 (1:1)"
+          }
+        ],
+        "holding_time_minutes": 150.0
+      },
+      {
+        "date": "2025-09-25",
+        "box_high": 7808.0,
+        "box_low": 7769.22021484375,
+        "box_range": 38.77978515625,
+        "direction": "LONG",
+        "entry_time": "2025-09-25T09:40:00+02:00",
+        "entry_price": 7809.0,
+        "stop_loss": 7769.22021484375,
+        "risk_points": 39.77978515625,
+        "exit_time": "2025-09-25T11:45:00+02:00",
+        "exit_price": 7768.22021484375,
+        "status": "STOPPED_OUT",
+        "pnl_points": -40.77978515625,
+        "pnl_r": -1.0251383961997815,
+        "partial_exits": [],
+        "holding_time_minutes": 125.0
+      },
+      {
+        "date": "2025-09-26",
+        "box_high": 7864.8701171875,
+        "box_low": 7821.759765625,
+        "box_range": 43.1103515625,
+        "direction": "LONG",
+        "entry_time": "2025-09-26T09:50:00+02:00",
+        "entry_price": 7865.8701171875,
+        "stop_loss": 7821.759765625,
+        "risk_points": 44.1103515625,
+        "exit_time": "2025-09-26T12:45:00+02:00",
+        "exit_price": 7820.759765625,
+        "status": "STOPPED_OUT",
+        "pnl_points": -45.1103515625,
+        "pnl_r": -1.0226704155504882,
+        "partial_exits": [],
+        "holding_time_minutes": 175.0
+      },
+      {
+        "date": "2025-10-02",
+        "box_high": 8046.5400390625,
+        "box_low": 8025.5,
+        "box_range": 21.0400390625,
+        "direction": "LONG",
+        "entry_time": "2025-10-02T10:15:00+02:00",
+        "entry_price": 8047.5400390625,
+        "stop_loss": 8025.5,
+        "risk_points": 22.0400390625,
+        "exit_time": "2025-10-03T13:55:00+02:00",
+        "exit_price": 8046.5400390625,
+        "status": "STOPPED_OUT",
+        "pnl_points": 10.52001953125,
+        "pnl_r": 0.47731401479906066,
+        "partial_exits": [
+          {
+            "time": "2025-10-02T13:20:00+02:00",
+            "price": 8069.580078125,
+            "size": 0.5,
+            "reason": "TP1 (1:1)"
+          }
+        ],
+        "holding_time_minutes": 1660.0
+      },
+      {
+        "date": "2025-10-03",
+        "box_high": 8093.009765625,
+        "box_low": 8076.35986328125,
+        "box_range": 16.64990234375,
+        "direction": "LONG",
+        "entry_time": "2025-10-03T10:05:00+02:00",
+        "entry_price": 8094.009765625,
+        "stop_loss": 8076.35986328125,
+        "risk_points": 17.64990234375,
+        "exit_time": "2025-10-03T10:30:00+02:00",
+        "exit_price": 8075.35986328125,
+        "status": "STOPPED_OUT",
+        "pnl_points": -18.64990234375,
+        "pnl_r": -1.0566575372783358,
+        "partial_exits": [],
+        "holding_time_minutes": 25.0
+      }
+    ],
+    "equity_curve": [
+      {
+        "date": "2025-09-10",
+        "equity": 98355.1953125,
+        "pnl": -1644.8046875,
+        "pnl_r": -1.0249251515225275
+      },
+      {
+        "date": "2025-09-15",
+        "equity": 99191.796875,
+        "pnl": 836.6015625,
+        "pnl_r": 0.48832596105613574
+      },
+      {
+        "date": "2025-09-16",
+        "equity": 97380.986328125,
+        "pnl": -1810.810546875,
+        "pnl_r": -1.0342698415354494
+      },
+      {
+        "date": "2025-09-19",
+        "equity": 98292.998046875,
+        "pnl": 912.01171875,
+        "pnl_r": 0.48407663121229083
+      },
+      {
+        "date": "2025-09-23",
+        "equity": 99199.853515625,
+        "pnl": 906.85546875,
+        "pnl_r": 0.48141965452170127
+      },
+      {
+        "date": "2025-09-25",
+        "equity": 97568.662109375,
+        "pnl": -1631.19140625,
+        "pnl_r": -1.0251383961997815
+      },
+      {
+        "date": "2025-09-26",
+        "equity": 95764.248046875,
+        "pnl": -1804.4140625,
+        "pnl_r": -1.0226704155504882
+      },
+      {
+        "date": "2025-10-02",
+        "equity": 96605.849609375,
+        "pnl": 841.6015625,
+        "pnl_r": 0.47731401479906066
+      },
+      {
+        "date": "2025-10-03",
+        "equity": 94740.859375,
+        "pnl": -1864.990234375,
+        "pnl_r": -1.0566575372783358
+      }
+    ],
+    "metrics": {
+      "basic_stats": {
+        "total_trades": 9,
+        "executed_trades": 9,
+        "invalid_trades": 0,
+        "total_pnl": -5259.140625,
+        "avg_pnl_per_trade": -584.3489583333334,
+        "best_trade": 20.9150390625,
+        "worst_trade": -45.1103515625,
+        "avg_pnl_points": -12.916666666666666,
+        "median_pnl_points": -18.64990234375
+      },
+      "win_rate": {
+        "win_rate": 44.44444444444444,
+        "winning_trades": 4,
+        "losing_trades": 5,
+        "breakeven_trades": 0,
+        "avg_win": 14.8975830078125,
+        "avg_loss": -35.16806640625,
+        "largest_win": 20.9150390625,
+        "largest_loss": -45.1103515625,
+        "win_loss_ratio": 0.42361109182746914
+      },
+      "profit_factor": {
+        "profit_factor": 0.33888887346197527,
+        "gross_profit": 59.59033203125,
+        "gross_loss": 175.84033203125,
+        "net_profit": -116.25
+      },
+      "sharpe_ratio": {
+        "sharpe_ratio": -7.5722679671759066,
+        "annual_return": -90.51070225392705,
+        "annual_volatility": 11.955559767081336,
+        "daily_avg_return": -0.3591694533885994,
+        "daily_std": 0.7531294744825361
+      },
+      "sortino_ratio": {
+        "sortino_ratio": -452.37126154382594,
+        "downside_deviation": 0.20012478676246853
+      },
+      "max_drawdown": {
+        "max_drawdown_pct": 4.49496040830611,
+        "max_drawdown_value": 4458.994140625,
+        "drawdown_start_date": "2025-09-23",
+        "drawdown_bottom_date": "2025-10-03",
+        "drawdown_recovery_date": "Not recovered",
+        "current_drawdown_pct": -4.49496040830611
+      },
+      "monthly_returns": {
+        "avg_monthly_return": -2629.5703125,
+        "median_monthly_return": -2629.5703125,
+        "best_month": -1023.388671875,
+        "worst_month": -4235.751953125,
+        "positive_months": 0,
+        "negative_months": 2,
+        "monthly_win_rate": 0.0,
+        "monthly_returns": {
+          "2025-09-30 00:00:00": -4235.751953125,
+          "2025-10-31 00:00:00": -1023.388671875
+        }
+      },
+      "r_distribution": {
+        "avg_r_multiple": -0.3591694533885994,
+        "median_r_multiple": -1.0226704155504882,
+        "max_r_multiple": 0.48832596105613574,
+        "min_r_multiple": -1.0566575372783358,
+        "std_r_multiple": 0.7531294744825361,
+        "r_distribution": {
+          "< -3R": 0,
+          "-3R to -2R": 0,
+          "-2R to -1R": 5,
+          "-1R to 0R": 0,
+          "0R to 1R": 4,
+          "1R to 2R": 0,
+          "2R to 3R": 0,
+          "3R to 5R": 0,
+          "5R to 10R": 0,
+          "> 10R": 0
+        },
+        "trades_above_1r": 0,
+        "trades_above_2r": 0,
+        "trades_above_3r": 0
+      },
+      "trade_duration": {
+        "avg_duration_minutes": 326.6666666666667,
+        "median_duration_minutes": 150.0,
+        "min_duration_minutes": 25.0,
+        "max_duration_minutes": 1660.0,
+        "avg_duration_hours": 5.444444444444445,
+        "trades_under_1hour": 2,
+        "trades_1to3_hours": 4,
+        "trades_over_3hours": 3
+      },
+      "directional_stats": {
+        "long": {
+          "count": 9,
+          "win_rate": 44.44444444444444,
+          "avg_pnl": -12.916666666666666,
+          "total_pnl": -116.25
+        },
+        "short": {
+          "count": 0,
+          "win_rate": 0,
+          "avg_pnl": 0,
+          "total_pnl": 0
+        }
+      },
+      "take_profit_analysis": {
+        "status_distribution": {
+          "STOPPED_OUT": 9
+        },
+        "stopped_out": 9,
+        "tp1_achieved": 4,
+        "tp2_achieved": 0,
+        "tp3_achieved": 0,
+        "total_partial_exits": 4,
+        "avg_partials_per_trade": 0.4444444444444444
+      },
+      "box_range_analysis": {
+        "avg_box_range": 31.66899956597222,
+        "median_box_range": 30.400390625,
+        "min_box_range": 16.64990234375,
+        "max_box_range": 43.1103515625,
+        "small_ranges": {
+          "count": 0,
+          "win_rate": 0,
+          "avg_pnl": 0
+        },
+        "medium_ranges": {
+          "count": 4,
+          "win_rate": 50.0,
+          "avg_pnl": -6.3387451171875
+        },
+        "large_ranges": {
+          "count": 5,
+          "win_rate": 40.0,
+          "avg_pnl": -18.17900390625
+        }
+      }
+    },
+    "total_pnl_usd": -5785.054687500001,
+    "market_info": {
+      "code": "STOXX",
+      "name": "Euro Stoxx 50",
+      "symbol": "^STOXX50E",
+      "timezone": "Europe/Berlin",
+      "currency": "EUR",
+      "point_value": 10.0,
+      "market_hours": "09:00 - 17:30",
+      "box_parameters": {
+        "start_offset_minutes": -60,
+        "duration_minutes": 90,
+        "min_range": 5.0,
+        "max_range": 40.0
+      },
+      "slippage_points": 1.0,
+      "liquidity_rating": 4
+    }
+  },
+  "CAC": {
+    "symbol": "CAC",
+    "initial_capital": 100000,
+    "final_capital": 94460.859375,
+    "total_pnl": -5539.140625,
+    "return_pct": -5.539140625000005,
+    "total_trades": 9,
+    "total_setups": 20,
+    "valid_entries": 9,
+    "invalid_trades": 11,
+    "trades": [
+      {
+        "date": "2025-09-10",
+        "box_high": 7802.169921875,
+        "box_low": 7763.0498046875,
+        "box_range": 39.1201171875,
+        "direction": "LONG",
+        "entry_time": "2025-09-10T10:20:00+02:00",
+        "entry_price": 7803.669921875,
+        "stop_loss": 7763.0498046875,
+        "risk_points": 40.6201171875,
+        "exit_time": "2025-09-10T10:50:00+02:00",
+        "exit_price": 7761.5498046875,
+        "status": "STOPPED_OUT",
+        "pnl_points": -42.1201171875,
+        "pnl_r": -1.0369275153263613,
+        "partial_exits": [],
+        "holding_time_minutes": 30.0
+      },
+      {
+        "date": "2025-09-15",
+        "box_high": 7885.2900390625,
+        "box_low": 7843.4599609375,
+        "box_range": 41.830078125,
+        "direction": "LONG",
+        "entry_time": "2025-09-15T09:40:00+02:00",
+        "entry_price": 7886.7900390625,
+        "stop_loss": 7843.4599609375,
+        "risk_points": 43.330078125,
+        "exit_time": "2025-09-15T16:00:00+02:00",
+        "exit_price": 7885.2900390625,
+        "status": "STOPPED_OUT",
+        "pnl_points": 20.9150390625,
+        "pnl_r": 0.48269100743745774,
+        "partial_exits": [
+          {
+            "time": "2025-09-15T13:55:00+02:00",
+            "price": 7930.1201171875,
+            "size": 0.5,
+            "reason": "TP1 (1:1)"
+          }
+        ],
+        "holding_time_minutes": 380.0
+      },
+      {
+        "date": "2025-09-16",
+        "box_high": 7890.56005859375,
+        "box_low": 7862.3798828125,
+        "box_range": 28.18017578125,
+        "direction": "LONG",
+        "entry_time": "2025-09-16T10:30:00+02:00",
+        "entry_price": 7892.06005859375,
+        "stop_loss": 7862.3798828125,
+        "risk_points": 29.68017578125,
+        "exit_time": "2025-09-16T15:30:00+02:00",
+        "exit_price": 7860.8798828125,
+        "status": "STOPPED_OUT",
+        "pnl_points": -31.18017578125,
+        "pnl_r": -1.0505387842395328,
+        "partial_exits": [],
+        "holding_time_minutes": 300.0
+      },
+      {
+        "date": "2025-09-19",
+        "box_high": 7900.41015625,
+        "box_low": 7870.009765625,
+        "box_range": 30.400390625,
+        "direction": "LONG",
+        "entry_time": "2025-09-19T09:35:00+02:00",
+        "entry_price": 7901.91015625,
+        "stop_loss": 7870.009765625,
+        "risk_points": 31.900390625,
+        "exit_time": "2025-09-19T11:10:00+02:00",
+        "exit_price": 7900.41015625,
+        "status": "STOPPED_OUT",
+        "pnl_points": 15.2001953125,
+        "pnl_r": 0.476489316108492,
+        "partial_exits": [
+          {
+            "time": "2025-09-19T10:15:00+02:00",
+            "price": 7933.810546875,
+            "size": 0.5,
+            "reason": "TP1 (1:1)"
+          }
+        ],
+        "holding_time_minutes": 95.0
+      },
+      {
+        "date": "2025-09-23",
+        "box_high": 7883.02001953125,
+        "box_low": 7857.10986328125,
+        "box_range": 25.91015625,
+        "direction": "LONG",
+        "entry_time": "2025-09-23T09:50:00+02:00",
+        "entry_price": 7884.52001953125,
+        "stop_loss": 7857.10986328125,
+        "risk_points": 27.41015625,
+        "exit_time": "2025-09-23T12:20:00+02:00",
+        "exit_price": 7883.02001953125,
+        "status": "STOPPED_OUT",
+        "pnl_points": 12.955078125,
+        "pnl_r": 0.47263787943565627,
+        "partial_exits": [
+          {
+            "time": "2025-09-23T10:50:00+02:00",
+            "price": 7911.93017578125,
+            "size": 0.5,
+            "reason": "TP1 (1:1)"
+          }
+        ],
+        "holding_time_minutes": 150.0
+      },
+      {
+        "date": "2025-09-25",
+        "box_high": 7808.0,
+        "box_low": 7769.22021484375,
+        "box_range": 38.77978515625,
+        "direction": "LONG",
+        "entry_time": "2025-09-25T09:40:00+02:00",
+        "entry_price": 7809.5,
+        "stop_loss": 7769.22021484375,
+        "risk_points": 40.27978515625,
+        "exit_time": "2025-09-25T11:45:00+02:00",
+        "exit_price": 7767.72021484375,
+        "status": "STOPPED_OUT",
+        "pnl_points": -41.77978515625,
+        "pnl_r": -1.0372395233534966,
+        "partial_exits": [],
+        "holding_time_minutes": 125.0
+      },
+      {
+        "date": "2025-09-26",
+        "box_high": 7864.8701171875,
+        "box_low": 7821.759765625,
+        "box_range": 43.1103515625,
+        "direction": "LONG",
+        "entry_time": "2025-09-26T09:50:00+02:00",
+        "entry_price": 7866.3701171875,
+        "stop_loss": 7821.759765625,
+        "risk_points": 44.6103515625,
+        "exit_time": "2025-09-26T12:45:00+02:00",
+        "exit_price": 7820.259765625,
+        "status": "STOPPED_OUT",
+        "pnl_points": -46.1103515625,
+        "pnl_r": -1.0336244828265582,
+        "partial_exits": [],
+        "holding_time_minutes": 175.0
+      },
+      {
+        "date": "2025-10-02",
+        "box_high": 8046.5400390625,
+        "box_low": 8025.5,
+        "box_range": 21.0400390625,
+        "direction": "LONG",
+        "entry_time": "2025-10-02T10:15:00+02:00",
+        "entry_price": 8048.0400390625,
+        "stop_loss": 8025.5,
+        "risk_points": 22.5400390625,
+        "exit_time": "2025-10-03T13:55:00+02:00",
+        "exit_price": 8046.5400390625,
+        "status": "STOPPED_OUT",
+        "pnl_points": 10.52001953125,
+        "pnl_r": 0.46672587842814434,
+        "partial_exits": [
+          {
+            "time": "2025-10-02T13:20:00+02:00",
+            "price": 8070.580078125,
+            "size": 0.5,
+            "reason": "TP1 (1:1)"
+          }
+        ],
+        "holding_time_minutes": 1660.0
+      },
+      {
+        "date": "2025-10-03",
+        "box_high": 8093.009765625,
+        "box_low": 8076.35986328125,
+        "box_range": 16.64990234375,
+        "direction": "LONG",
+        "entry_time": "2025-10-03T10:05:00+02:00",
+        "entry_price": 8094.509765625,
+        "stop_loss": 8076.35986328125,
+        "risk_points": 18.14990234375,
+        "exit_time": "2025-10-03T10:30:00+02:00",
+        "exit_price": 8074.85986328125,
+        "status": "STOPPED_OUT",
+        "pnl_points": -19.64990234375,
+        "pnl_r": -1.0826450727717845,
+        "partial_exits": [],
+        "holding_time_minutes": 25.0
+      }
+    ],
+    "equity_curve": [
+      {
+        "date": "2025-09-10",
+        "equity": 98315.1953125,
+        "pnl": -1684.8046875,
+        "pnl_r": -1.0369275153263613
+      },
+      {
+        "date": "2025-09-15",
+        "equity": 99151.796875,
+        "pnl": 836.6015625,
+        "pnl_r": 0.48269100743745774
+      },
+      {
+        "date": "2025-09-16",
+        "equity": 97280.986328125,
+        "pnl": -1870.810546875,
+        "pnl_r": -1.0505387842395328
+      },
+      {
+        "date": "2025-09-19",
+        "equity": 98192.998046875,
+        "pnl": 912.01171875,
+        "pnl_r": 0.476489316108492
+      },
+      {
+        "date": "2025-09-23",
+        "equity": 99099.853515625,
+        "pnl": 906.85546875,
+        "pnl_r": 0.47263787943565627
+      },
+      {
+        "date": "2025-09-25",
+        "equity": 97428.662109375,
+        "pnl": -1671.19140625,
+        "pnl_r": -1.0372395233534966
+      },
+      {
+        "date": "2025-09-26",
+        "equity": 95584.248046875,
+        "pnl": -1844.4140625,
+        "pnl_r": -1.0336244828265582
+      },
+      {
+        "date": "2025-10-02",
+        "equity": 96425.849609375,
+        "pnl": 841.6015625,
+        "pnl_r": 0.46672587842814434
+      },
+      {
+        "date": "2025-10-03",
+        "equity": 94460.859375,
+        "pnl": -1964.990234375,
+        "pnl_r": -1.0826450727717845
+      }
+    ],
+    "metrics": {
+      "basic_stats": {
+        "total_trades": 9,
+        "executed_trades": 9,
+        "invalid_trades": 0,
+        "total_pnl": -5539.140625,
+        "avg_pnl_per_trade": -615.4600694444445,
+        "best_trade": 20.9150390625,
+        "worst_trade": -46.1103515625,
+        "avg_pnl_points": -13.472222222222221,
+        "median_pnl_points": -19.64990234375
+      },
+      "win_rate": {
+        "win_rate": 44.44444444444444,
+        "winning_trades": 4,
+        "losing_trades": 5,
+        "breakeven_trades": 0,
+        "avg_win": 14.8975830078125,
+        "avg_loss": -36.16806640625,
+        "largest_win": 20.9150390625,
+        "largest_loss": -46.1103515625,
+        "win_loss_ratio": 0.4118987960395398
+      },
+      "profit_factor": {
+        "profit_factor": 0.32951903683163186,
+        "gross_profit": 59.59033203125,
+        "gross_loss": 180.84033203125,
+        "net_profit": -121.25
+      },
+      "sharpe_ratio": {
+        "sharpe_ratio": -7.791365216696065,
+        "annual_return": -93.58807631902353,
+        "annual_volatility": 12.014335577342901,
+        "daily_avg_return": -0.37138125523422033,
+        "daily_std": 0.7568320025077365
+      },
+      "sortino_ratio": {
+        "sortino_ratio": -324.4503984807989,
+        "downside_deviation": 0.2885127488125532
+      },
+      "max_drawdown": {
+        "max_drawdown_pct": 4.73106655435991,
+        "max_drawdown_value": 4690.9375,
+        "drawdown_start_date": "2025-09-15",
+        "drawdown_bottom_date": "2025-10-03",
+        "drawdown_recovery_date": "Not recovered",
+        "current_drawdown_pct": -4.73106655435991
+      },
+      "monthly_returns": {
+        "avg_monthly_return": -2769.5703125,
+        "median_monthly_return": -2769.5703125,
+        "best_month": -1123.388671875,
+        "worst_month": -4415.751953125,
+        "positive_months": 0,
+        "negative_months": 2,
+        "monthly_win_rate": 0.0,
+        "monthly_returns": {
+          "2025-09-30 00:00:00": -4415.751953125,
+          "2025-10-31 00:00:00": -1123.388671875
+        }
+      },
+      "r_distribution": {
+        "avg_r_multiple": -0.37138125523422033,
+        "median_r_multiple": -1.0336244828265582,
+        "max_r_multiple": 0.48269100743745774,
+        "min_r_multiple": -1.0826450727717845,
+        "std_r_multiple": 0.7568320025077365,
+        "r_distribution": {
+          "< -3R": 0,
+          "-3R to -2R": 0,
+          "-2R to -1R": 5,
+          "-1R to 0R": 0,
+          "0R to 1R": 4,
+          "1R to 2R": 0,
+          "2R to 3R": 0,
+          "3R to 5R": 0,
+          "5R to 10R": 0,
+          "> 10R": 0
+        },
+        "trades_above_1r": 0,
+        "trades_above_2r": 0,
+        "trades_above_3r": 0
+      },
+      "trade_duration": {
+        "avg_duration_minutes": 326.6666666666667,
+        "median_duration_minutes": 150.0,
+        "min_duration_minutes": 25.0,
+        "max_duration_minutes": 1660.0,
+        "avg_duration_hours": 5.444444444444445,
+        "trades_under_1hour": 2,
+        "trades_1to3_hours": 4,
+        "trades_over_3hours": 3
+      },
+      "directional_stats": {
+        "long": {
+          "count": 9,
+          "win_rate": 44.44444444444444,
+          "avg_pnl": -13.472222222222221,
+          "total_pnl": -121.25
+        },
+        "short": {
+          "count": 0,
+          "win_rate": 0,
+          "avg_pnl": 0,
+          "total_pnl": 0
+        }
+      },
+      "take_profit_analysis": {
+        "status_distribution": {
+          "STOPPED_OUT": 9
+        },
+        "stopped_out": 9,
+        "tp1_achieved": 4,
+        "tp2_achieved": 0,
+        "tp3_achieved": 0,
+        "total_partial_exits": 4,
+        "avg_partials_per_trade": 0.4444444444444444
+      },
+      "box_range_analysis": {
+        "avg_box_range": 31.66899956597222,
+        "median_box_range": 30.400390625,
+        "min_box_range": 16.64990234375,
+        "max_box_range": 43.1103515625,
+        "small_ranges": {
+          "count": 0,
+          "win_rate": 0,
+          "avg_pnl": 0
+        },
+        "medium_ranges": {
+          "count": 4,
+          "win_rate": 50.0,
+          "avg_pnl": -6.8387451171875
+        },
+        "large_ranges": {
+          "count": 5,
+          "win_rate": 40.0,
+          "avg_pnl": -18.77900390625
+        }
+      }
+    },
+    "total_pnl_usd": -6093.054687500001,
+    "market_info": {
+      "code": "CAC",
+      "name": "CAC 40 Index",
+      "symbol": "^FCHI",
+      "timezone": "Europe/Paris",
+      "currency": "EUR",
+      "point_value": 10.0,
+      "market_hours": "09:00 - 17:30",
+      "box_parameters": {
+        "start_offset_minutes": -60,
+        "duration_minutes": 90,
+        "min_range": 8.0,
+        "max_range": 50.0
+      },
+      "slippage_points": 1.5,
+      "liquidity_rating": 4
+    }
+  },
+  "NKY": {
+    "symbol": "NKY",
+    "initial_capital": 100000,
+    "final_capital": 100000,
+    "total_pnl": 0,
+    "return_pct": 0.0,
+    "total_trades": 0,
+    "total_setups": 0,
+    "valid_entries": 0,
+    "invalid_trades": 0,
+    "trades": [],
+    "equity_curve": []
+  },
+  "ASX": {
+    "symbol": "ASX",
+    "initial_capital": 100000,
+    "final_capital": 102056.18896484375,
+    "total_pnl": 2056.18896484375,
+    "return_pct": 2.0561889648437415,
+    "total_trades": 7,
+    "total_setups": 20,
+    "valid_entries": 7,
+    "invalid_trades": 13,
+    "trades": [
+      {
+        "date": "2025-09-10",
+        "box_high": 8811.099609375,
+        "box_low": 8791.2001953125,
+        "box_range": 19.8994140625,
+        "direction": "LONG",
+        "entry_time": "2025-09-10T11:00:00+10:00",
+        "entry_price": 8812.599609375,
+        "stop_loss": 8791.2001953125,
+        "risk_points": 21.3994140625,
+        "exit_time": "2025-09-11T10:00:00+10:00",
+        "exit_price": 8811.099609375,
+        "status": "STOPPED_OUT",
+        "pnl_points": 9.94970703125,
+        "pnl_r": 0.4649523114133163,
+        "partial_exits": [
+          {
+            "time": "2025-09-10T15:20:00+10:00",
+            "price": 8833.9990234375,
+            "size": 0.5,
+            "reason": "TP1 (1:1)"
+          }
+        ],
+        "holding_time_minutes": 1380.0
+      },
+      {
+        "date": "2025-09-12",
+        "box_high": 8874.599609375,
+        "box_low": 8838.7998046875,
+        "box_range": 35.7998046875,
+        "direction": "LONG",
+        "entry_time": "2025-09-12T10:30:00+10:00",
+        "entry_price": 8876.099609375,
+        "stop_loss": 8838.7998046875,
+        "risk_points": 37.2998046875,
+        "exit_time": "2025-09-15T10:00:00+10:00",
+        "exit_price": 8837.2998046875,
+        "status": "STOPPED_OUT",
+        "pnl_points": -38.7998046875,
+        "pnl_r": -1.0402146877863594,
+        "partial_exits": [],
+        "holding_time_minutes": 4290.0
+      },
+      {
+        "date": "2025-09-16",
+        "box_high": 8885.2998046875,
+        "box_low": 8866.599609375,
+        "box_range": 18.7001953125,
+        "direction": "LONG",
+        "entry_time": "2025-09-16T10:50:00+10:00",
+        "entry_price": 8886.7998046875,
+        "stop_loss": 8866.599609375,
+        "risk_points": 20.2001953125,
+        "exit_time": "2025-09-16T11:40:00+10:00",
+        "exit_price": 8865.099609375,
+        "status": "STOPPED_OUT",
+        "pnl_points": -21.7001953125,
+        "pnl_r": -1.0742567077592458,
+        "partial_exits": [],
+        "holding_time_minutes": 50.0
+      },
+      {
+        "date": "2025-09-29",
+        "box_high": 8845.2001953125,
+        "box_low": 8811.7001953125,
+        "box_range": 33.5,
+        "direction": "LONG",
+        "entry_time": "2025-09-29T10:30:00+10:00",
+        "entry_price": 8846.7001953125,
+        "stop_loss": 8811.7001953125,
+        "risk_points": 35.0,
+        "exit_time": "2025-09-30T15:45:00+10:00",
+        "exit_price": 8845.2001953125,
+        "status": "STOPPED_OUT",
+        "pnl_points": 16.75,
+        "pnl_r": 0.4785714285714286,
+        "partial_exits": [
+          {
+            "time": "2025-09-30T10:35:00+10:00",
+            "price": 8881.7001953125,
+            "size": 0.5,
+            "reason": "TP1 (1:1)"
+          }
+        ],
+        "holding_time_minutes": 1755.0
+      },
+      {
+        "date": "2025-09-30",
+        "box_high": 8877.2001953125,
+        "box_low": 8858.099609375,
+        "box_range": 19.1005859375,
+        "direction": "LONG",
+        "entry_time": "2025-09-30T11:00:00+10:00",
+        "entry_price": 8878.7001953125,
+        "stop_loss": 8858.099609375,
+        "risk_points": 20.6005859375,
+        "exit_time": "2025-09-30T12:15:00+10:00",
+        "exit_price": 8856.599609375,
+        "status": "STOPPED_OUT",
+        "pnl_points": -22.1005859375,
+        "pnl_r": -1.0728134629059018,
+        "partial_exits": [],
+        "holding_time_minutes": 75.0
+      },
+      {
+        "date": "2025-10-01",
+        "box_high": 8835.900390625,
+        "box_low": 8809.0,
+        "box_range": 26.900390625,
+        "direction": "LONG",
+        "entry_time": "2025-10-01T11:05:00+10:00",
+        "entry_price": 8837.400390625,
+        "stop_loss": 8809.0,
+        "risk_points": 28.400390625,
+        "exit_time": "2025-10-03T16:10:00+10:00",
+        "exit_price": 8982.400390625,
+        "status": "TP3_HIT",
+        "pnl_points": 86.7001953125,
+        "pnl_r": 3.052781789423011,
+        "partial_exits": [
+          {
+            "time": "2025-10-02T10:00:00+10:00",
+            "price": 8865.80078125,
+            "size": 0.5,
+            "reason": "TP1 (1:1)"
+          }
+        ],
+        "holding_time_minutes": 3185.0
+      },
+      {
+        "date": "2025-10-03",
+        "box_high": 8955.2998046875,
+        "box_low": 8927.900390625,
+        "box_range": 27.3994140625,
+        "direction": "LONG",
+        "entry_time": "2025-10-03T11:15:00+10:00",
+        "entry_price": 8956.7998046875,
+        "stop_loss": 8927.900390625,
+        "risk_points": 28.8994140625,
+        "exit_time": "2025-10-03T16:10:00+10:00",
+        "exit_price": 8982.400390625,
+        "status": "TP3_HIT",
+        "pnl_points": 27.25,
+        "pnl_r": 0.9429256918865948,
+        "partial_exits": [
+          {
+            "time": "2025-10-03T12:00:00+10:00",
+            "price": 8985.69921875,
+            "size": 0.5,
+            "reason": "TP1 (1:1)"
+          }
+        ],
+        "holding_time_minutes": 295.0
+      }
+    ],
+    "equity_curve": [
+      {
+        "date": "2025-09-10",
+        "equity": 100746.22802734375,
+        "pnl": 746.22802734375,
+        "pnl_r": 0.4649523114133163
+      },
+      {
+        "date": "2025-09-12",
+        "equity": 98806.23779296875,
+        "pnl": -1939.990234375,
+        "pnl_r": -1.0402146877863594
+      },
+      {
+        "date": "2025-09-16",
+        "equity": 97178.72314453125,
+        "pnl": -1627.5146484375,
+        "pnl_r": -1.0742567077592458
+      },
+      {
+        "date": "2025-09-29",
+        "equity": 98016.22314453125,
+        "pnl": 837.5,
+        "pnl_r": 0.4785714285714286
+      },
+      {
+        "date": "2025-09-30",
+        "equity": 96358.67919921875,
+        "pnl": -1657.5439453125,
+        "pnl_r": -1.0728134629059018
+      },
+      {
+        "date": "2025-10-01",
+        "equity": 100693.68896484375,
+        "pnl": 4335.009765625,
+        "pnl_r": 3.052781789423011
+      },
+      {
+        "date": "2025-10-03",
+        "equity": 102056.18896484375,
+        "pnl": 1362.5,
+        "pnl_r": 0.9429256918865948
+      }
+    ],
+    "metrics": {
+      "basic_stats": {
+        "total_trades": 7,
+        "executed_trades": 7,
+        "invalid_trades": 0,
+        "total_pnl": 2056.18896484375,
+        "avg_pnl_per_trade": 293.7412806919643,
+        "best_trade": 86.7001953125,
+        "worst_trade": -38.7998046875,
+        "avg_pnl_points": 8.292759486607142,
+        "median_pnl_points": 9.94970703125
+      },
+      "win_rate": {
+        "win_rate": 57.14285714285714,
+        "winning_trades": 4,
+        "losing_trades": 3,
+        "breakeven_trades": 0,
+        "avg_win": 35.1624755859375,
+        "avg_loss": -27.533528645833332,
+        "largest_win": 86.7001953125,
+        "largest_loss": -38.7998046875,
+        "win_loss_ratio": 1.2770784318361845
+      },
+      "profit_factor": {
+        "profit_factor": 1.7027712424482462,
+        "gross_profit": 140.64990234375,
+        "gross_loss": 82.6005859375,
+        "net_profit": 58.04931640625
+      },
+      "sharpe_ratio": {
+        "sharpe_ratio": 2.8492314469754763,
+        "annual_return": 63.07006906234238,
+        "annual_volatility": 22.128798672804013,
+        "daily_avg_return": 0.250278051834692,
+        "daily_std": 1.3939832881156091
+      },
+      "sortino_ratio": {
+        "sortino_ratio": 252.68301397935284,
+        "downside_deviation": 0.24952238802840265
+      },
+      "max_drawdown": {
+        "max_drawdown_pct": 4.3550502227578844,
+        "max_drawdown_value": 4387.548828125,
+        "drawdown_start_date": "2025-09-10",
+        "drawdown_bottom_date": "2025-09-30",
+        "drawdown_recovery_date": "2025-10-03",
+        "current_drawdown_pct": 0.0
+      },
+      "monthly_returns": {
+        "avg_monthly_return": 1028.094482421875,
+        "median_monthly_return": 1028.094482421875,
+        "best_month": 5697.509765625,
+        "worst_month": -3641.32080078125,
+        "positive_months": 1,
+        "negative_months": 1,
+        "monthly_win_rate": 50.0,
+        "monthly_returns": {
+          "2025-09-30 00:00:00": -3641.32080078125,
+          "2025-10-31 00:00:00": 5697.509765625
+        }
+      },
+      "r_distribution": {
+        "avg_r_multiple": 0.250278051834692,
+        "median_r_multiple": 0.4649523114133163,
+        "max_r_multiple": 3.052781789423011,
+        "min_r_multiple": -1.0742567077592458,
+        "std_r_multiple": 1.3939832881156091,
+        "r_distribution": {
+          "< -3R": 0,
+          "-3R to -2R": 0,
+          "-2R to -1R": 3,
+          "-1R to 0R": 0,
+          "0R to 1R": 3,
+          "1R to 2R": 0,
+          "2R to 3R": 0,
+          "3R to 5R": 1,
+          "5R to 10R": 0,
+          "> 10R": 0
+        },
+        "trades_above_1r": 1,
+        "trades_above_2r": 1,
+        "trades_above_3r": 1
+      },
+      "trade_duration": {
+        "avg_duration_minutes": 1575.7142857142858,
+        "median_duration_minutes": 1380.0,
+        "min_duration_minutes": 50.0,
+        "max_duration_minutes": 4290.0,
+        "avg_duration_hours": 26.261904761904763,
+        "trades_under_1hour": 1,
+        "trades_1to3_hours": 1,
+        "trades_over_3hours": 5
+      },
+      "directional_stats": {
+        "long": {
+          "count": 7,
+          "win_rate": 57.14285714285714,
+          "avg_pnl": 8.292759486607142,
+          "total_pnl": 58.04931640625
+        },
+        "short": {
+          "count": 0,
+          "win_rate": 0,
+          "avg_pnl": 0,
+          "total_pnl": 0
+        }
+      },
+      "take_profit_analysis": {
+        "status_distribution": {
+          "STOPPED_OUT": 5,
+          "TP3_HIT": 2
+        },
+        "stopped_out": 5,
+        "tp1_achieved": 4,
+        "tp2_achieved": 0,
+        "tp3_achieved": 2,
+        "total_partial_exits": 4,
+        "avg_partials_per_trade": 0.5714285714285714
+      },
+      "box_range_analysis": {
+        "avg_box_range": 25.899972098214285,
+        "median_box_range": 26.900390625,
+        "min_box_range": 18.7001953125,
+        "max_box_range": 35.7998046875,
+        "small_ranges": {
+          "count": 0,
+          "win_rate": 0,
+          "avg_pnl": 0
+        },
+        "medium_ranges": {
+          "count": 5,
+          "win_rate": 60.0,
+          "avg_pnl": 16.01982421875
+        },
+        "large_ranges": {
+          "count": 2,
+          "win_rate": 50.0,
+          "avg_pnl": -11.02490234375
+        }
+      }
+    },
+    "total_pnl_usd": 1357.084716796875,
+    "market_info": {
+      "code": "ASX",
+      "name": "ASX 200 Index",
+      "symbol": "^AXJO",
+      "timezone": "Australia/Sydney",
+      "currency": "AUD",
+      "point_value": 25.0,
+      "market_hours": "10:00 - 16:00",
+      "box_parameters": {
+        "start_offset_minutes": -60,
+        "duration_minutes": 90,
+        "min_range": 5.0,
+        "max_range": 40.0
+      },
+      "slippage_points": 1.5,
+      "liquidity_rating": 3
+    }
+  },
+  "IBEX": {
+    "symbol": "IBEX",
+    "initial_capital": 100000,
+    "final_capital": 103581.9775390625,
+    "total_pnl": 3581.9775390625,
+    "return_pct": 3.5819775390625086,
+    "total_trades": 8,
+    "total_setups": 20,
+    "valid_entries": 8,
+    "invalid_trades": 12,
+    "trades": [
+      {
+        "date": "2025-09-10",
+        "box_high": 15173.900390625,
+        "box_low": 15112.2998046875,
+        "box_range": 61.6005859375,
+        "direction": "LONG",
+        "entry_time": "2025-09-10T10:05:00+02:00",
+        "entry_price": 15175.900390625,
+        "stop_loss": 15112.2998046875,
+        "risk_points": 63.6005859375,
+        "exit_time": "2025-09-16T17:00:00+02:00",
+        "exit_price": 15173.900390625,
+        "status": "STOPPED_OUT",
+        "pnl_points": 30.80029296875,
+        "pnl_r": 0.4842768744146053,
+        "partial_exits": [
+          {
+            "time": "2025-09-10T13:00:00+02:00",
+            "price": 15239.5009765625,
+            "size": 0.5,
+            "reason": "TP1 (1:1)"
+          }
+        ],
+        "holding_time_minutes": 9055.0
+      },
+      {
+        "date": "2025-09-11",
+        "box_high": 15276.7998046875,
+        "box_low": 15205.2001953125,
+        "box_range": 71.599609375,
+        "direction": "LONG",
+        "entry_time": "2025-09-11T10:25:00+02:00",
+        "entry_price": 15278.7998046875,
+        "stop_loss": 15205.2001953125,
+        "risk_points": 73.599609375,
+        "exit_time": "2025-09-12T14:35:00+02:00",
+        "exit_price": 15203.2001953125,
+        "status": "STOPPED_OUT",
+        "pnl_points": -75.599609375,
+        "pnl_r": -1.0271740572672028,
+        "partial_exits": [],
+        "holding_time_minutes": 1690.0
+      },
+      {
+        "date": "2025-09-15",
+        "box_high": 15374.7001953125,
+        "box_low": 15338.7998046875,
+        "box_range": 35.900390625,
+        "direction": "LONG",
+        "entry_time": "2025-09-15T11:00:00+02:00",
+        "entry_price": 15376.7001953125,
+        "stop_loss": 15338.7998046875,
+        "risk_points": 37.900390625,
+        "exit_time": "2025-09-16T09:00:00+02:00",
+        "exit_price": 15336.7998046875,
+        "status": "STOPPED_OUT",
+        "pnl_points": -39.900390625,
+        "pnl_r": -1.0527699046637464,
+        "partial_exits": [],
+        "holding_time_minutes": 1320.0
+      },
+      {
+        "date": "2025-09-19",
+        "box_high": 15270.400390625,
+        "box_low": 15192.2998046875,
+        "box_range": 78.1005859375,
+        "direction": "LONG",
+        "entry_time": "2025-09-19T09:45:00+02:00",
+        "entry_price": 15272.400390625,
+        "stop_loss": 15192.2998046875,
+        "risk_points": 80.1005859375,
+        "exit_time": "2025-09-22T09:00:00+02:00",
+        "exit_price": 15190.2998046875,
+        "status": "STOPPED_OUT",
+        "pnl_points": -82.1005859375,
+        "pnl_r": -1.0249686063665069,
+        "partial_exits": [],
+        "holding_time_minutes": 4275.0
+      },
+      {
+        "date": "2025-09-25",
+        "box_high": 15179.2001953125,
+        "box_low": 15104.7998046875,
+        "box_range": 74.400390625,
+        "direction": "LONG",
+        "entry_time": "2025-09-25T10:10:00+02:00",
+        "entry_price": 15181.2001953125,
+        "stop_loss": 15104.7998046875,
+        "risk_points": 76.400390625,
+        "exit_time": "2025-10-03T17:25:00+02:00",
+        "exit_price": 15589.5,
+        "status": "TP3_HIT",
+        "pnl_points": 242.35009765625,
+        "pnl_r": 3.1721054784364853,
+        "partial_exits": [
+          {
+            "time": "2025-09-26T13:35:00+02:00",
+            "price": 15257.6005859375,
+            "size": 0.5,
+            "reason": "TP1 (1:1)"
+          }
+        ],
+        "holding_time_minutes": 11955.0
+      },
+      {
+        "date": "2025-09-26",
+        "box_high": 15238.0,
+        "box_low": 15185.900390625,
+        "box_range": 52.099609375,
+        "direction": "LONG",
+        "entry_time": "2025-09-26T09:30:00+02:00",
+        "entry_price": 15240.0,
+        "stop_loss": 15185.900390625,
+        "risk_points": 54.099609375,
+        "exit_time": "2025-10-03T17:25:00+02:00",
+        "exit_price": 15589.5,
+        "status": "TP3_HIT",
+        "pnl_points": 201.7998046875,
+        "pnl_r": 3.7301527130943355,
+        "partial_exits": [
+          {
+            "time": "2025-09-26T14:35:00+02:00",
+            "price": 15294.099609375,
+            "size": 0.5,
+            "reason": "TP1 (1:1)"
+          }
+        ],
+        "holding_time_minutes": 10555.0
+      },
+      {
+        "date": "2025-10-02",
+        "box_high": 15573.7001953125,
+        "box_low": 15504.0,
+        "box_range": 69.7001953125,
+        "direction": "LONG",
+        "entry_time": "2025-10-02T11:00:00+02:00",
+        "entry_price": 15575.7001953125,
+        "stop_loss": 15504.0,
+        "risk_points": 71.7001953125,
+        "exit_time": "2025-10-02T17:10:00+02:00",
+        "exit_price": 15502.0,
+        "status": "STOPPED_OUT",
+        "pnl_points": -73.7001953125,
+        "pnl_r": -1.0278939268056824,
+        "partial_exits": [],
+        "holding_time_minutes": 370.0
+      },
+      {
+        "date": "2025-10-03",
+        "box_high": 15659.099609375,
+        "box_low": 15582.099609375,
+        "box_range": 77.0,
+        "direction": "LONG",
+        "entry_time": "2025-10-03T09:35:00+02:00",
+        "entry_price": 15661.099609375,
+        "stop_loss": 15582.099609375,
+        "risk_points": 79.0,
+        "exit_time": "2025-10-03T13:45:00+02:00",
+        "exit_price": 15580.099609375,
+        "status": "STOPPED_OUT",
+        "pnl_points": -81.0,
+        "pnl_r": -1.0253164556962024,
+        "partial_exits": [],
+        "holding_time_minutes": 250.0
+      }
+    ],
+    "equity_curve": [
+      {
+        "date": "2025-09-10",
+        "equity": 100924.0087890625,
+        "pnl": 924.0087890625,
+        "pnl_r": 0.4842768744146053
+      },
+      {
+        "date": "2025-09-11",
+        "equity": 99412.0166015625,
+        "pnl": -1511.9921875,
+        "pnl_r": -1.0271740572672028
+      },
+      {
+        "date": "2025-09-15",
+        "equity": 97416.9970703125,
+        "pnl": -1995.01953125,
+        "pnl_r": -1.0527699046637464
+      },
+      {
+        "date": "2025-09-19",
+        "equity": 95774.9853515625,
+        "pnl": -1642.01171875,
+        "pnl_r": -1.0249686063665069
+      },
+      {
+        "date": "2025-09-25",
+        "equity": 100621.9873046875,
+        "pnl": 4847.001953125,
+        "pnl_r": 3.1721054784364853
+      },
+      {
+        "date": "2025-09-26",
+        "equity": 106675.9814453125,
+        "pnl": 6053.994140625,
+        "pnl_r": 3.7301527130943355
+      },
+      {
+        "date": "2025-10-02",
+        "equity": 105201.9775390625,
+        "pnl": -1474.00390625,
+        "pnl_r": -1.0278939268056824
+      },
+      {
+        "date": "2025-10-03",
+        "equity": 103581.9775390625,
+        "pnl": -1620.0,
+        "pnl_r": -1.0253164556962024
+      }
+    ],
+    "metrics": {
+      "basic_stats": {
+        "total_trades": 8,
+        "executed_trades": 8,
+        "invalid_trades": 0,
+        "total_pnl": 3581.9775390625,
+        "avg_pnl_per_trade": 447.7471923828125,
+        "best_trade": 242.35009765625,
+        "worst_trade": -82.1005859375,
+        "avg_pnl_points": 15.3311767578125,
+        "median_pnl_points": -56.80029296875
+      },
+      "win_rate": {
+        "win_rate": 37.5,
+        "winning_trades": 3,
+        "losing_trades": 5,
+        "breakeven_trades": 0,
+        "avg_win": 158.31673177083334,
+        "avg_loss": -70.46015625,
+        "largest_win": 242.35009765625,
+        "largest_loss": -82.1005859375,
+        "win_loss_ratio": 2.2468972565020864
+      },
+      "profit_factor": {
+        "profit_factor": 1.348138353901252,
+        "gross_profit": 474.9501953125,
+        "gross_loss": 352.30078125,
+        "net_profit": 122.6494140625
+      },
+      "sharpe_ratio": {
+        "sharpe_ratio": 2.325352042199953,
+        "annual_return": 70.19498162710171,
+        "annual_volatility": 30.178218331496616,
+        "daily_avg_return": 0.27855151439326076,
+        "daily_std": 1.9010490646702531
+      },
+      "sortino_ratio": {
+        "sortino_ratio": 415.87642437690386,
+        "downside_deviation": 0.16873998503820684
+      },
+      "max_drawdown": {
+        "max_drawdown_pct": 5.1018816030799785,
+        "max_drawdown_value": 5149.0234375,
+        "drawdown_start_date": "2025-09-10",
+        "drawdown_bottom_date": "2025-09-19",
+        "drawdown_recovery_date": "2025-09-26",
+        "current_drawdown_pct": -2.9003753837841586
+      },
+      "monthly_returns": {
+        "avg_monthly_return": 1790.98876953125,
+        "median_monthly_return": 1790.98876953125,
+        "best_month": 6675.9814453125,
+        "worst_month": -3094.00390625,
+        "positive_months": 1,
+        "negative_months": 1,
+        "monthly_win_rate": 50.0,
+        "monthly_returns": {
+          "2025-09-30 00:00:00": 6675.9814453125,
+          "2025-10-31 00:00:00": -3094.00390625
+        }
+      },
+      "r_distribution": {
+        "avg_r_multiple": 0.27855151439326076,
+        "median_r_multiple": -1.0251425310313547,
+        "max_r_multiple": 3.7301527130943355,
+        "min_r_multiple": -1.0527699046637464,
+        "std_r_multiple": 1.9010490646702531,
+        "r_distribution": {
+          "< -3R": 0,
+          "-3R to -2R": 0,
+          "-2R to -1R": 5,
+          "-1R to 0R": 0,
+          "0R to 1R": 1,
+          "1R to 2R": 0,
+          "2R to 3R": 0,
+          "3R to 5R": 2,
+          "5R to 10R": 0,
+          "> 10R": 0
+        },
+        "trades_above_1r": 2,
+        "trades_above_2r": 2,
+        "trades_above_3r": 2
+      },
+      "trade_duration": {
+        "avg_duration_minutes": 4933.75,
+        "median_duration_minutes": 2982.5,
+        "min_duration_minutes": 250.0,
+        "max_duration_minutes": 11955.0,
+        "avg_duration_hours": 82.22916666666667,
+        "trades_under_1hour": 0,
+        "trades_1to3_hours": 0,
+        "trades_over_3hours": 8
+      },
+      "directional_stats": {
+        "long": {
+          "count": 8,
+          "win_rate": 37.5,
+          "avg_pnl": 15.3311767578125,
+          "total_pnl": 122.6494140625
+        },
+        "short": {
+          "count": 0,
+          "win_rate": 0,
+          "avg_pnl": 0,
+          "total_pnl": 0
+        }
+      },
+      "take_profit_analysis": {
+        "status_distribution": {
+          "STOPPED_OUT": 6,
+          "TP3_HIT": 2
+        },
+        "stopped_out": 6,
+        "tp1_achieved": 3,
+        "tp2_achieved": 0,
+        "tp3_achieved": 2,
+        "total_partial_exits": 3,
+        "avg_partials_per_trade": 0.375
+      },
+      "box_range_analysis": {
+        "avg_box_range": 65.0501708984375,
+        "median_box_range": 70.64990234375,
+        "min_box_range": 35.900390625,
+        "max_box_range": 78.1005859375,
+        "small_ranges": {
+          "count": 0,
+          "win_rate": 0,
+          "avg_pnl": 0
+        },
+        "medium_ranges": {
+          "count": 0,
+          "win_rate": 0,
+          "avg_pnl": 0
+        },
+        "large_ranges": {
+          "count": 8,
+          "win_rate": 37.5,
+          "avg_pnl": 15.3311767578125
+        }
+      }
+    },
+    "total_pnl_usd": 3940.1752929687505,
+    "market_info": {
+      "code": "IBEX",
+      "name": "IBEX 35 Index",
+      "symbol": "^IBEX",
+      "timezone": "Europe/Madrid",
+      "currency": "EUR",
+      "point_value": 10.0,
+      "market_hours": "09:00 - 17:30",
+      "box_parameters": {
+        "start_offset_minutes": -60,
+        "duration_minutes": 90,
+        "min_range": 10.0,
+        "max_range": 60.0
+      },
+      "slippage_points": 2.0,
+      "liquidity_rating": 3
+    }
+  },
+  "HSI": {
+    "symbol": "HSI",
+    "initial_capital": 100000,
+    "final_capital": 104929.931640625,
+    "total_pnl": 4929.931640625,
+    "return_pct": 4.929931640625007,
+    "total_trades": 12,
+    "total_setups": 19,
+    "valid_entries": 12,
+    "invalid_trades": 7,
+    "trades": [
+      {
+        "date": "2025-09-09",
+        "box_high": 25946.830078125,
+        "box_low": 25675.279296875,
+        "box_range": 271.55078125,
+        "direction": "LONG",
+        "entry_time": "2025-09-09T10:50:00+08:00",
+        "entry_price": 25951.830078125,
+        "stop_loss": 25675.279296875,
+        "risk_points": 276.55078125,
+        "exit_time": "2025-09-11T09:30:00+08:00",
+        "exit_price": 25946.830078125,
+        "status": "STOPPED_OUT",
+        "pnl_points": 135.775390625,
+        "pnl_r": 0.4909600689294744,
+        "partial_exits": [
+          {
+            "time": "2025-09-10T10:05:00+08:00",
+            "price": 26228.380859375,
+            "size": 0.5,
+            "reason": "TP1 (1:1)"
+          }
+        ],
+        "holding_time_minutes": 2800.0
+      },
+      {
+        "date": "2025-09-10",
+        "box_high": 26186.220703125,
+        "box_low": 26017.5,
+        "box_range": 168.720703125,
+        "direction": "LONG",
+        "entry_time": "2025-09-10T10:15:00+08:00",
+        "entry_price": 26191.220703125,
+        "stop_loss": 26017.5,
+        "risk_points": 173.720703125,
+        "exit_time": "2025-09-11T09:30:00+08:00",
+        "exit_price": 26012.5,
+        "status": "STOPPED_OUT",
+        "pnl_points": -178.720703125,
+        "pnl_r": -1.0287818314688852,
+        "partial_exits": [],
+        "holding_time_minutes": 1395.0
+      },
+      {
+        "date": "2025-09-11",
+        "box_high": 25987.490234375,
+        "box_low": 25878.970703125,
+        "box_range": 108.51953125,
+        "direction": "LONG",
+        "entry_time": "2025-09-11T10:15:00+08:00",
+        "entry_price": 25992.490234375,
+        "stop_loss": 25878.970703125,
+        "risk_points": 113.51953125,
+        "exit_time": "2025-10-03T16:05:00+08:00",
+        "exit_price": 27120.69921875,
+        "status": "TP3_HIT",
+        "pnl_points": 620.8642578125,
+        "pnl_r": 5.469228519321427,
+        "partial_exits": [
+          {
+            "time": "2025-09-11T11:20:00+08:00",
+            "price": 26106.009765625,
+            "size": 0.5,
+            "reason": "TP1 (1:1)"
+          }
+        ],
+        "holding_time_minutes": 32030.0
+      },
+      {
+        "date": "2025-09-15",
+        "box_high": 26458.4609375,
+        "box_low": 26287.4609375,
+        "box_range": 171.0,
+        "direction": "LONG",
+        "entry_time": "2025-09-15T10:15:00+08:00",
+        "entry_price": 26463.4609375,
+        "stop_loss": 26287.4609375,
+        "risk_points": 176.0,
+        "exit_time": "2025-09-15T14:25:00+08:00",
+        "exit_price": 26282.4609375,
+        "status": "STOPPED_OUT",
+        "pnl_points": -181.0,
+        "pnl_r": -1.0284090909090908,
+        "partial_exits": [],
+        "holding_time_minutes": 250.0
+      },
+      {
+        "date": "2025-09-18",
+        "box_high": 26979.83984375,
+        "box_low": 26805.669921875,
+        "box_range": 174.169921875,
+        "direction": "LONG",
+        "entry_time": "2025-09-18T10:10:00+08:00",
+        "entry_price": 26984.83984375,
+        "stop_loss": 26805.669921875,
+        "risk_points": 179.169921875,
+        "exit_time": "2025-09-18T11:10:00+08:00",
+        "exit_price": 26800.669921875,
+        "status": "STOPPED_OUT",
+        "pnl_points": -184.169921875,
+        "pnl_r": -1.0279064697225704,
+        "partial_exits": [],
+        "holding_time_minutes": 60.0
+      },
+      {
+        "date": "2025-09-19",
+        "box_high": 26583.029296875,
+        "box_low": 26414.109375,
+        "box_range": 168.919921875,
+        "direction": "LONG",
+        "entry_time": "2025-09-19T10:25:00+08:00",
+        "entry_price": 26588.029296875,
+        "stop_loss": 26414.109375,
+        "risk_points": 173.919921875,
+        "exit_time": "2025-09-22T09:30:00+08:00",
+        "exit_price": 26409.109375,
+        "status": "STOPPED_OUT",
+        "pnl_points": -178.919921875,
+        "pnl_r": -1.02874886296001,
+        "partial_exits": [],
+        "holding_time_minutes": 4265.0
+      },
+      {
+        "date": "2025-09-24",
+        "box_high": 26268.650390625,
+        "box_low": 26057.259765625,
+        "box_range": 211.390625,
+        "direction": "LONG",
+        "entry_time": "2025-09-24T10:00:00+08:00",
+        "entry_price": 26273.650390625,
+        "stop_loss": 26057.259765625,
+        "risk_points": 216.390625,
+        "exit_time": "2025-09-26T09:30:00+08:00",
+        "exit_price": 26268.650390625,
+        "status": "STOPPED_OUT",
+        "pnl_points": 105.6953125,
+        "pnl_r": 0.4884468192649289,
+        "partial_exits": [
+          {
+            "time": "2025-09-24T14:00:00+08:00",
+            "price": 26490.041015625,
+            "size": 0.5,
+            "reason": "TP1 (1:1)"
+          }
+        ],
+        "holding_time_minutes": 2850.0
+      },
+      {
+        "date": "2025-09-25",
+        "box_high": 26563.330078125,
+        "box_low": 26423.939453125,
+        "box_range": 139.390625,
+        "direction": "LONG",
+        "entry_time": "2025-09-25T11:15:00+08:00",
+        "entry_price": 26568.330078125,
+        "stop_loss": 26423.939453125,
+        "risk_points": 144.390625,
+        "exit_time": "2025-09-25T15:10:00+08:00",
+        "exit_price": 26418.939453125,
+        "status": "STOPPED_OUT",
+        "pnl_points": -149.390625,
+        "pnl_r": -1.0346282869819283,
+        "partial_exits": [],
+        "holding_time_minutes": 235.0
+      },
+      {
+        "date": "2025-09-26",
+        "box_high": 26353.630859375,
+        "box_low": 26217.970703125,
+        "box_range": 135.66015625,
+        "direction": "LONG",
+        "entry_time": "2025-09-26T11:05:00+08:00",
+        "entry_price": 26358.630859375,
+        "stop_loss": 26217.970703125,
+        "risk_points": 140.66015625,
+        "exit_time": "2025-09-26T15:00:00+08:00",
+        "exit_price": 26212.970703125,
+        "status": "STOPPED_OUT",
+        "pnl_points": -145.66015625,
+        "pnl_r": -1.0355466688883335,
+        "partial_exits": [],
+        "holding_time_minutes": 235.0
+      },
+      {
+        "date": "2025-09-29",
+        "box_high": 26470.890625,
+        "box_low": 26321.5703125,
+        "box_range": 149.3203125,
+        "direction": "LONG",
+        "entry_time": "2025-09-29T10:15:00+08:00",
+        "entry_price": 26475.890625,
+        "stop_loss": 26321.5703125,
+        "risk_points": 154.3203125,
+        "exit_time": "2025-10-03T16:05:00+08:00",
+        "exit_price": 27120.69921875,
+        "status": "TP3_HIT",
+        "pnl_points": 399.564453125,
+        "pnl_r": 2.589188983951805,
+        "partial_exits": [
+          {
+            "time": "2025-09-29T13:45:00+08:00",
+            "price": 26630.2109375,
+            "size": 0.5,
+            "reason": "TP1 (1:1)"
+          }
+        ],
+        "holding_time_minutes": 6110.0
+      },
+      {
+        "date": "2025-10-02",
+        "box_high": 27234.66015625,
+        "box_low": 26918.30078125,
+        "box_range": 316.359375,
+        "direction": "LONG",
+        "entry_time": "2025-10-02T10:50:00+08:00",
+        "entry_price": 27239.66015625,
+        "stop_loss": 26918.30078125,
+        "risk_points": 321.359375,
+        "exit_time": "2025-10-03T16:05:00+08:00",
+        "exit_price": 27120.69921875,
+        "status": "OPEN",
+        "pnl_points": -118.9609375,
+        "pnl_r": -0.3701803860553314,
+        "partial_exits": [],
+        "holding_time_minutes": 1755.0
+      },
+      {
+        "date": "2025-10-03",
+        "box_high": 27262.0,
+        "box_low": 27099.220703125,
+        "box_range": 162.779296875,
+        "direction": "SHORT",
+        "entry_time": "2025-10-03T10:05:00+08:00",
+        "entry_price": 27094.220703125,
+        "stop_loss": 27262.0,
+        "risk_points": 167.779296875,
+        "exit_time": "2025-10-03T16:05:00+08:00",
+        "exit_price": 27120.69921875,
+        "status": "OPEN",
+        "pnl_points": -26.478515625,
+        "pnl_r": -0.15781753838631946,
+        "partial_exits": [],
+        "holding_time_minutes": 360.0
+      }
+    ],
+    "equity_curve": [
+      {
+        "date": "2025-09-09",
+        "equity": 106788.76953125,
+        "pnl": 6788.76953125,
+        "pnl_r": 0.4909600689294744
+      },
+      {
+        "date": "2025-09-10",
+        "equity": 97852.734375,
+        "pnl": -8936.03515625,
+        "pnl_r": -1.0287818314688852
+      },
+      {
+        "date": "2025-09-11",
+        "equity": 128895.947265625,
+        "pnl": 31043.212890625,
+        "pnl_r": 5.469228519321427
+      },
+      {
+        "date": "2025-09-15",
+        "equity": 119845.947265625,
+        "pnl": -9050.0,
+        "pnl_r": -1.0284090909090908
+      },
+      {
+        "date": "2025-09-18",
+        "equity": 110637.451171875,
+        "pnl": -9208.49609375,
+        "pnl_r": -1.0279064697225704
+      },
+      {
+        "date": "2025-09-19",
+        "equity": 101691.455078125,
+        "pnl": -8945.99609375,
+        "pnl_r": -1.02874886296001
+      },
+      {
+        "date": "2025-09-24",
+        "equity": 106976.220703125,
+        "pnl": 5284.765625,
+        "pnl_r": 0.4884468192649289
+      },
+      {
+        "date": "2025-09-25",
+        "equity": 99506.689453125,
+        "pnl": -7469.53125,
+        "pnl_r": -1.0346282869819283
+      },
+      {
+        "date": "2025-09-26",
+        "equity": 92223.681640625,
+        "pnl": -7283.0078125,
+        "pnl_r": -1.0355466688883335
+      },
+      {
+        "date": "2025-09-29",
+        "equity": 112201.904296875,
+        "pnl": 19978.22265625,
+        "pnl_r": 2.589188983951805
+      },
+      {
+        "date": "2025-10-02",
+        "equity": 106253.857421875,
+        "pnl": -5948.046875,
+        "pnl_r": -0.3701803860553314
+      },
+      {
+        "date": "2025-10-03",
+        "equity": 104929.931640625,
+        "pnl": -1323.92578125,
+        "pnl_r": -0.15781753838631946
+      }
+    ],
+    "metrics": {
+      "basic_stats": {
+        "total_trades": 12,
+        "executed_trades": 12,
+        "invalid_trades": 0,
+        "total_pnl": 4929.931640625,
+        "avg_pnl_per_trade": 410.82763671875,
+        "best_trade": 620.8642578125,
+        "worst_trade": -184.169921875,
+        "avg_pnl_points": 8.216552734375,
+        "median_pnl_points": -132.310546875
+      },
+      "win_rate": {
+        "win_rate": 33.33333333333333,
+        "winning_trades": 4,
+        "losing_trades": 8,
+        "breakeven_trades": 0,
+        "avg_win": 315.474853515625,
+        "avg_loss": -145.41259765625,
+        "largest_win": 620.8642578125,
+        "largest_loss": -184.169921875,
+        "win_loss_ratio": 2.169515286848777
+      },
+      "profit_factor": {
+        "profit_factor": 1.0847576434243884,
+        "gross_profit": 1261.8994140625,
+        "gross_loss": 1163.30078125,
+        "net_profit": 98.5986328125
+      },
+      "sharpe_ratio": {
+        "sharpe_ratio": 1.6212849129313955,
+        "annual_return": 48.8419103779985,
+        "annual_volatility": 30.113097327060856,
+        "daily_avg_return": 0.19381710467459723,
+        "daily_std": 1.8969468269830208
+      },
+      "sortino_ratio": {
+        "sortino_ratio": 9.14758972105031,
+        "downside_deviation": 5.337133809756485
+      },
+      "max_drawdown": {
+        "max_drawdown_pct": 28.451061808349078,
+        "max_drawdown_value": 36672.265625,
+        "drawdown_start_date": "2025-09-11",
+        "drawdown_bottom_date": "2025-09-26",
+        "drawdown_recovery_date": "Not recovered",
+        "current_drawdown_pct": -18.593304237573534
+      },
+      "monthly_returns": {
+        "avg_monthly_return": 2464.9658203125,
+        "median_monthly_return": 2464.9658203125,
+        "best_month": 12201.904296875,
+        "worst_month": -7271.97265625,
+        "positive_months": 1,
+        "negative_months": 1,
+        "monthly_win_rate": 50.0,
+        "monthly_returns": {
+          "2025-09-30 00:00:00": 12201.904296875,
+          "2025-10-31 00:00:00": -7271.97265625
+        }
+      },
+      "r_distribution": {
+        "avg_r_multiple": 0.19381710467459723,
+        "median_r_multiple": -0.6990434278889509,
+        "max_r_multiple": 5.469228519321427,
+        "min_r_multiple": -1.0355466688883335,
+        "std_r_multiple": 1.8969468269830208,
+        "r_distribution": {
+          "< -3R": 0,
+          "-3R to -2R": 0,
+          "-2R to -1R": 6,
+          "-1R to 0R": 2,
+          "0R to 1R": 2,
+          "1R to 2R": 0,
+          "2R to 3R": 1,
+          "3R to 5R": 0,
+          "5R to 10R": 1,
+          "> 10R": 0
+        },
+        "trades_above_1r": 2,
+        "trades_above_2r": 2,
+        "trades_above_3r": 1
+      },
+      "trade_duration": {
+        "avg_duration_minutes": 4362.083333333333,
+        "median_duration_minutes": 1575.0,
+        "min_duration_minutes": 60.0,
+        "max_duration_minutes": 32030.0,
+        "avg_duration_hours": 72.70138888888889,
+        "trades_under_1hour": 0,
+        "trades_1to3_hours": 1,
+        "trades_over_3hours": 11
+      },
+      "directional_stats": {
+        "long": {
+          "count": 11,
+          "win_rate": 36.36363636363637,
+          "avg_pnl": 11.370649857954545,
+          "total_pnl": 125.0771484375
+        },
+        "short": {
+          "count": 1,
+          "win_rate": 0.0,
+          "avg_pnl": -26.478515625,
+          "total_pnl": -26.478515625
+        }
+      },
+      "take_profit_analysis": {
+        "status_distribution": {
+          "STOPPED_OUT": 8,
+          "TP3_HIT": 2,
+          "OPEN": 2
+        },
+        "stopped_out": 8,
+        "tp1_achieved": 4,
+        "tp2_achieved": 0,
+        "tp3_achieved": 2,
+        "total_partial_exits": 4,
+        "avg_partials_per_trade": 0.3333333333333333
+      },
+      "box_range_analysis": {
+        "avg_box_range": 181.48177083333334,
+        "median_box_range": 168.8203125,
+        "min_box_range": 108.51953125,
+        "max_box_range": 316.359375,
+        "small_ranges": {
+          "count": 0,
+          "win_rate": 0,
+          "avg_pnl": 0
+        },
+        "medium_ranges": {
+          "count": 0,
+          "win_rate": 0,
+          "avg_pnl": 0
+        },
+        "large_ranges": {
+          "count": 12,
+          "win_rate": 33.33333333333333,
+          "avg_pnl": 8.216552734375
+        }
+      }
+    },
+    "total_pnl_usd": 640.89111328125,
+    "market_info": {
+      "code": "HSI",
+      "name": "Hang Seng Index",
+      "symbol": "^HSI",
+      "timezone": "Asia/Hong_Kong",
+      "currency": "HKD",
+      "point_value": 50.0,
+      "market_hours": "09:30 - 16:00",
+      "box_parameters": {
+        "start_offset_minutes": -60,
+        "duration_minutes": 90,
+        "min_range": 50.0,
+        "max_range": 300.0
+      },
+      "slippage_points": 5.0,
+      "liquidity_rating": 4
+    }
+  },
+  "SPX": {
+    "symbol": "SPX",
+    "initial_capital": 100000,
+    "final_capital": 136400.0,
+    "total_pnl": 36400.0,
+    "return_pct": 36.40000000000001,
+    "total_trades": 8,
+    "total_setups": 20,
+    "valid_entries": 8,
+    "invalid_trades": 12,
+    "trades": [
+      {
+        "date": "2025-09-08",
+        "box_high": 23876.25,
+        "box_low": 23753.25,
+        "box_range": 123.0,
+        "direction": "LONG",
+        "entry_time": "2025-09-08T10:45:00-04:00",
+        "entry_price": 23877.25,
+        "stop_loss": 23753.25,
+        "risk_points": 124.0,
+        "exit_time": "2025-09-09T10:30:00-04:00",
+        "exit_price": 23752.25,
+        "status": "STOPPED_OUT",
+        "pnl_points": -125.0,
+        "pnl_r": -1.0080645161290323,
+        "partial_exits": [],
+        "holding_time_minutes": 1425.0
+      },
+      {
+        "date": "2025-09-11",
+        "box_high": 23997.5,
+        "box_low": 23838.0,
+        "box_range": 159.5,
+        "direction": "LONG",
+        "entry_time": "2025-09-11T10:45:00-04:00",
+        "entry_price": 23998.5,
+        "stop_loss": 23838.0,
+        "risk_points": 160.5,
+        "exit_time": "2025-10-03T16:55:00-04:00",
+        "exit_price": 24985.0,
+        "status": "TP3_HIT",
+        "pnl_points": 573.5,
+        "pnl_r": 3.573208722741433,
+        "partial_exits": [
+          {
+            "time": "2025-09-12T14:55:00-04:00",
+            "price": 24159.0,
+            "size": 0.5,
+            "reason": "TP1 (1:1)"
+          }
+        ],
+        "holding_time_minutes": 32050.0
+      },
+      {
+        "date": "2025-09-15",
+        "box_high": 24262.25,
+        "box_low": 24139.5,
+        "box_range": 122.75,
+        "direction": "LONG",
+        "entry_time": "2025-09-15T11:05:00-04:00",
+        "entry_price": 24263.25,
+        "stop_loss": 24139.5,
+        "risk_points": 123.75,
+        "exit_time": "2025-09-16T11:40:00-04:00",
+        "exit_price": 24262.25,
+        "status": "STOPPED_OUT",
+        "pnl_points": 61.375,
+        "pnl_r": 0.49595959595959593,
+        "partial_exits": [
+          {
+            "time": "2025-09-16T03:30:00-04:00",
+            "price": 24387.0,
+            "size": 0.5,
+            "reason": "TP1 (1:1)"
+          }
+        ],
+        "holding_time_minutes": 1475.0
+      },
+      {
+        "date": "2025-09-18",
+        "box_high": 24761.0,
+        "box_low": 24598.75,
+        "box_range": 162.25,
+        "direction": "LONG",
+        "entry_time": "2025-09-18T10:20:00-04:00",
+        "entry_price": 24762.0,
+        "stop_loss": 24598.75,
+        "risk_points": 163.25,
+        "exit_time": "2025-09-24T11:40:00-04:00",
+        "exit_price": 24761.0,
+        "status": "STOPPED_OUT",
+        "pnl_points": 81.125,
+        "pnl_r": 0.49693721286370596,
+        "partial_exits": [
+          {
+            "time": "2025-09-22T10:45:00-04:00",
+            "price": 24925.25,
+            "size": 0.5,
+            "reason": "TP1 (1:1)"
+          }
+        ],
+        "holding_time_minutes": 8720.0
+      },
+      {
+        "date": "2025-09-25",
+        "box_high": 24611.75,
+        "box_low": 24422.5,
+        "box_range": 189.25,
+        "direction": "LONG",
+        "entry_time": "2025-09-25T10:25:00-04:00",
+        "entry_price": 24612.75,
+        "stop_loss": 24422.5,
+        "risk_points": 190.25,
+        "exit_time": "2025-10-03T16:55:00-04:00",
+        "exit_price": 24985.0,
+        "status": "TP3_HIT",
+        "pnl_points": 281.25,
+        "pnl_r": 1.4783180026281209,
+        "partial_exits": [
+          {
+            "time": "2025-09-28T20:40:00-04:00",
+            "price": 24803.0,
+            "size": 0.5,
+            "reason": "TP1 (1:1)"
+          }
+        ],
+        "holding_time_minutes": 11910.0
+      },
+      {
+        "date": "2025-09-29",
+        "box_high": 24955.5,
+        "box_low": 24846.5,
+        "box_range": 109.0,
+        "direction": "LONG",
+        "entry_time": "2025-09-29T10:10:00-04:00",
+        "entry_price": 24956.5,
+        "stop_loss": 24846.5,
+        "risk_points": 110.0,
+        "exit_time": "2025-09-29T11:35:00-04:00",
+        "exit_price": 24845.5,
+        "status": "STOPPED_OUT",
+        "pnl_points": -111.0,
+        "pnl_r": -1.009090909090909,
+        "partial_exits": [],
+        "holding_time_minutes": 85.0
+      },
+      {
+        "date": "2025-09-30",
+        "box_high": 24845.0,
+        "box_low": 24722.25,
+        "box_range": 122.75,
+        "direction": "LONG",
+        "entry_time": "2025-09-30T11:05:00-04:00",
+        "entry_price": 24846.0,
+        "stop_loss": 24722.25,
+        "risk_points": 123.75,
+        "exit_time": "2025-10-01T02:45:00-04:00",
+        "exit_price": 24721.25,
+        "status": "STOPPED_OUT",
+        "pnl_points": -124.75,
+        "pnl_r": -1.0080808080808081,
+        "partial_exits": [],
+        "holding_time_minutes": 940.0
+      },
+      {
+        "date": "2025-10-03",
+        "box_high": 25168.0,
+        "box_low": 25100.75,
+        "box_range": 67.25,
+        "direction": "SHORT",
+        "entry_time": "2025-10-03T10:25:00-04:00",
+        "entry_price": 25099.75,
+        "stop_loss": 25168.0,
+        "risk_points": 68.25,
+        "exit_time": "2025-10-03T16:55:00-04:00",
+        "exit_price": 24985.0,
+        "status": "TP3_HIT",
+        "pnl_points": 91.5,
+        "pnl_r": 1.3406593406593406,
+        "partial_exits": [
+          {
+            "time": "2025-10-03T13:00:00-04:00",
+            "price": 25031.5,
+            "size": 0.5,
+            "reason": "TP1 (1:1)"
+          }
+        ],
+        "holding_time_minutes": 390.0
+      }
+    ],
+    "equity_curve": [
+      {
+        "date": "2025-09-08",
+        "equity": 93750.0,
+        "pnl": -6250.0,
+        "pnl_r": -1.0080645161290323
+      },
+      {
+        "date": "2025-09-11",
+        "equity": 122425.0,
+        "pnl": 28675.0,
+        "pnl_r": 3.573208722741433
+      },
+      {
+        "date": "2025-09-15",
+        "equity": 125493.75,
+        "pnl": 3068.75,
+        "pnl_r": 0.49595959595959593
+      },
+      {
+        "date": "2025-09-18",
+        "equity": 129550.0,
+        "pnl": 4056.25,
+        "pnl_r": 0.49693721286370596
+      },
+      {
+        "date": "2025-09-25",
+        "equity": 143612.5,
+        "pnl": 14062.5,
+        "pnl_r": 1.4783180026281209
+      },
+      {
+        "date": "2025-09-29",
+        "equity": 138062.5,
+        "pnl": -5550.0,
+        "pnl_r": -1.009090909090909
+      },
+      {
+        "date": "2025-09-30",
+        "equity": 131825.0,
+        "pnl": -6237.5,
+        "pnl_r": -1.0080808080808081
+      },
+      {
+        "date": "2025-10-03",
+        "equity": 136400.0,
+        "pnl": 4575.0,
+        "pnl_r": 1.3406593406593406
+      }
+    ],
+    "metrics": {
+      "basic_stats": {
+        "total_trades": 8,
+        "executed_trades": 8,
+        "invalid_trades": 0,
+        "total_pnl": 36400.0,
+        "avg_pnl_per_trade": 4550.0,
+        "best_trade": 573.5,
+        "worst_trade": -125.0,
+        "avg_pnl_points": 91.0,
+        "median_pnl_points": 71.25
+      },
+      "win_rate": {
+        "win_rate": 62.5,
+        "winning_trades": 5,
+        "losing_trades": 3,
+        "breakeven_trades": 0,
+        "avg_win": 217.75,
+        "avg_loss": -120.25,
+        "largest_win": 573.5,
+        "largest_loss": -125.0,
+        "win_loss_ratio": 1.8108108108108107
+      },
+      "profit_factor": {
+        "profit_factor": 3.018018018018018,
+        "gross_profit": 1088.75,
+        "gross_loss": 360.75,
+        "net_profit": 728.0
+      },
+      "sharpe_ratio": {
+        "sharpe_ratio": 5.779845157023089,
+        "annual_return": 137.33516920887058,
+        "annual_volatility": 23.757586142600886,
+        "daily_avg_return": 0.5449808301939308,
+        "daily_std": 1.4965872543932437
+      },
+      "sortino_ratio": {
+        "sortino_ratio": 18018.958348112654,
+        "downside_deviation": 0.007620594185082472
+      },
+      "max_drawdown": {
+        "max_drawdown_pct": 8.207850987901471,
+        "max_drawdown_value": 11787.5,
+        "drawdown_start_date": "2025-09-25",
+        "drawdown_bottom_date": "2025-09-30",
+        "drawdown_recovery_date": "Not recovered",
+        "current_drawdown_pct": -5.022195143180434
+      },
+      "monthly_returns": {
+        "avg_monthly_return": 18200.0,
+        "median_monthly_return": 18200.0,
+        "best_month": 31825.0,
+        "worst_month": 4575.0,
+        "positive_months": 2,
+        "negative_months": 0,
+        "monthly_win_rate": 100.0,
+        "monthly_returns": {
+          "2025-09-30 00:00:00": 31825.0,
+          "2025-10-31 00:00:00": 4575.0
+        }
+      },
+      "r_distribution": {
+        "avg_r_multiple": 0.5449808301939308,
+        "median_r_multiple": 0.49644840441165095,
+        "max_r_multiple": 3.573208722741433,
+        "min_r_multiple": -1.009090909090909,
+        "std_r_multiple": 1.4965872543932437,
+        "r_distribution": {
+          "< -3R": 0,
+          "-3R to -2R": 0,
+          "-2R to -1R": 3,
+          "-1R to 0R": 0,
+          "0R to 1R": 2,
+          "1R to 2R": 2,
+          "2R to 3R": 0,
+          "3R to 5R": 1,
+          "5R to 10R": 0,
+          "> 10R": 0
+        },
+        "trades_above_1r": 3,
+        "trades_above_2r": 1,
+        "trades_above_3r": 1
+      },
+      "trade_duration": {
+        "avg_duration_minutes": 7124.375,
+        "median_duration_minutes": 1450.0,
+        "min_duration_minutes": 85.0,
+        "max_duration_minutes": 32050.0,
+        "avg_duration_hours": 118.73958333333333,
+        "trades_under_1hour": 0,
+        "trades_1to3_hours": 1,
+        "trades_over_3hours": 7
+      },
+      "directional_stats": {
+        "long": {
+          "count": 7,
+          "win_rate": 57.14285714285714,
+          "avg_pnl": 90.92857142857143,
+          "total_pnl": 636.5
+        },
+        "short": {
+          "count": 1,
+          "win_rate": 100.0,
+          "avg_pnl": 91.5,
+          "total_pnl": 91.5
+        }
+      },
+      "take_profit_analysis": {
+        "status_distribution": {
+          "STOPPED_OUT": 5,
+          "TP3_HIT": 3
+        },
+        "stopped_out": 5,
+        "tp1_achieved": 5,
+        "tp2_achieved": 0,
+        "tp3_achieved": 3,
+        "total_partial_exits": 5,
+        "avg_partials_per_trade": 0.625
+      },
+      "box_range_analysis": {
+        "avg_box_range": 131.96875,
+        "median_box_range": 122.875,
+        "min_box_range": 67.25,
+        "max_box_range": 189.25,
+        "small_ranges": {
+          "count": 0,
+          "win_rate": 0,
+          "avg_pnl": 0
+        },
+        "medium_ranges": {
+          "count": 0,
+          "win_rate": 0,
+          "avg_pnl": 0
+        },
+        "large_ranges": {
+          "count": 8,
+          "win_rate": 62.5,
+          "avg_pnl": 91.0
+        }
+      }
+    },
+    "total_pnl_usd": 36400.0,
+    "market_info": {
+      "code": "SPX",
+      "name": "S&P 500 E-mini Futures",
+      "symbol": "ES=F",
+      "timezone": "America/New_York",
+      "currency": "USD",
+      "point_value": 50.0,
+      "market_hours": "09:30 - 16:00",
+      "box_parameters": {
+        "start_offset_minutes": -60,
+        "duration_minutes": 90,
+        "min_range": 5.0,
+        "max_range": 40.0
+      },
+      "slippage_points": 1.0,
+      "liquidity_rating": 5
+    }
+  },
+  "NDX": {
+    "symbol": "NDX",
+    "initial_capital": 100000,
+    "final_capital": 114560.0,
+    "total_pnl": 14560.0,
+    "return_pct": 14.559999999999995,
+    "total_trades": 8,
+    "total_setups": 20,
+    "valid_entries": 8,
+    "invalid_trades": 12,
+    "trades": [
+      {
+        "date": "2025-09-08",
+        "box_high": 23876.25,
+        "box_low": 23753.25,
+        "box_range": 123.0,
+        "direction": "LONG",
+        "entry_time": "2025-09-08T10:45:00-04:00",
+        "entry_price": 23877.25,
+        "stop_loss": 23753.25,
+        "risk_points": 124.0,
+        "exit_time": "2025-09-09T10:30:00-04:00",
+        "exit_price": 23752.25,
+        "status": "STOPPED_OUT",
+        "pnl_points": -125.0,
+        "pnl_r": -1.0080645161290323,
+        "partial_exits": [],
+        "holding_time_minutes": 1425.0
+      },
+      {
+        "date": "2025-09-11",
+        "box_high": 23997.5,
+        "box_low": 23838.0,
+        "box_range": 159.5,
+        "direction": "LONG",
+        "entry_time": "2025-09-11T10:45:00-04:00",
+        "entry_price": 23998.5,
+        "stop_loss": 23838.0,
+        "risk_points": 160.5,
+        "exit_time": "2025-10-03T16:55:00-04:00",
+        "exit_price": 24985.0,
+        "status": "TP3_HIT",
+        "pnl_points": 573.5,
+        "pnl_r": 3.573208722741433,
+        "partial_exits": [
+          {
+            "time": "2025-09-12T14:55:00-04:00",
+            "price": 24159.0,
+            "size": 0.5,
+            "reason": "TP1 (1:1)"
+          }
+        ],
+        "holding_time_minutes": 32050.0
+      },
+      {
+        "date": "2025-09-15",
+        "box_high": 24262.25,
+        "box_low": 24139.5,
+        "box_range": 122.75,
+        "direction": "LONG",
+        "entry_time": "2025-09-15T11:05:00-04:00",
+        "entry_price": 24263.25,
+        "stop_loss": 24139.5,
+        "risk_points": 123.75,
+        "exit_time": "2025-09-16T11:40:00-04:00",
+        "exit_price": 24262.25,
+        "status": "STOPPED_OUT",
+        "pnl_points": 61.375,
+        "pnl_r": 0.49595959595959593,
+        "partial_exits": [
+          {
+            "time": "2025-09-16T03:30:00-04:00",
+            "price": 24387.0,
+            "size": 0.5,
+            "reason": "TP1 (1:1)"
+          }
+        ],
+        "holding_time_minutes": 1475.0
+      },
+      {
+        "date": "2025-09-18",
+        "box_high": 24761.0,
+        "box_low": 24598.75,
+        "box_range": 162.25,
+        "direction": "LONG",
+        "entry_time": "2025-09-18T10:20:00-04:00",
+        "entry_price": 24762.0,
+        "stop_loss": 24598.75,
+        "risk_points": 163.25,
+        "exit_time": "2025-09-24T11:40:00-04:00",
+        "exit_price": 24761.0,
+        "status": "STOPPED_OUT",
+        "pnl_points": 81.125,
+        "pnl_r": 0.49693721286370596,
+        "partial_exits": [
+          {
+            "time": "2025-09-22T10:45:00-04:00",
+            "price": 24925.25,
+            "size": 0.5,
+            "reason": "TP1 (1:1)"
+          }
+        ],
+        "holding_time_minutes": 8720.0
+      },
+      {
+        "date": "2025-09-25",
+        "box_high": 24611.75,
+        "box_low": 24422.5,
+        "box_range": 189.25,
+        "direction": "LONG",
+        "entry_time": "2025-09-25T10:25:00-04:00",
+        "entry_price": 24612.75,
+        "stop_loss": 24422.5,
+        "risk_points": 190.25,
+        "exit_time": "2025-10-03T16:55:00-04:00",
+        "exit_price": 24985.0,
+        "status": "TP3_HIT",
+        "pnl_points": 281.25,
+        "pnl_r": 1.4783180026281209,
+        "partial_exits": [
+          {
+            "time": "2025-09-28T20:40:00-04:00",
+            "price": 24803.0,
+            "size": 0.5,
+            "reason": "TP1 (1:1)"
+          }
+        ],
+        "holding_time_minutes": 11910.0
+      },
+      {
+        "date": "2025-09-29",
+        "box_high": 24955.5,
+        "box_low": 24846.5,
+        "box_range": 109.0,
+        "direction": "LONG",
+        "entry_time": "2025-09-29T10:10:00-04:00",
+        "entry_price": 24956.5,
+        "stop_loss": 24846.5,
+        "risk_points": 110.0,
+        "exit_time": "2025-09-29T11:35:00-04:00",
+        "exit_price": 24845.5,
+        "status": "STOPPED_OUT",
+        "pnl_points": -111.0,
+        "pnl_r": -1.009090909090909,
+        "partial_exits": [],
+        "holding_time_minutes": 85.0
+      },
+      {
+        "date": "2025-09-30",
+        "box_high": 24845.0,
+        "box_low": 24722.25,
+        "box_range": 122.75,
+        "direction": "LONG",
+        "entry_time": "2025-09-30T11:05:00-04:00",
+        "entry_price": 24846.0,
+        "stop_loss": 24722.25,
+        "risk_points": 123.75,
+        "exit_time": "2025-10-01T02:45:00-04:00",
+        "exit_price": 24721.25,
+        "status": "STOPPED_OUT",
+        "pnl_points": -124.75,
+        "pnl_r": -1.0080808080808081,
+        "partial_exits": [],
+        "holding_time_minutes": 940.0
+      },
+      {
+        "date": "2025-10-03",
+        "box_high": 25168.0,
+        "box_low": 25100.75,
+        "box_range": 67.25,
+        "direction": "SHORT",
+        "entry_time": "2025-10-03T10:25:00-04:00",
+        "entry_price": 25099.75,
+        "stop_loss": 25168.0,
+        "risk_points": 68.25,
+        "exit_time": "2025-10-03T16:55:00-04:00",
+        "exit_price": 24985.0,
+        "status": "TP3_HIT",
+        "pnl_points": 91.5,
+        "pnl_r": 1.3406593406593406,
+        "partial_exits": [
+          {
+            "time": "2025-10-03T13:00:00-04:00",
+            "price": 25031.5,
+            "size": 0.5,
+            "reason": "TP1 (1:1)"
+          }
+        ],
+        "holding_time_minutes": 390.0
+      }
+    ],
+    "equity_curve": [
+      {
+        "date": "2025-09-08",
+        "equity": 97500.0,
+        "pnl": -2500.0,
+        "pnl_r": -1.0080645161290323
+      },
+      {
+        "date": "2025-09-11",
+        "equity": 108970.0,
+        "pnl": 11470.0,
+        "pnl_r": 3.573208722741433
+      },
+      {
+        "date": "2025-09-15",
+        "equity": 110197.5,
+        "pnl": 1227.5,
+        "pnl_r": 0.49595959595959593
+      },
+      {
+        "date": "2025-09-18",
+        "equity": 111820.0,
+        "pnl": 1622.5,
+        "pnl_r": 0.49693721286370596
+      },
+      {
+        "date": "2025-09-25",
+        "equity": 117445.0,
+        "pnl": 5625.0,
+        "pnl_r": 1.4783180026281209
+      },
+      {
+        "date": "2025-09-29",
+        "equity": 115225.0,
+        "pnl": -2220.0,
+        "pnl_r": -1.009090909090909
+      },
+      {
+        "date": "2025-09-30",
+        "equity": 112730.0,
+        "pnl": -2495.0,
+        "pnl_r": -1.0080808080808081
+      },
+      {
+        "date": "2025-10-03",
+        "equity": 114560.0,
+        "pnl": 1830.0,
+        "pnl_r": 1.3406593406593406
+      }
+    ],
+    "metrics": {
+      "basic_stats": {
+        "total_trades": 8,
+        "executed_trades": 8,
+        "invalid_trades": 0,
+        "total_pnl": 14560.0,
+        "avg_pnl_per_trade": 1820.0,
+        "best_trade": 573.5,
+        "worst_trade": -125.0,
+        "avg_pnl_points": 91.0,
+        "median_pnl_points": 71.25
+      },
+      "win_rate": {
+        "win_rate": 62.5,
+        "winning_trades": 5,
+        "losing_trades": 3,
+        "breakeven_trades": 0,
+        "avg_win": 217.75,
+        "avg_loss": -120.25,
+        "largest_win": 573.5,
+        "largest_loss": -125.0,
+        "win_loss_ratio": 1.8108108108108107
+      },
+      "profit_factor": {
+        "profit_factor": 3.018018018018018,
+        "gross_profit": 1088.75,
+        "gross_loss": 360.75,
+        "net_profit": 728.0
+      },
+      "sharpe_ratio": {
+        "sharpe_ratio": 5.779845157023089,
+        "annual_return": 137.33516920887058,
+        "annual_volatility": 23.757586142600886,
+        "daily_avg_return": 0.5449808301939308,
+        "daily_std": 1.4965872543932437
+      },
+      "sortino_ratio": {
+        "sortino_ratio": 18018.958348112654,
+        "downside_deviation": 0.007620594185082472
+      },
+      "max_drawdown": {
+        "max_drawdown_pct": 4.014645153050364,
+        "max_drawdown_value": 4715.0,
+        "drawdown_start_date": "2025-09-25",
+        "drawdown_bottom_date": "2025-09-30",
+        "drawdown_recovery_date": "Not recovered",
+        "current_drawdown_pct": -2.4564689854825663
+      },
+      "monthly_returns": {
+        "avg_monthly_return": 7280.0,
+        "median_monthly_return": 7280.0,
+        "best_month": 12730.0,
+        "worst_month": 1830.0,
+        "positive_months": 2,
+        "negative_months": 0,
+        "monthly_win_rate": 100.0,
+        "monthly_returns": {
+          "2025-09-30 00:00:00": 12730.0,
+          "2025-10-31 00:00:00": 1830.0
+        }
+      },
+      "r_distribution": {
+        "avg_r_multiple": 0.5449808301939308,
+        "median_r_multiple": 0.49644840441165095,
+        "max_r_multiple": 3.573208722741433,
+        "min_r_multiple": -1.009090909090909,
+        "std_r_multiple": 1.4965872543932437,
+        "r_distribution": {
+          "< -3R": 0,
+          "-3R to -2R": 0,
+          "-2R to -1R": 3,
+          "-1R to 0R": 0,
+          "0R to 1R": 2,
+          "1R to 2R": 2,
+          "2R to 3R": 0,
+          "3R to 5R": 1,
+          "5R to 10R": 0,
+          "> 10R": 0
+        },
+        "trades_above_1r": 3,
+        "trades_above_2r": 1,
+        "trades_above_3r": 1
+      },
+      "trade_duration": {
+        "avg_duration_minutes": 7124.375,
+        "median_duration_minutes": 1450.0,
+        "min_duration_minutes": 85.0,
+        "max_duration_minutes": 32050.0,
+        "avg_duration_hours": 118.73958333333333,
+        "trades_under_1hour": 0,
+        "trades_1to3_hours": 1,
+        "trades_over_3hours": 7
+      },
+      "directional_stats": {
+        "long": {
+          "count": 7,
+          "win_rate": 57.14285714285714,
+          "avg_pnl": 90.92857142857143,
+          "total_pnl": 636.5
+        },
+        "short": {
+          "count": 1,
+          "win_rate": 100.0,
+          "avg_pnl": 91.5,
+          "total_pnl": 91.5
+        }
+      },
+      "take_profit_analysis": {
+        "status_distribution": {
+          "STOPPED_OUT": 5,
+          "TP3_HIT": 3
+        },
+        "stopped_out": 5,
+        "tp1_achieved": 5,
+        "tp2_achieved": 0,
+        "tp3_achieved": 3,
+        "total_partial_exits": 5,
+        "avg_partials_per_trade": 0.625
+      },
+      "box_range_analysis": {
+        "avg_box_range": 131.96875,
+        "median_box_range": 122.875,
+        "min_box_range": 67.25,
+        "max_box_range": 189.25,
+        "small_ranges": {
+          "count": 0,
+          "win_rate": 0,
+          "avg_pnl": 0
+        },
+        "medium_ranges": {
+          "count": 0,
+          "win_rate": 0,
+          "avg_pnl": 0
+        },
+        "large_ranges": {
+          "count": 8,
+          "win_rate": 62.5,
+          "avg_pnl": 91.0
+        }
+      }
+    },
+    "total_pnl_usd": 14560.0,
+    "market_info": {
+      "code": "NDX",
+      "name": "NASDAQ 100 E-mini Futures",
+      "symbol": "NQ=F",
+      "timezone": "America/New_York",
+      "currency": "USD",
+      "point_value": 20.0,
+      "market_hours": "09:30 - 16:00",
+      "box_parameters": {
+        "start_offset_minutes": -60,
+        "duration_minutes": 90,
+        "min_range": 10.0,
+        "max_range": 100.0
+      },
+      "slippage_points": 1.0,
+      "liquidity_rating": 5
+    }
+  }
+}

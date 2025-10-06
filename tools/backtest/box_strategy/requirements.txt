@@ -1,0 +1,94 @@
+# Box Strategy Backtesting System Requirements
+
+# Core dependencies
+pandas>=2.0.0
+numpy>=1.24.0
+yfinance>=0.2.28
+
+# Visualization
+matplotlib>=3.7.0
+seaborn>=0.12.0
+
+# Data handling
+pytz>=2023.3
+
+# ============================================================
+# MACHINE LEARNING DEPENDENCIES (Phase 3)
+# ============================================================
+
+# Core ML libraries
+scikit-learn>=1.3.0
+joblib>=1.3.0
+
+# Gradient Boosting (GPU-optimized)
+xgboost>=2.0.0  # GPU support via tree_method='gpu_hist'
+lightgbm>=4.1.0  # GPU support via device='gpu'
+
+# Deep Learning (GPU-accelerated with CUDA)
+# For NVIDIA GTX 3060/3080 - CUDA 11.8
+# Install with: pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+torch>=2.1.0  # PyTorch with CUDA 11.8
+torchvision>=0.16.0
+torchaudio>=2.1.0
+
+# Alternative CPU-only installation (if no GPU):
+# torch>=2.1.0
+# torchvision>=0.16.0
+# torchaudio>=2.1.0
+
+# Class Balancing
+imbalanced-learn>=0.11.0  # SMOTE and other balancing techniques
+
+# Model Interpretability
+shap>=0.43.0  # SHAP values for feature importance
+lime>=0.2.0  # Local interpretable model-agnostic explanations
+
+# Technical Analysis Features
+ta>=0.11.0  # Technical analysis indicators library
+
+# Hyperparameter Tuning
+scikit-optimize>=0.9.0  # Bayesian optimization
+optuna>=3.4.0  # Advanced hyperparameter optimization
+
+# Model Persistence
+pickle5>=0.0.12  # Enhanced pickle for Python < 3.8
+
+# Experiment Tracking (Optional)
+# mlflow>=2.8.0  # Uncomment for experiment tracking and model registry
+
+# Progress Bars
+tqdm>=4.66.0  # Progress bars for training loops
+
+# ============================================================
+# GPU SETUP NOTES
+# ============================================================
+#
+# For NVIDIA GTX 3060/3080 (CUDA 11.8):
+#
+# 1. Install CUDA Toolkit 11.8:
+#    Download from: https://developer.nvidia.com/cuda-11-8-0-download-archive
+#
+# 2. Install cuDNN 8.6+ for CUDA 11.8:
+#    Download from: https://developer.nvidia.com/cudnn
+#
+# 3. Install PyTorch with CUDA support:
+#    pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+#
+# 4. Install XGBoost with GPU support:
+#    pip install xgboost --upgrade
+#    (GPU support is included by default in recent versions)
+#
+# 5. Install LightGBM with GPU support:
+#    Windows: pip install lightgbm --install-option=--gpu
+#    Linux: Follow instructions at https://lightgbm.readthedocs.io/en/latest/GPU-Tutorial.html
+#
+# 6. Verify GPU availability:
+#    python -c "import torch; print(f'CUDA available: {torch.cuda.is_available()}')"
+#    python -c "import torch; print(f'GPU: {torch.cuda.get_device_name(0)}')"
+#
+# ============================================================
+
+# Optional: For advanced data sources
+# alpha-vantage>=2.3.1
+# polygon-api-client>=1.12.0
+# ib-insync>=0.9.86

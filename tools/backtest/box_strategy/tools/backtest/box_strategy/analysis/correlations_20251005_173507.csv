@@ -1,0 +1,17 @@
+characteristic,performance_metric,correlation,strength
+liquidity_rating,win_rate,,Strong
+liquidity_rating,profit_factor,,Strong
+liquidity_rating,sharpe_ratio,,Strong
+liquidity_rating,return_pct,,Strong
+avg_box_range,win_rate,,Strong
+avg_box_range,profit_factor,,Strong
+avg_box_range,sharpe_ratio,,Strong
+avg_box_range,return_pct,,Strong
+execution_rate,win_rate,,Strong
+execution_rate,profit_factor,,Strong
+execution_rate,sharpe_ratio,,Strong
+execution_rate,return_pct,,Strong
+avg_duration_hours,win_rate,,Strong
+avg_duration_hours,profit_factor,,Strong
+avg_duration_hours,sharpe_ratio,,Strong
+avg_duration_hours,return_pct,,Strong

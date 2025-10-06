@@ -1,0 +1,3 @@
+Market,Name,Currency,Trades,Win Rate (%),Profit Factor,Avg R,Sharpe,Max DD (%),Return (%),P&L (USD),Liquidity
+SPX,S&P 500 E-mini Futures,USD,8,62.5,3.02,0.54,5.78,8.21,36.4,36400.0,5
+NDX,NASDAQ 100 E-mini Futures,USD,8,62.5,3.02,0.54,5.78,4.01,14.56,14560.0,5
