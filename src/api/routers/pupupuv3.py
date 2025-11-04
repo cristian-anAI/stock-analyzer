@@ -181,7 +181,7 @@ async def get_current_analysis(symbol: str = Query(default="BTC/USDT")):
                                 direction=signal.direction,
                                 entry_price=signal.entry_price,
                                 stop_loss=signal.stop_loss,
-                                tp1=signal.tp1,
+                                tp1=signal.take_profit_1,
                                 tp2_price=tp2_price,
                                 tp2_ratio=prediction.tp2_ratio,
                                 tp2_probability=prediction.tp2_probability,
@@ -190,14 +190,14 @@ async def get_current_analysis(symbol: str = Query(default="BTC/USDT")):
                                 tp3_ratio=prediction.tp3_ratio,
                                 tp3_probability=prediction.tp3_probability,
                                 tp3_timeframe=prediction.tp3_timeframe,
-                                risk_amount=signal.risk_amount,
-                                position_size=signal.position_size,
-                                ml_confidence=prediction.confidence_score,
+                                risk_amount=signal.risk_usd,
+                                position_size=signal.position_size_usd,
+                                ml_confidence=signal.ml_confidence,
                                 conditions_met={
-                                    'touch': signal.pivot_touch,
-                                    'ema_test': signal.ema_test,
-                                    'vwap_alignment': signal.vwap_aligned,
-                                    'volume_profile_support': signal.volume_profile_support
+                                    'pivot_touch': True,
+                                    'ema_cross': signal.cross_type,
+                                    'vwap_bias': signal.vwap_bias,
+                                    'with_vwap': signal.with_vwap_bias
                                 }
                             )
                             last_notified_signal[symbol] = signal_id
@@ -246,8 +246,8 @@ async def get_current_analysis(symbol: str = Query(default="BTC/USDT")):
                 'vwap_above_price': bool(current_vwap > current_price),
                 'vwap_distance': round(float(abs(current_vwap - current_price)), 2),
                 'vwap_distance_pct': round(float(abs(current_vwap - current_price) / current_price * 100), 2),
-                'in_value_area': bool(vp_context.get('in_value_area', False)),
-                'near_hvn': bool(vp_context.get('near_hvn', False))
+                'in_value_area': bool(int(vp_context.get('in_value_area', False))),
+                'near_hvn': bool(int(vp_context.get('near_hvn', False)))
             }
 
         return {
@@ -269,8 +269,8 @@ async def get_current_analysis(symbol: str = Query(default="BTC/USDT")):
                 'poc': round(float(vp_7d['poc']), 2) if vp_7d else 0,
                 'vah': round(float(vp_7d['vah']), 2) if vp_7d else 0,
                 'val': round(float(vp_7d['val']), 2) if vp_7d else 0,
-                'in_value_area': bool(vp_context.get('in_value_area', False)),
-                'near_hvn': bool(vp_context.get('near_hvn', False))
+                'in_value_area': bool(int(vp_context.get('in_value_area', False))),
+                'near_hvn': bool(int(vp_context.get('near_hvn', False)))
             },
             'signal': signal_info,
             'signal_conditions': signal_conditions,
