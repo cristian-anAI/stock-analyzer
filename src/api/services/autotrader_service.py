@@ -21,6 +21,7 @@ from .risk_management_service import risk_management_service
 from .overtrading_prevention_service import overtrading_prevention
 from .market_timing_service import market_timing_service
 from .transaction_pnl_service import get_transaction_pnl_service
+from .telegram_service import telegram_service
 from ..strategies.swing_trading_strategy import SwingTradingStrategy
 from ..strategies.crypto_competition_strategy import CryptoCompetitionStrategy
 from ..strategies.mtss_crypto_strategy import MTSSCryptoStrategy
@@ -523,6 +524,30 @@ class AutotraderService:
                         if action:
                             actions.append(action)
                             existing_symbols.add(symbol)
+                    else:
+                        # Send Telegram alert for high-score opportunity that wasn't bought
+                        if improved_score >= 6.0:
+                            # Determine the main reason it wasn't bought
+                            reason_not_bought = None
+                            if not can_open:
+                                reason_not_bought = "Sin capital o max posiciones alcanzado"
+                            elif not can_trade:
+                                reason_not_bought = f"Overtrading: {trade_reason}"
+                            elif not (passes_volatility or self.high_volatility_bypass):
+                                reason_not_bought = f"Alta volatilidad: {vol_reason}"
+                            elif not score_passes:
+                                reason_not_bought = f"Score {improved_score:.2f} < threshold {self.buy_score_threshold}"
+
+                            try:
+                                telegram_service.send_opportunity_alert(
+                                    symbol=symbol,
+                                    price=current_price,
+                                    score=improved_score,
+                                    position_type="LONG",
+                                    reason_not_bought=reason_not_bought
+                                )
+                            except Exception as e:
+                                logger.error(f"Failed to send Telegram opportunity alert for {symbol}: {e}")
 
                 except Exception as e:
                     logger.error(f"Error evaluating buy signal for {symbol}: {e}")
@@ -653,6 +678,30 @@ class AutotraderService:
                         if action:
                             actions.append(action)
                             existing_symbols.add(symbol)
+                    else:
+                        # Send Telegram alert for high-score opportunity that wasn't bought
+                        if improved_score >= 6.0:
+                            # Determine the main reason it wasn't bought
+                            reason_not_bought = None
+                            if not can_open:
+                                reason_not_bought = "Sin capital o max posiciones alcanzado"
+                            elif not can_trade:
+                                reason_not_bought = f"Overtrading: {trade_reason}"
+                            elif not (passes_volatility or self.high_volatility_bypass):
+                                reason_not_bought = f"Alta volatilidad: {vol_reason}"
+                            elif not score_passes:
+                                reason_not_bought = f"Score {improved_score:.2f} < threshold {self.buy_score_threshold}"
+
+                            try:
+                                telegram_service.send_opportunity_alert(
+                                    symbol=symbol,
+                                    price=current_price,
+                                    score=improved_score,
+                                    position_type="CRYPTO_LONG",
+                                    reason_not_bought=reason_not_bought
+                                )
+                            except Exception as e:
+                                logger.error(f"Failed to send Telegram opportunity alert for {symbol}: {e}")
 
                 except Exception as e:
                     logger.error(f"Error evaluating buy signal for {symbol}: {e}")
@@ -772,8 +821,25 @@ class AutotraderService:
                 "reason": reason,
                 "timestamp": datetime.now().isoformat()
             }
-            
+
             logger.info(f"BUY: {symbol} ({asset_type}) - {quantity:.4f} @ ${current_price:.2f} - {reason}")
+
+            # Send Telegram notification
+            try:
+                score = asset_data.get('score', 0.0)
+                remaining_capital = portfolio_manager.get_available_capital(asset_type)
+                telegram_service.send_buy_notification(
+                    symbol=symbol,
+                    price=current_price,
+                    quantity=int(quantity),
+                    score=score,
+                    total_value=value,
+                    remaining_capital=remaining_capital,
+                    position_type=asset_type.upper()
+                )
+            except Exception as e:
+                logger.error(f"Failed to send Telegram buy notification: {e}")
+
             return action
             
         except Exception as e:
@@ -863,8 +929,23 @@ class AutotraderService:
                 "reason": reason,
                 "timestamp": datetime.now().isoformat()
             }
-            
+
             logger.info(f"SELL: {symbol} ({position['type']}) - {quantity:.4f} @ ${current_price:.2f} - P&L: ${pnl:.2f} ({pnl_percent:.2f}%) - {reason}")
+
+            # Send Telegram notification
+            try:
+                telegram_service.send_sell_notification(
+                    symbol=symbol,
+                    entry_price=entry_price,
+                    exit_price=current_price,
+                    quantity=int(quantity),
+                    pnl=pnl,
+                    pnl_percent=pnl_percent,
+                    position_type=position.get('type', 'stock').upper()
+                )
+            except Exception as e:
+                logger.error(f"Failed to send Telegram sell notification: {e}")
+
             return action
             
         except Exception as e:

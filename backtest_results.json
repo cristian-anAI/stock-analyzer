@@ -1,0 +1,124 @@
+{
+  "total_signals": 16,
+  "total_trades": 16,
+  "wins": 9,
+  "losses": 7,
+  "win_rate": 0.5625,
+  "total_pnl": 2059.999999999939,
+  "avg_rr": 0.518749999999981,
+  "max_drawdown": 600.0,
+  "trades": [
+    {
+      "outcome": "WIN",
+      "pnl": 339.9999999999891,
+      "bars_held": 1,
+      "exit_price": 108912.4066130446,
+      "rr_achieved": 1.6999999999999453
+    },
+    {
+      "outcome": "LOSS",
+      "pnl": -200.0,
+      "bars_held": 2,
+      "exit_price": 108215.54,
+      "rr_achieved": -1.0
+    },
+    {
+      "outcome": "LOSS",
+      "pnl": -200.0,
+      "bars_held": 4,
+      "exit_price": 108215.54,
+      "rr_achieved": -1.0
+    },
+    {
+      "outcome": "WIN",
+      "pnl": 340.00000000001074,
+      "bars_held": 9,
+      "exit_price": 111013.31265012742,
+      "rr_achieved": 1.7000000000000537
+    },
+    {
+      "outcome": "WIN",
+      "pnl": 340.00000000000745,
+      "bars_held": 6,
+      "exit_price": 110959.5142075838,
+      "rr_achieved": 1.7000000000000375
+    },
+    {
+      "outcome": "WIN",
+      "pnl": 340.0000000000077,
+      "bars_held": 1,
+      "exit_price": 110759.95532734728,
+      "rr_achieved": 1.7000000000000384
+    },
+    {
+      "outcome": "WIN",
+      "pnl": 339.99999999998727,
+      "bars_held": 2,
+      "exit_price": 110843.84736154001,
+      "rr_achieved": 1.6999999999999365
+    },
+    {
+      "outcome": "LOSS",
+      "pnl": -200.0,
+      "bars_held": 2,
+      "exit_price": 111029.43,
+      "rr_achieved": -1.0
+    },
+    {
+      "outcome": "LOSS",
+      "pnl": -200.0,
+      "bars_held": 1,
+      "exit_price": 111205.56,
+      "rr_achieved": -1.0
+    },
+    {
+      "outcome": "LOSS",
+      "pnl": -200.0,
+      "bars_held": 2,
+      "exit_price": 110537.63,
+      "rr_achieved": -1.0
+    },
+    {
+      "outcome": "WIN",
+      "pnl": 339.9999999999926,
+      "bars_held": 2,
+      "exit_price": 110551.93792691724,
+      "rr_achieved": 1.6999999999999629
+    },
+    {
+      "outcome": "WIN",
+      "pnl": 339.99999999999505,
+      "bars_held": 1,
+      "exit_price": 110220.37396788353,
+      "rr_achieved": 1.6999999999999753
+    },
+    {
+      "outcome": "WIN",
+      "pnl": 340.0,
+      "bars_held": 3,
+      "exit_price": 107787.53209988966,
+      "rr_achieved": 1.7
+    },
+    {
+      "outcome": "WIN",
+      "pnl": 339.9999999999492,
+      "bars_held": 1,
+      "exit_price": 107961.92730070974,
+      "rr_achieved": 1.6999999999997457
+    },
+    {
+      "outcome": "LOSS",
+      "pnl": -200.0,
+      "bars_held": 5,
+      "exit_price": 107869.22,
+      "rr_achieved": -1.0
+    },
+    {
+      "outcome": "LOSS",
+      "pnl": 200.00000000000003,
+      "bars_held": 1,
+      "exit_price": 108813.97,
+      "rr_achieved": -1.0
+    }
+  ]
+}

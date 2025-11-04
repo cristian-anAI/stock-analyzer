@@ -1,0 +1,308 @@
+{
+  "version": "1",
+  "timestamp": "20251008_204524",
+  "configuration": {
+    "feature_engineering": {
+      "rsi_periods": [
+        14,
+        21
+      ],
+      "atr_period": 14,
+      "bollinger_period": 20,
+      "bollinger_std": 2,
+      "macd_fast": 12,
+      "macd_slow": 26,
+      "macd_signal": 9,
+      "ema_periods": [
+        9,
+        21,
+        50
+      ],
+      "volume_ma_period": 20,
+      "box_range_lookback": 20,
+      "market_trend_periods": [
+        5,
+        10,
+        20
+      ],
+      "min_feature_importance": 0.01,
+      "max_features": 50
+    },
+    "training": {
+      "test_size": 0.2,
+      "validation_size": 0.2,
+      "shuffle": true,
+      "random_state": 42,
+      "cv_folds": 5,
+      "cv_shuffle": true,
+      "balance_classes": true,
+      "balancing_method": "smote",
+      "scale_features": true,
+      "scaler_type": "standard"
+    },
+    "models": {
+      "random_forest": {
+        "n_estimators": 200,
+        "max_depth": 15,
+        "min_samples_split": 5,
+        "min_samples_leaf": 2,
+        "max_features": "sqrt",
+        "bootstrap": true,
+        "n_jobs": -1,
+        "random_state": 42,
+        "class_weight": "balanced"
+      },
+      "xgboost": {
+        "n_estimators": 150,
+        "max_depth": 8,
+        "learning_rate": 0.1,
+        "subsample": 0.8,
+        "colsample_bytree": 0.8,
+        "gamma": 0.1,
+        "reg_alpha": 0.1,
+        "reg_lambda": 1.0,
+        "tree_method": "hist",
+        "gpu_id": 0,
+        "predictor": "auto",
+        "random_state": 42,
+        "eval_metric": "logloss"
+      },
+      "lightgbm": {
+        "n_estimators": 150,
+        "max_depth": 10,
+        "learning_rate": 0.1,
+        "num_leaves": 31,
+        "subsample": 0.8,
+        "colsample_bytree": 0.8,
+        "reg_alpha": 0.1,
+        "reg_lambda": 1.0,
+        "device": "cpu",
+        "gpu_platform_id": 0,
+        "gpu_device_id": 0,
+        "random_state": 42,
+        "verbose": -1
+      },
+      "neural_network": {
+        "hidden_layers": [
+          128,
+          64,
+          32
+        ],
+        "activation": "relu",
+        "dropout_rate": 0.3,
+        "batch_size": 32,
+        "epochs": 100,
+        "learning_rate": 0.001,
+        "optimizer": "adam",
+        "weight_decay": 0.0001,
+        "early_stopping_patience": 15,
+        "device": "cpu",
+        "random_state": 42
+      },
+      "ensemble": {
+        "voting": "soft",
+        "weights": [
+          1.5,
+          2.0,
+          2.0,
+          1.5
+        ],
+        "n_jobs": -1
+      }
+    },
+    "hyperparameter_tuning": {
+      "enabled": false,
+      "method": "random",
+      "n_iter": 50,
+      "cv_folds": 3,
+      "n_jobs": -1,
+      "verbose": 2,
+      "param_grids": {
+        "random_forest": {
+          "n_estimators": [
+            100,
+            200,
+            300
+          ],
+          "max_depth": [
+            10,
+            15,
+            20,
+            null
+          ],
+          "min_samples_split": [
+            2,
+            5,
+            10
+          ]
+        },
+        "xgboost": {
+          "n_estimators": [
+            100,
+            150,
+            200
+          ],
+          "max_depth": [
+            6,
+            8,
+            10
+          ],
+          "learning_rate": [
+            0.05,
+            0.1,
+            0.15
+          ]
+        }
+      }
+    },
+    "prediction": {
+      "confidence_high_threshold": 0.75,
+      "confidence_medium_threshold": 0.5,
+      "trade_threshold": 0.6,
+      "skip_threshold": 0.4,
+      "confidence_position_multipliers": {
+        "HIGH": 1.0,
+        "MEDIUM": 0.6,
+        "LOW": 0.0
+      },
+      "use_ensemble": true,
+      "fallback_model": "xgboost"
+    },
+    "evaluation": {
+      "metrics": [
+        "accuracy",
+        "precision",
+        "recall",
+        "f1",
+        "roc_auc",
+        "confusion_matrix",
+        "classification_report"
+      ],
+      "generate_plots": true,
+      "plot_types": [
+        "confusion_matrix",
+        "roc_curve",
+        "precision_recall_curve",
+        "feature_importance",
+        "learning_curve",
+        "calibration_curve"
+      ],
+      "plot_dpi": 300,
+      "plot_format": "png",
+      "use_shap": true,
+      "shap_sample_size": 100,
+      "top_n_features": 20
+    },
+    "ml_backtest": {
+      "enable_ml_filter": true,
+      "min_confidence": 0.6,
+      "dynamic_position_sizing": true,
+      "compare_with_baseline": true,
+      "confidence_thresholds_to_test": [
+        0.5,
+        0.55,
+        0.6,
+        0.65,
+        0.7,
+        0.75
+      ]
+    },
+    "persistence": {
+      "model_format": "joblib",
+      "compress_level": 3,
+      "save_training_data": true,
+      "versioning": true,
+      "model_names": {
+        "random_forest": "random_forest_v{version}.pkl",
+        "xgboost": "xgboost_v{version}.pkl",
+        "lightgbm": "lightgbm_v{version}.pkl",
+        "neural_network": "neural_network_v{version}.pth",
+        "ensemble": "ensemble_v{version}.pkl",
+        "scaler": "feature_scaler_v{version}.pkl",
+        "feature_names": "feature_names_v{version}.json"
+      }
+    },
+    "logging": {
+      "level": "INFO",
+      "log_file": "C:\\repos\\stock-analyzer\\tools\\backtest\\box_strategy\\ml_results\\ml_training.log",
+      "log_to_console": true,
+      "log_to_file": true,
+      "show_progress_bars": true,
+      "verbose": 1
+    }
+  },
+  "models_trained": [
+    "random_forest",
+    "xgboost"
+  ],
+  "num_features": 48,
+  "feature_names": [
+    "box_range",
+    "box_range_percentile",
+    "box_high",
+    "box_low",
+    "box_midpoint",
+    "box_formation_quality",
+    "box_volatility_ratio",
+    "candles_in_box",
+    "breakout_strength",
+    "entry_delay_minutes",
+    "entry_price_vs_box_pct",
+    "stop_distance",
+    "risk_points",
+    "stop_to_atr_ratio",
+    "initial_risk_reward",
+    "rsi_5min_14",
+    "rsi_5min_21",
+    "rsi_divergence_5min",
+    "macd_5min",
+    "macd_signal_5min",
+    "macd_hist_5min",
+    "bb_position_5min",
+    "bb_width_5min",
+    "atr_5min",
+    "ema_9_5min",
+    "volume_ratio_5min",
+    "rsi_1hour_14",
+    "macd_1hour",
+    "bb_position_1hour",
+    "atr_1hour",
+    "trend_1hour",
+    "hour_of_day",
+    "day_of_week",
+    "is_market_open",
+    "volatility_environment",
+    "volume_environment",
+    "market_trend_5d",
+    "market_trend_10d",
+    "market_trend_20d",
+    "breakout_candle_size",
+    "breakout_candle_body_pct",
+    "previous_candle_direction",
+    "price_momentum",
+    "volume_spike",
+    "direction",
+    "liquidity_rating",
+    "point_value",
+    "typical_box_range_min"
+  ],
+  "evaluation_results": [
+    {
+      "model": "random_forest",
+      "accuracy": 0.625,
+      "precision": 0.5,
+      "recall": 0.3333333333333333,
+      "f1": 0.4,
+      "auc": 0.5333333333333333
+    },
+    {
+      "model": "xgboost",
+      "accuracy": 0.75,
+      "precision": 1.0,
+      "recall": 0.3333333333333333,
+      "f1": 0.5,
+      "auc": 0.4666666666666666
+    }
+  ],
+  "best_model": "random_forest"
+}

@@ -1,0 +1,25 @@
+Market Confluence Analysis
+Timestamp: 2025-10-13T21:03:01.531546
+Total Breakouts: 6
+
+SPX: LONG - 59.2%
+NDX: LONG - 64.1%
+FTSE: LONG - 68.1%
+STOXX: LONG - 53.7%
+CAC: SHORT - 61.3%
+RUT: LONG - 54.8%
+
+Warnings:
+  5 markets breaking LONG with high correlation
+    SPX  NDX: 97.2% correlated
+    SPX  RUT: 87.8% correlated
+  Mixed signals: Some markets LONG, others SHORT
+
+Recommendations:
+ RECOMMENDATION: Take 1-2 LONG positions maximum
+   Primary: FTSE (68.1% win prob)
+   Secondary: NDX (64.1% win prob) - lower correlation
+ AVOID: Taking multiple highly correlated positions
+    Don't take both SPX and NDX
+    Don't take both SPX and RUT
+  CAUTION: Conflicting market directions suggest uncertainty

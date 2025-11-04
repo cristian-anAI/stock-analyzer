@@ -10,7 +10,7 @@ import logging
 from typing import List, Optional, Dict, Any
 import uvicorn
 
-from .routers import stocks, cryptos, positions, cache, scheduler, diagnostics, portfolio, reports, short_monitoring, symbol_search, market_status, position_monitoring, mtss_analysis, unified_scoring, mtss_bulk_scores, strategy_config
+from .routers import stocks, cryptos, positions, cache, scheduler, diagnostics, portfolio, reports, short_monitoring, symbol_search, market_status, position_monitoring, mtss_analysis, unified_scoring, mtss_bulk_scores, strategy_config, box_strategy, box_exit_signals, pupupuv2, pupupuv3
 from .database.database import init_db
 from .middleware.error_handler import ErrorHandlerMiddleware
 from .middleware.logging_middleware import LoggingMiddleware
@@ -90,6 +90,10 @@ app.include_router(mtss_analysis.router, tags=["mtss-analysis"])
 app.include_router(unified_scoring.router, tags=["unified-scoring"])
 app.include_router(mtss_bulk_scores.router, tags=["mtss-bulk-scores"])
 app.include_router(strategy_config.router, tags=["strategy-config"])
+app.include_router(box_strategy.router, tags=["box-strategy"])
+app.include_router(box_exit_signals.router, tags=["box-exit-signals"])
+app.include_router(pupupuv2.router, tags=["pupupuv2"])
+app.include_router(pupupuv3.router, tags=["pupupuv3"])
 
 @app.on_event("startup")
 async def startup_event():

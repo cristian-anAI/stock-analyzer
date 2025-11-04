@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+  postgres_local:
+    image: postgres:15-alpine
+    container_name: stock_analyzer_postgres_local
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-stock_analyzer_local}
+      POSTGRES_USER: ${POSTGRES_USER:-stock_analyzer_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-local_dev_password_123}
+      PGDATA: /var/lib/postgresql/data/pgdata
+
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+
+    volumes:
+      - postgres_local_data:/var/lib/postgresql/data
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-stock_analyzer_user} -d ${POSTGRES_DB:-stock_analyzer_local}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+    networks:
+      - stock_analyzer_network
+
+  # Optional: pgAdmin for database management
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: stock_analyzer_pgadmin_local
+    restart: unless-stopped
+
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@stockanalyzer.local}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin123}
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+
+    ports:
+      - "${PGADMIN_PORT:-5050}:80"
+
+    volumes:
+      - pgadmin_local_data:/var/lib/pgadmin
+
+    networks:
+      - stock_analyzer_network
+
+    depends_on:
+      - postgres_local
+
+volumes:
+  postgres_local_data:
+    driver: local
+  pgadmin_local_data:
+    driver: local
+
+networks:
+  stock_analyzer_network:
+    driver: bridge

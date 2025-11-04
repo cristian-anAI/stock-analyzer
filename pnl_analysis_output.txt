@@ -1,0 +1,161 @@
+
+======================================================================================================================================================
+ANÁLISIS DETALLADO DE TRANSACCIONES DEL AUTOTRADER
+======================================================================================================================================================
+
+BUY  | TXN        | Qty:    38.29 | Price: $  182.94 | Cost: $   7005.30 | 2025-09-04T17:15:19.490561
+
+BUY  | CRM        | Qty:    24.73 | Price: $  236.51 | Cost: $   5849.42 | 2025-09-04T17:15:19.751904
+
+BUY  | ADBE       | Qty:    14.06 | Price: $  336.93 | Cost: $   4736.26 | 2025-09-04T17:15:20.049412
+
+BUY  | CNC        | Qty:   144.29 | Price: $   28.43 | Cost: $   4102.78 | 2025-09-04T17:44:05.915741
+
+BUY  | AMD        | Qty:    20.72 | Price: $  160.31 | Cost: $   3322.01 | 2025-09-04T18:27:33.862045
+
+BUY  | PFE        | Qty:   113.76 | Price: $   24.53 | Cost: $   2790.49 | 2025-09-04T19:56:08.645737
+
+BUY  | ETH-USD    | Qty:     0.86 | Price: $ 4308.35 | Cost: $   3712.50 | 2025-09-04T20:01:07.665603
+
+BUY  | NVDA       | Qty:    14.61 | Price: $  165.40 | Cost: $   2417.26 | 2025-09-05T16:20:46.525357
+
+BUY  | PLTR       | Qty:    13.40 | Price: $  150.58 | Cost: $   2018.41 | 2025-09-05T16:20:46.842889
+  Closed full position: 24.73 @ $236.51 -> P&L: $288.27
+SELL | CRM        | Qty:    24.73 | Price: $  248.17 | Revenue: $   6137.70 | Trade P&L: $    288.27 | Total P&L: $    288.27 | 2025-09-05T16:31:19.962607
+  Closed full position: 14.06 @ $336.93 -> P&L: $168.75
+SELL | ADBE       | Qty:    14.06 | Price: $  348.94 | Revenue: $   4905.01 | Trade P&L: $    168.75 | Total P&L: $    457.03 | 2025-09-05T16:31:19.977008
+  Closed full position: 144.29 @ $28.43 -> P&L: $37.83
+SELL | CNC        | Qty:   144.29 | Price: $   28.70 | Revenue: $   4140.62 | Trade P&L: $     37.83 | Total P&L: $    494.86 | 2025-09-05T16:31:19.990825
+
+BUY  | INTC       | Qty:   180.70 | Price: $   24.27 | Cost: $   4386.58 | 2025-09-05T16:31:20.358272
+
+BUY  | MSFT       | Qty:     7.47 | Price: $  493.58 | Cost: $   3684.73 | 2025-09-05T20:55:23.775565
+
+BUY  | WFC        | Qty:    39.05 | Price: $   79.26 | Cost: $   3095.17 | 2025-09-05T20:55:24.125248
+  Closed full position: 0.86 @ $4308.35 -> P&L: $25.55
+SELL | ETH-USD    | Qty:     0.86 | Price: $ 4338.00 | Revenue: $   3738.05 | Trade P&L: $     25.55 | Total P&L: $    520.40 | 2025-09-08T19:04:20.920597
+  Closed full position: 14.61 @ $165.40 -> P&L: $64.96
+SELL | NVDA       | Qty:    14.61 | Price: $  169.84 | Revenue: $   2482.22 | Trade P&L: $     64.96 | Total P&L: $    585.37 | 2025-09-08T19:04:20.940613
+
+BUY  | AAPL       | Qty:    14.75 | Price: $  236.70 | Cost: $   3492.33 | 2025-09-08T19:04:21.300058
+  Closed full position: 13.40 @ $150.58 -> P&L: $84.86
+SELL | PLTR       | Qty:    13.40 | Price: $  156.91 | Revenue: $   2103.28 | Trade P&L: $     84.86 | Total P&L: $    670.23 | 2025-09-08T19:04:24.088592
+  Closed full position: 39.05 @ $79.26 -> P&L: $-2.93
+SELL | WFC        | Qty:    39.05 | Price: $   79.19 | Revenue: $   3092.24 | Trade P&L: $     -2.93 | Total P&L: $    667.30 | 2025-09-08T19:05:49.852029
+  Closed full position: 20.72 @ $160.31 -> P&L: $-132.84
+SELL | AMD        | Qty:    20.72 | Price: $  153.90 | Revenue: $   3189.17 | Trade P&L: $   -132.84 | Total P&L: $    534.46 | 2025-09-09T16:30:44.789514
+  Closed full position: 14.75 @ $236.70 -> P&L: $-110.66
+SELL | AAPL       | Qty:    14.75 | Price: $  229.20 | Revenue: $   3381.67 | Trade P&L: $   -110.66 | Total P&L: $    423.80 | 2025-09-11T19:15:55.891323
+  Closed full position: 7.47 @ $493.58 -> P&L: $101.70
+SELL | MSFT       | Qty:     7.47 | Price: $  507.20 | Revenue: $   3786.43 | Trade P&L: $    101.70 | Total P&L: $    525.50 | 2025-09-12T16:31:32.183223
+  Closed full position: 180.70 @ $24.27 -> P&L: $81.32
+SELL | INTC       | Qty:   180.70 | Price: $   24.73 | Revenue: $   4467.90 | Trade P&L: $     81.32 | Total P&L: $    606.82 | 2025-09-15T19:29:38.012089
+
+BUY  | ETH-USD    | Qty:     0.70 | Price: $ 4485.83 | Cost: $   3122.95 | 2025-09-15T19:29:38.527993
+
+BUY  | SOL-USD    | Qty:    11.94 | Price: $  230.56 | Cost: $   2751.95 | 2025-09-15T19:29:39.009299
+  Closed full position: 0.70 @ $4485.83 -> P&L: $14.56
+SELL | ETH-USD    | Qty:     0.70 | Price: $ 4506.74 | Revenue: $   3137.51 | Trade P&L: $     14.56 | Total P&L: $    621.37 | 2025-09-15T20:03:44.311214
+  Closed full position: 11.94 @ $230.56 -> P&L: $32.11
+SELL | SOL-USD    | Qty:    11.94 | Price: $  233.26 | Revenue: $   2784.06 | Trade P&L: $     32.11 | Total P&L: $    653.49 | 2025-09-15T20:03:44.331708
+  Closed full position: 38.29 @ $182.94 -> P&L: $-100.38
+SELL | TXN        | Qty:    38.29 | Price: $  180.32 | Revenue: $   6904.91 | Trade P&L: $   -100.38 | Total P&L: $    553.10 | 2025-09-17T17:45:30.712346
+
+BUY  | ETH-USD    | Qty:     0.54 | Price: $ 4498.32 | Cost: $   2425.02 | 2025-09-19T16:53:31.928765
+
+BUY  | SOL-USD    | Qty:     9.01 | Price: $  237.17 | Cost: $   2136.92 | 2025-09-19T17:11:54.363727
+  Closed full position: 9.01 @ $237.17 -> P&L: $4.70
+SELL | SOL-USD    | Qty:     9.01 | Price: $  237.69 | Revenue: $   2141.62 | Trade P&L: $      4.70 | Total P&L: $    557.80 | 2025-09-19T18:07:08.790636
+  Closed full position: 0.54 @ $4498.32 -> P&L: $-7.70
+SELL | ETH-USD    | Qty:     0.54 | Price: $ 4484.04 | Revenue: $   2417.32 | Trade P&L: $     -7.70 | Total P&L: $    550.10 | 2025-09-19T19:02:23.919802
+  Closed full position: 113.76 @ $24.53 -> P&L: $341.84
+SELL | PFE        | Qty:   113.76 | Price: $   27.53 | Revenue: $   3132.33 | Trade P&L: $    341.84 | Total P&L: $    891.95 | 2025-10-03T16:33:00.977925
+
+BUY  | PLTR       | Qty:    39.83 | Price: $  178.10 | Cost: $   7093.01 | 2025-10-03T18:57:40.175175
+
+BUY  | AMD        | Qty:    36.63 | Price: $  167.60 | Cost: $   6139.39 | 2025-10-03T18:57:40.271174
+
+BUY  | TSLA       | Qty:    10.55 | Price: $  421.75 | Cost: $   4449.44 | 2025-10-03T19:15:11.555360
+
+BUY  | NVDA       | Qty:    22.13 | Price: $  186.55 | Cost: $   4127.51 | 2025-10-03T19:49:07.093680
+
+BUY  | INTC       | Qty:    81.28 | Price: $   36.81 | Cost: $   2991.36 | 2025-10-03T19:57:17.102138
+
+BUY  | NKE        | Qty:    33.33 | Price: $   72.31 | Cost: $   2409.81 | 2025-10-03T20:22:18.065184
+
+BUY  | KLAC       | Qty:     2.15 | Price: $ 1105.04 | Cost: $   2378.04 | 2025-10-03T21:02:48.282380
+  Closed full position: 39.83 @ $178.10 -> P&L: $115.16
+SELL | PLTR       | Qty:    39.83 | Price: $  180.99 | Revenue: $   7208.17 | Trade P&L: $    115.16 | Total P&L: $   1007.10 | 2025-10-21T20:58:38.690450
+  Closed full position: 36.63 @ $167.60 -> P&L: $2625.83
+SELL | AMD        | Qty:    36.63 | Price: $  239.29 | Revenue: $   8765.22 | Trade P&L: $   2625.83 | Total P&L: $   3632.93 | 2025-10-21T20:58:38.790541
+  Closed full position: 22.13 @ $186.55 -> P&L: $-117.82
+SELL | NVDA       | Qty:    22.13 | Price: $  181.23 | Revenue: $   4009.70 | Trade P&L: $   -117.82 | Total P&L: $   3515.12 | 2025-10-21T20:58:39.115421
+  Closed full position: 81.28 @ $36.81 -> P&L: $106.47
+SELL | INTC       | Qty:    81.28 | Price: $   38.12 | Revenue: $   3097.83 | Trade P&L: $    106.47 | Total P&L: $   3621.59 | 2025-10-21T20:58:39.244646
+  Closed full position: 33.33 @ $72.31 -> P&L: $-114.82
+SELL | NKE        | Qty:    33.33 | Price: $   68.86 | Revenue: $   2294.99 | Trade P&L: $   -114.82 | Total P&L: $   3506.77 | 2025-10-21T20:58:39.373475
+
+BUY  | MU         | Qty:    31.18 | Price: $  203.19 | Cost: $   6334.73 | 2025-10-21T20:58:39.621185
+
+BUY  | GLD        | Qty:    13.73 | Price: $  378.43 | Cost: $   5194.48 | 2025-10-21T20:58:39.771570
+
+BUY  | AVGO       | Qty:    12.46 | Price: $  341.98 | Cost: $   4259.47 | 2025-10-21T21:51:48.916661
+  Closed full position: 10.55 @ $421.75 -> P&L: $148.74
+SELL | TSLA       | Qty:    10.55 | Price: $  435.85 | Revenue: $   4598.18 | Trade P&L: $    148.74 | Total P&L: $   3655.51 | 2025-10-22T17:53:13.586321
+
+BUY  | AAPL       | Qty:    16.21 | Price: $  259.06 | Cost: $   4200.43 | 2025-10-22T18:02:06.347890
+  Closed full position: 2.15 @ $1105.04 -> P&L: $-21.48
+SELL | KLAC       | Qty:     2.15 | Price: $ 1095.06 | Revenue: $   2356.56 | Trade P&L: $    -21.48 | Total P&L: $   3634.03 | 2025-10-22T19:44:40.739910
+
+BUY  | KLAC       | Qty:     3.44 | Price: $ 1095.88 | Cost: $   3766.96 | 2025-10-22T20:26:03.082184
+
+BUY  | INTC       | Qty:    82.86 | Price: $   36.62 | Cost: $   3034.62 | 2025-10-22T21:07:08.211728
+
+BUY  | LRCX       | Qty:    18.00 | Price: $  140.76 | Cost: $   2533.91 | 2025-10-22T21:48:13.169257
+
+======================================================================================================================================================
+POSICIONES ABIERTAS
+======================================================================================================================================================
+
+INTC:
+  Qty:    82.86 | Entry: $   36.62 | Current: $   37.22 | Invested: $   3034.62 | Value: $   3083.51 | P&L: $     48.89 (+1.61%)
+  Total INTC: Invested: $   3034.62 | Unrealized P&L: $     48.89
+
+AAPL:
+  Qty:    16.21 | Entry: $  259.06 | Current: $  259.49 | Invested: $   4200.43 | Value: $   4207.45 | P&L: $      7.02 (+0.17%)
+  Total AAPL: Invested: $   4200.43 | Unrealized P&L: $      7.02
+
+KLAC:
+  Qty:     3.44 | Entry: $ 1095.88 | Current: $ 1156.67 | Invested: $   3766.96 | Value: $   3975.92 | P&L: $    208.96 (+5.55%)
+  Total KLAC: Invested: $   3766.96 | Unrealized P&L: $    208.96
+
+MU:
+  Qty:    31.18 | Entry: $  203.19 | Current: $  204.88 | Invested: $   6334.73 | Value: $   6387.42 | P&L: $     52.69 (+0.83%)
+  Total MU: Invested: $   6334.73 | Unrealized P&L: $     52.69
+
+GLD:
+  Qty:    13.73 | Entry: $  378.43 | Current: $  381.03 | Invested: $   5194.48 | Value: $   5230.17 | P&L: $     35.69 (+0.69%)
+  Total GLD: Invested: $   5194.48 | Unrealized P&L: $     35.69
+
+AVGO:
+  Qty:    12.46 | Entry: $  341.98 | Current: $  344.54 | Invested: $   4259.47 | Value: $   4291.42 | P&L: $     31.95 (+0.75%)
+  Total AVGO: Invested: $   4259.47 | Unrealized P&L: $     31.95
+
+LRCX:
+  Qty:    18.00 | Entry: $  140.76 | Current: $  146.44 | Invested: $   2533.91 | Value: $   2636.15 | P&L: $    102.25 (+4.04%)
+  Total LRCX: Invested: $   2533.91 | Unrealized P&L: $    102.25
+
+======================================================================================================================================================
+RESUMEN FINAL
+======================================================================================================================================================
+Realized P&L (cerradas):    $   3634.03
+Unrealized P&L (abiertas):  $    487.45
+Total P&L:                  $   4121.47
+
+Capital invertido actual:   $  29324.59
+Valor actual de posiciones: $  29812.04
+
+Capital inicial:            $100,000.00
+Capital final estimado:     $ 104121.47
+Retorno total:              +4.12%
+======================================================================================================================================================

@@ -1,0 +1,19 @@
+{
+  "market": "SPX",
+  "date": "2025-10-08",
+  "direction": "LONG",
+  "entry_price": 6776.50,
+  "exit_price": 6788.50,
+  "entry_time": "2025-10-08T10:05:00-04:00",
+  "exit_time": "2025-10-08T11:30:00-04:00",
+  "outcome": "WIN",
+  "pnl_points": 12.00,
+  "box_high": 6776.50,
+  "box_low": 6764.50,
+  "box_range": 12.00,
+  "stop_loss": 6764.50,
+  "tp1": 6788.50,
+  "tp2": 6800.50,
+  "tp3": 6812.50,
+  "notes": "Broke above box, tested high, went to TP1"
+}

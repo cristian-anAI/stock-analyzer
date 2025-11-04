@@ -1,0 +1,39 @@
+{
+  "config": {
+    "ema_period": 15,
+    "pivot_lookback": 100,
+    "capital_crypto": 30000.0,
+    "risk_per_trade_pct": 0.02,
+    "risk_reduced_pct": 0.01,
+    "tp1_ratio": 1.0,
+    "pivot_touch_threshold": 0.1
+  },
+  "symbol": "BTC/USDT",
+  "days": 7,
+  "phase1_metrics": {
+    "label": "Phase 1",
+    "total_trades": 466,
+    "wins": 228,
+    "losses": 238,
+    "win_rate": 48.93,
+    "total_pnl": -6000.0,
+    "avg_win": 600.0,
+    "avg_loss": -600.0,
+    "expectancy": -12.88,
+    "profit_factor": 0.96
+  },
+  "phase3_metrics": {
+    "label": "Phase 3",
+    "total_trades": 466,
+    "wins": 228,
+    "losses": 238,
+    "win_rate": 48.93,
+    "total_pnl": 109980.0,
+    "avg_win": 1108.68,
+    "avg_loss": -600.0,
+    "expectancy": 236.01,
+    "profit_factor": 1.77
+  },
+  "signals_count": 466,
+  "timestamp": "2025-10-29T13:44:24.145352"
+}

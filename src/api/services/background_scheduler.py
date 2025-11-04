@@ -13,6 +13,8 @@ from .data_service import DataService
 from .excel_reports_service import excel_reports_service
 from .position_monitor_service import position_monitor_service
 from .mtss_scheduler_service import mtss_scheduler
+from .telegram_service import telegram_service
+from .box_strategy_monitor import box_strategy_monitor
 
 logger = logging.getLogger(__name__)
 
@@ -45,6 +47,12 @@ class BackgroundScheduler:
         self.reports_interval = 3600  # 1 hour (Excel reports)
         self.position_monitor_interval = 300  # 5 minutes (position updates)
         self.mtss_scheduler_interval = 600  # 10 minutes (MTSS scheduler cycle)
+        self.box_strategy_interval = 60  # 1 minute (box strategy monitoring)
+
+        # Telegram notifications
+        self.market_close_notification_time = time(16, 5)  # 4:05 PM ET (market close)
+        self.market_close_notification_done_today = False
+        self.last_notification_date = None
         
         # Market open tracking
         self.market_open_update_done_today = False
@@ -69,7 +77,10 @@ class BackgroundScheduler:
         logger.info(f" Data update interval: {self.data_update_interval}s")
         logger.info(f" Excel reports interval: {self.reports_interval}s")
         logger.info(f" MTSS scheduler interval: {self.mtss_scheduler_interval}s")
-        
+
+        # Send startup notification with current positions
+        await self._send_startup_notification()
+
         # Start background task
         self.task = asyncio.create_task(self._run_scheduler())
         
@@ -112,14 +123,18 @@ class BackgroundScheduler:
         last_reports_generation = 0
         last_position_update = 0
         last_mtss_scheduler_run = 0
-        
+        last_box_strategy_run = 0
+
         try:
             while self.is_running:
                 current_time = asyncio.get_event_loop().time()
                 
                 # Check for market open position update (15:30 Spanish time)
                 await self._check_market_open_update()
-                
+
+                # Check for market close Telegram notification
+                await self._check_market_close_notification()
+
                 # Update crypto data (runs 24/7)
                 if current_time - last_crypto_update >= self.crypto_update_interval:
                     await self._update_crypto_data()
@@ -157,7 +172,12 @@ class BackgroundScheduler:
                 if current_time - last_mtss_scheduler_run >= self.mtss_scheduler_interval:
                     await self._run_mtss_scheduler_cycle()
                     last_mtss_scheduler_run = current_time
-                
+
+                # Run Box Strategy monitor (during market hours)
+                if current_time - last_box_strategy_run >= self.box_strategy_interval:
+                    await self._run_box_strategy_monitor()
+                    last_box_strategy_run = current_time
+
                 # Sleep for 10 seconds before next check
                 await asyncio.sleep(10)
                 
@@ -393,10 +413,120 @@ class BackgroundScheduler:
         if autotrader_interval:
             self.autotrader_interval = autotrader_interval
             logger.info(f" Autotrader interval updated to {autotrader_interval}s")
-        
+
         if data_update_interval:
             self.data_update_interval = data_update_interval
             logger.info(f" Data update interval updated to {data_update_interval}s")
+
+    async def _check_market_close_notification(self):
+        """Check if it's time to send daily market close notification"""
+        try:
+            from ..database.database import db_manager
+
+            current_time = datetime.now()
+            current_date = current_time.date()
+            current_time_obj = current_time.time()
+
+            # Reset flag for new day
+            if self.last_notification_date != current_date:
+                self.market_close_notification_done_today = False
+                self.last_notification_date = current_date
+
+            # Check if it's market close time (16:05 ET) and we haven't sent notification today
+            if (current_time_obj.hour == self.market_close_notification_time.hour and
+                current_time_obj.minute >= self.market_close_notification_time.minute and
+                current_time_obj.minute <= self.market_close_notification_time.minute + 5 and
+                not self.market_close_notification_done_today):
+
+                logger.info("📊 Market close detected - Sending Telegram notification")
+
+                # Get autotrader positions
+                positions = db_manager.execute_query(
+                    """SELECT id, symbol, type, quantity, entry_price, current_price,
+                              pnl, pnl_percent, position_side, created_at
+                       FROM positions
+                       WHERE source = 'autotrader'"""
+                )
+
+                # Get portfolio stats from portfolio manager
+                from .portfolio_manager import portfolio_manager
+
+                portfolio_stats = {
+                    'total_pnl': portfolio_manager.total_pnl_stocks + portfolio_manager.total_pnl_crypto,
+                    'invested_capital': portfolio_manager.invested_capital_stocks + portfolio_manager.invested_capital_crypto,
+                    'liquid_capital': portfolio_manager.liquid_capital_stocks + portfolio_manager.liquid_capital_crypto,
+                    'total_value': portfolio_manager.get_total_portfolio_value()
+                }
+
+                # Send Telegram notification
+                telegram_service.send_autotrader_positions_summary(
+                    positions=positions or [],
+                    portfolio_stats=portfolio_stats
+                )
+
+                # Mark as done for today
+                self.market_close_notification_done_today = True
+                logger.info("✅ Market close notification sent")
+
+        except Exception as e:
+            logger.error(f"Error in market close notification check: {e}")
+            self.stats["errors"] += 1
+
+    async def _send_startup_notification(self):
+        """Send Telegram notification when autotrader starts"""
+        try:
+            from ..database.database import db_manager
+
+            logger.info("📱 Sending autotrader startup notification")
+
+            # Get autotrader positions
+            positions = db_manager.execute_query(
+                """SELECT id, symbol, type, quantity, entry_price, current_price,
+                          pnl, pnl_percent, position_side, created_at
+                   FROM positions
+                   WHERE source = 'autotrader'"""
+            )
+
+            # Get portfolio stats from portfolio manager
+            from .portfolio_manager import portfolio_manager
+
+            portfolio_stats = {
+                'total_pnl': portfolio_manager.total_pnl_stocks + portfolio_manager.total_pnl_crypto,
+                'invested_capital': portfolio_manager.invested_capital_stocks + portfolio_manager.invested_capital_crypto,
+                'liquid_capital': portfolio_manager.liquid_capital_stocks + portfolio_manager.liquid_capital_crypto,
+                'total_value': portfolio_manager.get_total_portfolio_value()
+            }
+
+            # Send Telegram notification
+            telegram_service.send_autotrader_positions_summary(
+                positions=positions or [],
+                portfolio_stats=portfolio_stats
+            )
+
+            logger.info("✅ Startup notification sent")
+
+        except Exception as e:
+            logger.error(f"Error sending startup notification: {e}")
+            # Don't increment error count for startup notification failures
+
+    async def _run_box_strategy_monitor(self):
+        """Run box strategy monitoring cycle"""
+        try:
+            logger.debug("📦 Running box strategy monitor...")
+
+            # Run monitoring cycle
+            summary = await box_strategy_monitor.run_monitoring_cycle()
+
+            if summary.get('new_breakouts', 0) > 0 or summary.get('trade_updates', 0) > 0:
+                logger.info(
+                    f"📦 Box Strategy: {summary['new_breakouts']} new breakouts, "
+                    f"{summary['trade_updates']} trade updates, "
+                    f"{summary['active_trades']} active trades"
+                )
+
+        except Exception as e:
+            logger.error(f"Error in box strategy monitor: {e}")
+            self.stats["errors"] += 1
 
 # Global scheduler instance
 background_scheduler = BackgroundScheduler()

@@ -16,6 +16,7 @@
   "initial_risk_reward",
   "rsi_5min_14",
   "rsi_5min_21",
+  "rsi_divergence_5min",
   "macd_5min",
   "macd_signal_5min",
   "macd_hist_5min",

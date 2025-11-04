@@ -362,13 +362,22 @@ class MLPredictor:
         Returns:
             Dictionary with prediction and recommendation
         """
+        # Get timezone from market_data if available
+        entry_time = box_setup.get('entry_time')
+        if entry_time is None:
+            if market_data is not None and not market_data.empty and hasattr(market_data.index, 'tz'):
+                # Use timezone from data
+                entry_time = pd.Timestamp.now(tz=market_data.index.tz)
+            else:
+                entry_time = pd.Timestamp.now(tz='UTC')
+
         # Create trade data from box setup
         trade_data = {
             'box_high': box_setup['box_high'],
             'box_low': box_setup['box_low'],
             'box_range': box_setup['box_range'],
             'direction': box_setup.get('direction', 'LONG'),
-            'entry_time': box_setup.get('entry_time', pd.Timestamp.now()),
+            'entry_time': entry_time,
             'entry_price': box_setup.get('entry_price', box_setup['box_high']),
             'stop_loss': box_setup.get('stop_loss', box_setup['box_low']),
             'risk_points': box_setup.get('risk_points', box_setup['box_range']),

@@ -19,7 +19,13 @@ aiohttp>=3.9.0
 # Market hours and timezone handling
 pytz>=2023.3
 
-# Database (sqlite3 is built into Python)
+# Telegram notifications
+requests>=2.31.0  # Already included above for Telegram API
+
+# Database
+psycopg2-binary>=2.9.9  # PostgreSQL adapter
+python-dotenv>=1.0.0    # Environment variable management
+SQLAlchemy>=2.0.23      # ORM (optional but useful for complex queries)
 
 # Development dependencies
 pytest>=7.4.3

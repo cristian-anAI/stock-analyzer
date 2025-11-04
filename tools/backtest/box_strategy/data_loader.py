@@ -38,6 +38,7 @@ class DataLoader:
     SYMBOLS = {
         'SPX': 'ES=F',
         'NDX': 'NQ=F',
+        'RUT': 'RTY=F',  # Russell 2000 futures
         'DAX': 'FDAX=F',
         'FTSE': '^FTSE',
         'CAC': '^FCHI',
