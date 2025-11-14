@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1920, height=1080">
+    <title>Crypto Gaming Stream Overlay</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            width: 1920px;
+            height: 1080px;
+            background: transparent;
+            overflow: hidden;
+            font-family: 'Rajdhani', sans-serif;
+            position: relative;
+        }
+
+        /* Carbon fiber background texture */
+        .background-texture {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background:
+                linear-gradient(27deg, #151515 5px, transparent 5px) 0 5px,
+                linear-gradient(207deg, #151515 5px, transparent 5px) 10px 0px,
+                linear-gradient(27deg, #222 5px, transparent 5px) 0px 10px,
+                linear-gradient(207deg, #222 5px, transparent 5px) 10px 5px,
+                linear-gradient(90deg, #1b1b1b 10px, transparent 10px),
+                linear-gradient(#1d1d1d 25%, #1a1a1a 25%, #1a1a1a 50%, transparent 50%, transparent 75%, #242424 75%, #242424);
+            background-color: #131313;
+            background-size: 20px 20px;
+            opacity: 0.4;
+            z-index: -1;
+        }
+
+        /* Animated crypto logos background */
+        .crypto-bg {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 0;
+            opacity: 0.15;
+        }
+
+        .crypto-logo {
+            position: absolute;
+            font-size: 80px;
+            animation: float 20s ease-in-out infinite;
+        }
+
+        .crypto-logo.btc {
+            top: 15%;
+            left: 20%;
+            color: #F7931A;
+            animation-delay: 0s;
+        }
+
+        .crypto-logo.eth {
+            top: 50%;
+            right: 25%;
+            color: #627EEA;
+            animation-delay: 5s;
+        }
+
+        .crypto-logo.sol {
+            bottom: 20%;
+            left: 30%;
+            color: #14F195;
+            animation-delay: 10s;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0) rotate(0deg);
+            }
+            25% {
+                transform: translateY(-20px) rotate(5deg);
+            }
+            50% {
+                transform: translateY(-40px) rotate(-5deg);
+            }
+            75% {
+                transform: translateY(-20px) rotate(3deg);
+            }
+        }
+
+        /* Pokemon decorations */
+        .pokemon-decoration {
+            position: absolute;
+            font-size: 40px;
+            animation: walk 30s linear infinite;
+            opacity: 0.2;
+        }
+
+        .pokemon-decoration.pika {
+            bottom: 15%;
+            animation-delay: 0s;
+        }
+
+        .pokemon-decoration.char {
+            bottom: 25%;
+            animation-delay: 10s;
+        }
+
+        @keyframes walk {
+            0% {
+                left: -100px;
+            }
+            100% {
+                left: 2000px;
+            }
+        }
+
+        /* Main container */
+        .overlay-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            grid-template-rows: 1fr auto;
+            gap: 20px;
+        }
+
+        /* Tech frame borders */
+        .tech-frame {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        .corner {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+        }
+
+        .corner-tl {
+            top: 10px;
+            left: 10px;
+            border-top: 3px solid #F7931A;
+            border-left: 3px solid #F7931A;
+            box-shadow: 0 0 10px rgba(247, 147, 26, 0.6);
+        }
+
+        .corner-tr {
+            top: 10px;
+            right: 10px;
+            border-top: 3px solid #F7931A;
+            border-right: 3px solid #F7931A;
+            box-shadow: 0 0 10px rgba(247, 147, 26, 0.6);
+        }
+
+        .corner-bl {
+            bottom: 10px;
+            left: 10px;
+            border-bottom: 3px solid #F7931A;
+            border-left: 3px solid #F7931A;
+            box-shadow: 0 0 10px rgba(247, 147, 26, 0.6);
+        }
+
+        .corner-br {
+            bottom: 10px;
+            right: 10px;
+            border-bottom: 3px solid #F7931A;
+            border-right: 3px solid #F7931A;
+            box-shadow: 0 0 10px rgba(247, 147, 26, 0.6);
+        }
+
+        /* Window A - Vertical (iPhone/Pokemon) */
+        .window-a {
+            grid-column: 1;
+            grid-row: 1;
+            background: rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(247, 147, 26, 0.4);
+            border-radius: 15px;
+            box-shadow:
+                inset 0 0 20px rgba(0, 0, 0, 0.5),
+                0 0 20px rgba(247, 147, 26, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .window-a::before {
+            content: 'POKÉMON TCG POCKET';
+            position: absolute;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            font-size: 16px;
+            color: #F7931A;
+            text-shadow: 0 0 10px rgba(247, 147, 26, 0.8);
+            letter-spacing: 2px;
+            z-index: 10;
+        }
+
+        /* Window B - Horizontal (Trading) */
+        .window-b {
+            grid-column: 2;
+            grid-row: 1;
+            background: rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(247, 147, 26, 0.4);
+            border-radius: 15px;
+            box-shadow:
+                inset 0 0 20px rgba(0, 0, 0, 0.5),
+                0 0 20px rgba(247, 147, 26, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .window-b::before {
+            content: 'BTC TRADING PLATFORM';
+            position: absolute;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            font-size: 18px;
+            color: #F7931A;
+            text-shadow: 0 0 10px rgba(247, 147, 26, 0.8);
+            letter-spacing: 3px;
+            z-index: 10;
+        }
+
+        /* HUD inferior */
+        .hud-container {
+            grid-column: 1 / 3;
+            grid-row: 2;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(90deg,
+                rgba(20, 20, 20, 0.95) 0%,
+                rgba(30, 30, 30, 0.95) 50%,
+                rgba(20, 20, 20, 0.95) 100%);
+            border: 2px solid rgba(247, 147, 26, 0.5);
+            border-radius: 12px;
+            padding: 20px 40px;
+            box-shadow:
+                0 -5px 30px rgba(247, 147, 26, 0.3),
+                inset 0 0 20px rgba(0, 0, 0, 0.5);
+            position: relative;
+            height: 120px;
+        }
+
+        .hud-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg,
+                transparent 0%,
+                #F7931A 50%,
+                transparent 100%);
+            box-shadow: 0 0 10px rgba(247, 147, 26, 0.8);
+        }
+
+        .stat-box {
+            text-align: center;
+            padding: 10px 25px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(247, 147, 26, 0.3);
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(247, 147, 26, 0.2);
+            min-width: 200px;
+        }
+
+        .stat-label {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 14px;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 32px;
+            font-weight: 900;
+            color: #F7931A;
+            text-shadow:
+                0 0 10px rgba(247, 147, 26, 0.8),
+                0 0 20px rgba(247, 147, 26, 0.4);
+            line-height: 1;
+        }
+
+        .stat-value.positive {
+            color: #14F195;
+            text-shadow:
+                0 0 10px rgba(20, 241, 149, 0.8),
+                0 0 20px rgba(20, 241, 149, 0.4);
+        }
+
+        .stat-value.negative {
+            color: #FF4444;
+            text-shadow:
+                0 0 10px rgba(255, 68, 68, 0.8),
+                0 0 20px rgba(255, 68, 68, 0.4);
+        }
+
+        /* Webcam/Logo zone */
+        .webcam-zone {
+            position: absolute;
+            bottom: 140px;
+            right: 30px;
+            width: 320px;
+            height: 180px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(247, 147, 26, 0.4);
+            border-radius: 12px;
+            box-shadow:
+                inset 0 0 20px rgba(0, 0, 0, 0.5),
+                0 0 20px rgba(247, 147, 26, 0.2);
+            z-index: 50;
+        }
+
+        .webcam-zone::before {
+            content: 'WEBCAM / LOGO';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 14px;
+            color: rgba(247, 147, 26, 0.3);
+            letter-spacing: 2px;
+        }
+
+        /* Legal disclaimer */
+        .disclaimer {
+            position: absolute;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.3);
+            text-align: center;
+            letter-spacing: 1px;
+            z-index: 150;
+        }
+
+        /* Glowing accents */
+        .glow-line {
+            position: absolute;
+            height: 2px;
+            background: linear-gradient(90deg,
+                transparent 0%,
+                #F7931A 50%,
+                transparent 100%);
+            box-shadow: 0 0 10px rgba(247, 147, 26, 0.8);
+            animation: pulse 3s ease-in-out infinite;
+        }
+
+        .glow-line.top {
+            top: 10px;
+            left: 120px;
+            right: 120px;
+        }
+
+        .glow-line.bottom {
+            bottom: 10px;
+            left: 120px;
+            right: 120px;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 0.5;
+            }
+            50% {
+                opacity: 1;
+            }
+        }
+
+        /* Geometric decorations */
+        .geo-accent {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            border: 2px solid rgba(247, 147, 26, 0.5);
+            transform: rotate(45deg);
+            box-shadow: 0 0 10px rgba(247, 147, 26, 0.3);
+        }
+
+        .geo-accent.tl {
+            top: 50px;
+            left: 50px;
+        }
+
+        .geo-accent.tr {
+            top: 50px;
+            right: 50px;
+        }
+
+        .geo-accent.bl {
+            bottom: 150px;
+            left: 50px;
+        }
+
+        /* Stream title area */
+        .stream-title {
+            position: absolute;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 28px;
+            font-weight: 900;
+            color: #F7931A;
+            text-shadow:
+                0 0 20px rgba(247, 147, 26, 1),
+                0 0 40px rgba(247, 147, 26, 0.5);
+            letter-spacing: 4px;
+            z-index: 200;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body>
+    <!-- Background texture -->
+    <div class="background-texture"></div>
+
+    <!-- Animated crypto logos -->
+    <div class="crypto-bg">
+        <div class="crypto-logo btc">₿</div>
+        <div class="crypto-logo eth">Ξ</div>
+        <div class="crypto-logo sol">◎</div>
+    </div>
+
+    <!-- Pokemon decorations -->
+    <div class="pokemon-decoration pika">⚡🐭</div>
+    <div class="pokemon-decoration char">🔥🦎</div>
+
+    <!-- Tech frame -->
+    <div class="tech-frame">
+        <div class="corner corner-tl"></div>
+        <div class="corner corner-tr"></div>
+        <div class="corner corner-bl"></div>
+        <div class="corner corner-br"></div>
+        <div class="glow-line top"></div>
+        <div class="glow-line bottom"></div>
+    </div>
+
+    <!-- Geometric accents -->
+    <div class="geo-accent tl"></div>
+    <div class="geo-accent tr"></div>
+    <div class="geo-accent bl"></div>
+
+    <!-- Stream title -->
+    <div class="stream-title">CRYPTO × GAMING STREAM</div>
+
+    <!-- Main overlay container -->
+    <div class="overlay-container">
+        <!-- Window A: Pokemon TCG Pocket (Vertical) -->
+        <div class="window-a">
+            <!-- Esta área quedará transparente para captura de pantalla iPhone -->
+        </div>
+
+        <!-- Window B: Trading Platform (Horizontal) -->
+        <div class="window-b">
+            <!-- Esta área quedará transparente para captura de trading -->
+        </div>
+
+        <!-- HUD Container -->
+        <div class="hud-container">
+            <div class="stat-box">
+                <div class="stat-label">Racha de Victorias</div>
+                <div class="stat-value">12</div>
+            </div>
+
+            <div class="stat-box">
+                <div class="stat-label">P/L Realizado</div>
+                <div class="stat-value positive">+$1,247.50</div>
+            </div>
+
+            <div class="stat-box">
+                <div class="stat-label">P/L No Realizado</div>
+                <div class="stat-value negative">-$328.75</div>
+            </div>
+
+            <div class="stat-box">
+                <div class="stat-label">Total P/L Sesión</div>
+                <div class="stat-value positive">+$918.75</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Webcam/Logo zone -->
+    <div class="webcam-zone"></div>
+
+    <!-- Legal disclaimer -->
+    <div class="disclaimer">
+        ⚠️ NO ES CONSEJO DE INVERSIÓN · ENTRETENIMIENTO EDUCATIVO +18 · TRADE AT YOUR OWN RISK
+    </div>
+
+    <script>
+        // Dynamic stats update (ejemplo - puedes conectarlo a tus datos reales)
+        function updateStats() {
+            // Aquí puedes actualizar los valores dinámicamente
+            // Por ejemplo, conectando a una API o archivo JSON
+
+            // Ejemplo de actualización aleatoria para demostración:
+            /*
+            const realized = Math.random() * 2000 - 500;
+            const unrealized = Math.random() * 1000 - 500;
+
+            document.querySelectorAll('.stat-value')[1].textContent =
+                (realized >= 0 ? '+$' : '-$') + Math.abs(realized).toFixed(2);
+            document.querySelectorAll('.stat-value')[1].className =
+                'stat-value ' + (realized >= 0 ? 'positive' : 'negative');
+            */
+        }
+
+        // Actualizar cada 5 segundos
+        // setInterval(updateStats, 5000);
+    </script>
+</body>
+</html>
